@@ -1,0 +1,58 @@
+name: Service Worker Private Cache Safety
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/service-worker-private-cache.yml"
+      - "public/sw.js"
+      - "src/lib/serviceWorkerCache.ts"
+      - "src/store/authStore.ts"
+      - "scripts/test-service-worker-private-cache.mjs"
+      - "e2e/run_service_worker_private_cache_gate.py"
+      - "e2e/webdriver_client.py"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/service-worker-private-cache.yml"
+      - "public/sw.js"
+      - "src/lib/serviceWorkerCache.ts"
+      - "src/store/authStore.ts"
+      - "scripts/test-service-worker-private-cache.mjs"
+      - "e2e/run_service_worker_private_cache_gate.py"
+      - "e2e/webdriver_client.py"
+
+permissions:
+  contents: read
+
+jobs:
+  private-cache-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact head
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Compile browser gate
+        run: python3 -m py_compile e2e/webdriver_client.py e2e/run_service_worker_private_cache_gate.py
+
+      - name: Service Worker cache contract
+        run: node --test scripts/test-service-worker-private-cache.mjs
+
+      - name: ESLint PWA auth teardown entrypoints
+        run: npx eslint src/lib/serviceWorkerCache.ts src/store/authStore.ts
+
+      - name: Production build
+        run: npm run build
+
+      - name: Real Chrome private-cache lifecycle gate
+        run: PYTHONPATH=e2e python3 e2e/run_service_worker_private_cache_gate.py

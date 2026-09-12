@@ -1,0 +1,13 @@
+# Default maintainer ownership for the first public Alpha.
+* @boychina
+
+# High-risk browser/runtime surfaces require explicit maintainer review.
+/src/store/ @boychina
+/src/lib/ @boychina
+/src/components/AppShell/ @boychina
+/src/components/SmartTable/ @boychina
+/.github/workflows/ @boychina
+/nginx.conf.template @boychina
+/nginx-security-headers.conf @boychina
+/Dockerfile @boychina
+/SECURITY.md @boychina

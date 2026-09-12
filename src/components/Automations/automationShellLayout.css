@@ -1,0 +1,30 @@
+/*
+ * Shell-level sizing for the automation center.
+ *
+ * The automation center is a workspace, not a reading-width page: within the
+ * app shell it should use the full available content width, while retaining
+ * the same outer gutters used by the rest of the product. Component-level
+ * responsive behavior remains in automationCenter.css so embedded or future
+ * standalone uses are not affected.
+ */
+.qtable-shell-content .qtable-automation-center {
+  padding: 24px;
+}
+
+.qtable-shell-content .qtable-automation-center > * {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+@media (max-width: 900px) {
+  .qtable-shell-content .qtable-automation-center {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 640px) {
+  .qtable-shell-content .qtable-automation-center {
+    padding: 12px;
+  }
+}

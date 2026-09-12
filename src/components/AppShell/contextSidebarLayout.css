@@ -1,0 +1,10 @@
+.qtable-context-sidebar-host {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  min-height: 0;
+}
+
+.qtable-context-sidebar-host > * {
+  min-height: 0;
+}

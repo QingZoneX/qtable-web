@@ -1,0 +1,960 @@
+.qtable-automation-center {
+  width: 100%;
+  min-width: 0;
+  min-height: 100%;
+  overflow: auto;
+  padding: clamp(20px, 2.6vw, 36px);
+  background:
+    radial-gradient(circle at 8% 0%, rgba(37, 99, 235, 0.09), transparent 32%),
+    radial-gradient(circle at 88% 8%, rgba(124, 58, 237, 0.065), transparent 27%),
+    var(--qtable-color-background-layout);
+}
+
+.qtable-automation-center > * {
+  width: min(100%, 1240px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.qtable-automation-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+  padding: clamp(24px, 3vw, 40px);
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-lg);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.99), rgba(248, 250, 252, 0.94)),
+    var(--qtable-color-background);
+  box-shadow: 0 16px 42px rgba(15, 23, 42, 0.065);
+}
+
+.qtable-automation-hero-copy {
+  max-width: 780px;
+}
+
+.qtable-automation-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+  color: var(--qtable-color-primary);
+}
+
+.qtable-automation-hero h1.ant-typography {
+  margin: 12px 0 10px;
+  font-size: clamp(30px, 3.2vw, 44px);
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+}
+
+.qtable-automation-hero p.ant-typography {
+  max-width: 740px;
+  margin: 0;
+  color: var(--qtable-color-text-secondary);
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.qtable-automation-hero-actions {
+  flex: 0 0 auto;
+  justify-content: flex-end;
+}
+
+.qtable-automation-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: stretch;
+  margin-top: 18px;
+}
+
+.qtable-automation-summary-main,
+.qtable-automation-summary-context {
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-lg);
+  background: var(--qtable-color-background);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.qtable-automation-summary-main {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  padding: 18px 22px;
+}
+
+.qtable-automation-summary-main .ant-statistic + .ant-statistic {
+  border-left: 1px solid var(--qtable-color-border-secondary, var(--qtable-color-border));
+  padding-left: 22px;
+}
+
+.qtable-automation-summary-context {
+  min-width: 245px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4px;
+  padding: 16px 20px;
+}
+
+.qtable-automation-summary-context > span {
+  color: var(--qtable-color-text-secondary);
+  font-size: 12px;
+}
+
+.qtable-automation-summary-context > strong {
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+}
+
+.qtable-automation-summary-context .ant-tag {
+  margin-top: 5px;
+}
+
+.qtable-automation-center > .ant-alert {
+  margin-top: 16px;
+  border-radius: var(--qtable-radius-md);
+}
+
+.qtable-automation-toolbar {
+  position: sticky;
+  top: -1px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+  padding: 12px 14px;
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-lg);
+  background: color-mix(in srgb, var(--qtable-color-background) 94%, transparent);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.035);
+}
+
+.qtable-automation-toolbar-primary {
+  min-width: 0;
+  flex: 1;
+  display: grid;
+  grid-template-columns: 190px 190px minmax(220px, 1fr);
+  gap: 10px;
+}
+
+.qtable-automation-loading,
+.qtable-automation-filter-empty {
+  margin-top: 18px;
+  padding: 34px;
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-lg);
+  background: var(--qtable-color-background);
+}
+
+.qtable-automation-rule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+  padding-bottom: 32px;
+}
+
+.qtable-automation-rule-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 255px;
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-lg);
+  background: var(--qtable-color-background);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+  overflow: hidden;
+  transition:
+    transform 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.qtable-automation-rule-card:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--qtable-color-primary) 26%, var(--qtable-color-border));
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.07);
+}
+
+.qtable-automation-rule-card-main {
+  min-width: 0;
+  padding: 20px 22px;
+}
+
+.qtable-automation-rule-title-row {
+  min-width: 0;
+}
+
+.qtable-automation-rule-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.qtable-automation-rule-title-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.qtable-automation-rule-title-copy > .ant-typography {
+  font-size: 17px;
+  line-height: 1.35;
+}
+
+.qtable-automation-rule-description.ant-typography {
+  max-width: 760px;
+  margin: 8px 0 0;
+  color: var(--qtable-color-text-secondary);
+}
+
+.qtable-automation-rule-flow {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) auto minmax(150px, 1fr) auto minmax(190px, 1.25fr);
+  gap: 10px;
+  align-items: stretch;
+  margin-top: 18px;
+}
+
+.qtable-automation-flow-step {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 11px 12px;
+  border-radius: var(--qtable-radius-md);
+  background: var(--qtable-color-background-layout);
+}
+
+.qtable-automation-flow-step > span {
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  font-weight: 800;
+  color: var(--qtable-color-primary);
+}
+
+.qtable-automation-flow-step > strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--qtable-color-text);
+}
+
+.qtable-automation-flow-action {
+  background: color-mix(in srgb, var(--qtable-color-primary) 6%, var(--qtable-color-background-layout));
+}
+
+.qtable-automation-flow-arrow {
+  align-self: center;
+  color: var(--qtable-color-text-tertiary);
+}
+
+.qtable-automation-rule-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px;
+  border-left: 1px solid var(--qtable-color-border-secondary, var(--qtable-color-border));
+  background: color-mix(in srgb, var(--qtable-color-background-layout) 58%, var(--qtable-color-background));
+}
+
+.qtable-automation-rule-health {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.qtable-automation-muted {
+  color: var(--qtable-color-text-secondary);
+  font-size: 12px;
+}
+
+.qtable-automation-rule-actions {
+  width: 100%;
+}
+
+.qtable-automation-rule-actions .ant-btn {
+  padding-inline: 6px;
+}
+
+.qtable-automation-empty-state {
+  margin-top: 18px;
+  padding: clamp(26px, 4vw, 52px);
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-lg);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.95)),
+    var(--qtable-color-background);
+  text-align: center;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.045);
+}
+
+.qtable-automation-empty-copy {
+  max-width: 680px;
+  margin: 0 auto 24px;
+}
+
+.qtable-automation-empty-icon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 14px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--qtable-color-primary) 12%, transparent);
+  color: var(--qtable-color-primary);
+  font-size: 24px;
+}
+
+.qtable-automation-empty-copy h2.ant-typography {
+  margin-bottom: 8px;
+}
+
+.qtable-automation-empty-copy p.ant-typography {
+  color: var(--qtable-color-text-secondary);
+  line-height: 1.75;
+}
+
+.qtable-automation-template-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 auto 22px;
+  max-width: 980px;
+  text-align: left;
+}
+
+.qtable-automation-template-card {
+  appearance: none;
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-lg);
+  padding: 17px;
+  background: var(--qtable-color-background);
+  color: inherit;
+  display: flex;
+  gap: 12px;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  transition:
+    transform 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.qtable-automation-template-card:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--qtable-color-primary) 30%, var(--qtable-color-border));
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+}
+
+.qtable-automation-template-card:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.qtable-automation-template-icon {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--qtable-color-background-layout);
+  color: var(--qtable-color-primary);
+  font-size: 17px;
+}
+
+.qtable-automation-template-card > span:last-child {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.qtable-automation-template-card strong {
+  font-size: 14px;
+}
+
+.qtable-automation-template-card small {
+  color: var(--qtable-color-text-secondary);
+  line-height: 1.55;
+}
+
+.qtable-automation-empty-state > .ant-alert {
+  max-width: 720px;
+  margin: 20px auto 0;
+  text-align: left;
+}
+
+.qtable-automation-drawer-subtitle {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+}
+
+.qtable-automation-editor-drawer .ant-drawer-body,
+.qtable-automation-history-drawer .ant-drawer-body {
+  background: var(--qtable-color-background-layout);
+}
+
+.qtable-automation-editor-alert {
+  margin-bottom: 14px;
+  border-radius: var(--qtable-radius-md);
+}
+
+.qtable-automation-editor-section {
+  padding: 20px;
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-lg);
+  background: var(--qtable-color-background);
+}
+
+.qtable-automation-section-heading {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  margin-bottom: 18px;
+}
+
+.qtable-automation-heading-with-action {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.qtable-automation-section-heading h4.ant-typography {
+  margin: 0 0 4px;
+  font-size: 17px;
+}
+
+.qtable-automation-step-index {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--qtable-color-primary) 10%, transparent);
+  color: var(--qtable-color-primary);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.qtable-automation-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.qtable-automation-form-grid label,
+.qtable-automation-trigger-config label,
+.qtable-automation-transition-grid label {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.qtable-automation-form-grid label > span:first-child,
+.qtable-automation-trigger-config label > span:first-child,
+.qtable-automation-transition-grid label > span:first-child {
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--qtable-color-text-secondary);
+}
+
+.qtable-automation-form-wide {
+  grid-column: 1 / -1;
+}
+
+.qtable-automation-switch-field {
+  justify-content: end;
+}
+
+.qtable-automation-trigger-select {
+  width: min(100%, 360px);
+}
+
+.qtable-automation-trigger-config {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: var(--qtable-radius-md);
+  background: var(--qtable-color-background-layout);
+}
+
+.qtable-automation-transition-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.qtable-automation-condition-list,
+.qtable-automation-action-list,
+.qtable-automation-field-assignment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.qtable-automation-condition-row {
+  display: grid;
+  grid-template-columns: 28px minmax(130px, 1fr) minmax(130px, 1fr) minmax(150px, 1.2fr) 32px;
+  gap: 8px;
+  align-items: center;
+}
+
+.qtable-automation-row-number {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--qtable-color-background-layout);
+  color: var(--qtable-color-text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.qtable-automation-condition-value {
+  min-width: 0;
+}
+
+.qtable-automation-empty-builder-row {
+  padding: 18px;
+  border: 1px dashed var(--qtable-color-border);
+  border-radius: var(--qtable-radius-md);
+  color: var(--qtable-color-text-secondary);
+  text-align: center;
+}
+
+.qtable-automation-add-action-bar {
+  margin-bottom: 2px;
+}
+
+.qtable-automation-action-card {
+  padding: 15px;
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-md);
+  background: color-mix(in srgb, var(--qtable-color-background-layout) 38%, var(--qtable-color-background));
+}
+
+.qtable-automation-action-card > header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.qtable-automation-action-card > header > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qtable-automation-field-assignment {
+  display: grid;
+  grid-template-columns: minmax(170px, 0.8fr) minmax(180px, 1.2fr) 32px;
+  gap: 8px;
+  align-items: center;
+}
+
+.qtable-automation-preview-input {
+  width: min(100%, 520px);
+}
+
+.qtable-automation-preview-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: var(--qtable-radius-md);
+  background: var(--qtable-color-background-layout);
+}
+
+.qtable-automation-editor-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.qtable-automation-editor-footer > .ant-typography {
+  max-width: 480px;
+  font-size: 12px;
+}
+
+.qtable-automation-history-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.qtable-automation-history-toolbar > .ant-select {
+  width: 180px;
+  flex: 0 0 auto;
+}
+
+.qtable-automation-history-toolbar > .ant-typography {
+  text-align: right;
+  font-size: 12px;
+}
+
+.qtable-automation-execution-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.qtable-automation-execution-card {
+  padding: 16px;
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-lg);
+  background: var(--qtable-color-background);
+}
+
+.qtable-automation-execution-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.qtable-automation-execution-time {
+  margin-top: 6px;
+  color: var(--qtable-color-text-secondary);
+  font-size: 12px;
+}
+
+.qtable-automation-execution-card > .ant-alert {
+  margin-top: 12px;
+}
+
+.qtable-automation-execution-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.qtable-automation-action-result {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 9px;
+  background: var(--qtable-color-background-layout);
+}
+
+.qtable-automation-action-result > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.qtable-automation-action-result span {
+  color: var(--qtable-color-text-secondary);
+  font-size: 12px;
+}
+
+.qtable-automation-execution-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px solid var(--qtable-color-border-secondary, var(--qtable-color-border));
+}
+
+.qtable-automation-run-record {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+@media (max-width: 1080px) {
+  .qtable-automation-rule-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .qtable-automation-rule-meta {
+    border-left: 0;
+    border-top: 1px solid var(--qtable-color-border-secondary, var(--qtable-color-border));
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .qtable-automation-rule-health {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .qtable-automation-rule-actions {
+    width: auto;
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 900px) {
+  .qtable-automation-center {
+    padding: 18px;
+  }
+
+  .qtable-automation-hero {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .qtable-automation-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .qtable-automation-summary-context {
+    min-width: 0;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .qtable-automation-summary-context .ant-tag {
+    margin-top: 0;
+    margin-left: auto;
+  }
+
+  .qtable-automation-toolbar {
+    position: static;
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .qtable-automation-toolbar-primary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .qtable-automation-toolbar-primary > .ant-input-affix-wrapper {
+    grid-column: 1 / -1;
+  }
+
+  .qtable-automation-rule-flow {
+    grid-template-columns: 1fr;
+  }
+
+  .qtable-automation-flow-arrow {
+    transform: rotate(90deg);
+    justify-self: center;
+  }
+
+  .qtable-automation-template-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .qtable-automation-condition-row {
+    grid-template-columns: 28px minmax(0, 1fr) 32px;
+  }
+
+  .qtable-automation-condition-row > .ant-select:nth-of-type(2),
+  .qtable-automation-condition-value {
+    grid-column: 2 / 3;
+  }
+
+  .qtable-automation-condition-row > .ant-btn {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .qtable-automation-editor-footer {
+    align-items: flex-end;
+    flex-direction: column;
+  }
+
+  .qtable-automation-editor-footer > .ant-typography {
+    max-width: none;
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .qtable-automation-center {
+    padding: 12px;
+  }
+
+  .qtable-automation-hero {
+    padding: 22px 18px;
+    border-radius: var(--qtable-radius-md);
+  }
+
+  .qtable-automation-hero h1.ant-typography {
+    font-size: 30px;
+  }
+
+  .qtable-automation-hero-actions,
+  .qtable-automation-hero-actions .ant-btn {
+    width: 100%;
+  }
+
+  .qtable-automation-summary-main {
+    grid-template-columns: 1fr;
+    padding: 8px 16px;
+  }
+
+  .qtable-automation-summary-main .ant-statistic {
+    padding: 10px 0;
+  }
+
+  .qtable-automation-summary-main .ant-statistic + .ant-statistic {
+    border-left: 0;
+    border-top: 1px solid var(--qtable-color-border-secondary, var(--qtable-color-border));
+    padding-left: 0;
+  }
+
+  .qtable-automation-toolbar-primary {
+    grid-template-columns: 1fr;
+  }
+
+  .qtable-automation-toolbar-primary > .ant-input-affix-wrapper {
+    grid-column: auto;
+  }
+
+  .qtable-automation-rule-card-main,
+  .qtable-automation-rule-meta {
+    padding: 15px;
+  }
+
+  .qtable-automation-rule-title {
+    flex-direction: column;
+  }
+
+  .qtable-automation-rule-title .ant-switch {
+    align-self: flex-start;
+  }
+
+  .qtable-automation-rule-meta,
+  .qtable-automation-rule-health {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .qtable-automation-rule-actions {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .qtable-automation-editor-section {
+    padding: 14px;
+  }
+
+  .qtable-automation-form-grid,
+  .qtable-automation-transition-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .qtable-automation-form-wide {
+    grid-column: auto;
+  }
+
+  .qtable-automation-heading-with-action {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .qtable-automation-heading-with-action > .ant-btn {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .qtable-automation-condition-row {
+    grid-template-columns: 1fr 32px;
+    padding: 10px;
+    border: 1px solid var(--qtable-color-border);
+    border-radius: var(--qtable-radius-md);
+  }
+
+  .qtable-automation-row-number {
+    display: none;
+  }
+
+  .qtable-automation-condition-row > .ant-select,
+  .qtable-automation-condition-row > .ant-select:nth-of-type(2),
+  .qtable-automation-condition-value {
+    grid-column: 1;
+  }
+
+  .qtable-automation-condition-row > .ant-btn {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .qtable-automation-action-card > header,
+  .qtable-automation-action-card > header > div {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .qtable-automation-action-card > header > .ant-btn {
+    align-self: flex-end;
+    margin-top: -40px;
+  }
+
+  .qtable-automation-field-assignment {
+    grid-template-columns: 1fr 32px;
+  }
+
+  .qtable-automation-field-assignment > :nth-child(2) {
+    grid-column: 1;
+  }
+
+  .qtable-automation-field-assignment > .ant-btn {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .qtable-automation-history-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .qtable-automation-history-toolbar > .ant-select {
+    width: 100%;
+  }
+
+  .qtable-automation-history-toolbar > .ant-typography {
+    text-align: left;
+  }
+
+  .qtable-automation-execution-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qtable-automation-rule-card,
+  .qtable-automation-template-card {
+    transition: none;
+  }
+}

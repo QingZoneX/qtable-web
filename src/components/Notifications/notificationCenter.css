@@ -1,0 +1,457 @@
+.qtable-notification-popover-overlay .ant-popover-inner {
+  padding: 0;
+  border-radius: var(--qtable-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--qtable-shadow-floating);
+}
+
+.qtable-notification-popover {
+  width: min(400px, calc(100vw - 24px));
+  max-height: min(640px, calc(100vh - 84px));
+  display: flex;
+  flex-direction: column;
+  background: var(--qtable-color-background);
+}
+
+.qtable-notification-popover-header {
+  min-height: 64px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--qtable-color-border);
+}
+
+.qtable-notification-popover-header > div:first-child {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.qtable-notification-popover-header strong {
+  color: var(--qtable-color-text);
+  font-size: 15px;
+}
+
+.qtable-notification-popover-header span {
+  color: var(--qtable-color-text-tertiary);
+  font-size: var(--qtable-font-size-micro);
+}
+
+.qtable-notification-popover-list {
+  min-height: 160px;
+  overflow: auto;
+}
+
+.qtable-notification-popover-loading {
+  padding: 18px 16px;
+}
+
+.qtable-notification-popover-state {
+  min-height: 180px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  color: var(--qtable-color-text-secondary);
+}
+
+.qtable-notification-popover-empty {
+  padding-block: 42px;
+}
+
+.qtable-notification-popover-footer {
+  min-height: 44px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 0;
+  border-top: 1px solid var(--qtable-color-border);
+  color: var(--qtable-color-primary);
+  background: var(--qtable-color-background);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--qtable-font-size-label);
+  font-weight: 600;
+}
+
+.qtable-notification-popover-footer:hover {
+  background: var(--qtable-color-primary-soft);
+}
+
+.qtable-notification-bell.ant-btn {
+  position: relative;
+}
+
+.qtable-notification-item {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--qtable-color-border);
+  background: var(--qtable-color-background);
+  transition: background-color 120ms ease;
+}
+
+.qtable-notification-item:last-child {
+  border-bottom: 0;
+}
+
+.qtable-notification-item.is-unread {
+  background: color-mix(in srgb, var(--qtable-color-primary-soft) 48%, var(--qtable-color-background));
+}
+
+.qtable-notification-item:hover {
+  background: var(--qtable-color-surface-hover);
+}
+
+.qtable-notification-item.is-inaccessible {
+  background: var(--qtable-color-background-layout);
+}
+
+.qtable-notification-main {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 46px 16px 16px;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+}
+
+.qtable-notification-main:disabled {
+  cursor: default;
+}
+
+.qtable-notification-item.is-compact .qtable-notification-main {
+  padding: 12px 42px 12px 14px;
+  gap: 10px;
+}
+
+.qtable-notification-type-icon {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: var(--qtable-color-text-secondary);
+  background: var(--qtable-color-background-layout);
+}
+
+.qtable-notification-type-icon.is-primary,
+.qtable-notification-type-tag.is-primary {
+  color: var(--qtable-color-primary);
+  background: var(--qtable-color-primary-soft);
+}
+
+.qtable-notification-type-icon.is-success,
+.qtable-notification-type-tag.is-success {
+  color: var(--qtable-color-success);
+  background: var(--qtable-color-success-soft);
+}
+
+.qtable-notification-type-icon.is-warning,
+.qtable-notification-type-tag.is-warning {
+  color: var(--qtable-color-warning);
+  background: var(--qtable-color-warning-soft);
+}
+
+.qtable-notification-type-icon.is-danger,
+.qtable-notification-type-tag.is-danger {
+  color: var(--qtable-color-danger);
+  background: var(--qtable-color-danger-soft);
+}
+
+.qtable-notification-type-icon.is-ai,
+.qtable-notification-type-tag.is-ai {
+  color: var(--qtable-color-ai);
+  background: var(--qtable-color-ai-soft);
+}
+
+.qtable-notification-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.qtable-notification-title-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.qtable-notification-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--qtable-color-text);
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 650;
+}
+
+.qtable-notification-unread-dot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 999px;
+  background: var(--qtable-color-primary);
+}
+
+.qtable-notification-summary {
+  margin-top: 4px;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  color: var(--qtable-color-text-secondary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.qtable-notification-meta {
+  margin-top: 8px;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  color: var(--qtable-color-text-tertiary);
+  font-size: 11px;
+}
+
+.qtable-notification-actor-avatar {
+  color: var(--qtable-color-primary) !important;
+  background: var(--qtable-color-primary-soft) !important;
+  font-size: 9px !important;
+}
+
+.qtable-notification-actor-name {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qtable-notification-type-tag.ant-tag {
+  margin: 0;
+  border-radius: var(--qtable-radius-pill);
+  font-size: 10px;
+  line-height: 18px;
+}
+
+.qtable-notification-time {
+  white-space: nowrap;
+}
+
+.qtable-notification-access-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--qtable-color-text-tertiary);
+}
+
+.qtable-notification-read-button.ant-btn {
+  position: absolute;
+  top: 12px;
+  right: 10px;
+  opacity: 0;
+  color: var(--qtable-color-text-tertiary);
+}
+
+.qtable-notification-item:hover .qtable-notification-read-button,
+.qtable-notification-read-button:focus-visible {
+  opacity: 1;
+}
+
+.qtable-notification-main:focus-visible,
+.qtable-notification-popover-footer:focus-visible {
+  outline: 2px solid var(--qtable-color-primary);
+  outline-offset: -2px;
+}
+
+.qtable-notification-center {
+  width: min(1040px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 36px 0 56px;
+}
+
+.qtable-notification-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.qtable-notification-page-header .ant-typography {
+  margin-bottom: 0;
+}
+
+.qtable-notification-page-header h1.ant-typography {
+  margin: 0 0 6px;
+  color: var(--qtable-color-text);
+  font-size: var(--qtable-font-size-page-title);
+  line-height: 32px;
+}
+
+.qtable-notification-page-header p.ant-typography {
+  max-width: 680px;
+  color: var(--qtable-color-text-secondary);
+  font-size: var(--qtable-font-size-body);
+}
+
+.qtable-notification-summary-card {
+  margin-top: 24px;
+  min-height: 96px;
+  display: grid;
+  grid-template-columns: 150px 150px minmax(0, 1fr);
+  align-items: center;
+  gap: 20px;
+  padding: 18px 20px;
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-lg);
+  background: var(--qtable-color-background-layout);
+}
+
+.qtable-notification-summary-card > div:not(.qtable-notification-summary-hint) {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.qtable-notification-summary-card strong {
+  color: var(--qtable-color-text);
+  font-size: 24px;
+  line-height: 30px;
+}
+
+.qtable-notification-summary-label {
+  color: var(--qtable-color-text-tertiary);
+  font-size: 11px;
+}
+
+.qtable-notification-summary-hint {
+  padding-left: 20px;
+  border-left: 1px solid var(--qtable-color-border);
+  color: var(--qtable-color-text-secondary);
+  font-size: 12px;
+  line-height: 19px;
+}
+
+.qtable-notification-toolbar {
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.qtable-notification-type-filter {
+  width: 190px;
+}
+
+.qtable-notification-feed {
+  margin-top: 14px;
+  min-height: 360px;
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-lg);
+  overflow: hidden;
+  background: var(--qtable-color-background);
+}
+
+.qtable-notification-feed-list .qtable-notification-main {
+  min-height: 104px;
+}
+
+.qtable-notification-page-loading {
+  padding: 24px;
+}
+
+.qtable-notification-page-empty {
+  padding-block: 96px;
+}
+
+.qtable-notification-load-more {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+  border-top: 1px solid var(--qtable-color-border);
+}
+
+@media (max-width: 1099px) {
+  .qtable-notification-center {
+    width: calc(100% - 32px);
+    padding-top: 28px;
+  }
+
+  .qtable-notification-summary-card {
+    grid-template-columns: 120px 120px minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .qtable-notification-center {
+    width: calc(100% - 24px);
+    padding: 20px 0 36px;
+  }
+
+  .qtable-notification-page-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .qtable-notification-page-header > .ant-space {
+    width: 100%;
+  }
+
+  .qtable-notification-summary-card {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .qtable-notification-summary-hint {
+    grid-column: 1 / -1;
+    padding: 12px 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--qtable-color-border);
+  }
+
+  .qtable-notification-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .qtable-notification-type-filter {
+    width: 100%;
+  }
+
+  .qtable-notification-main {
+    padding-left: 12px;
+    padding-right: 42px;
+  }
+
+  .qtable-notification-type-icon {
+    width: 30px;
+    height: 30px;
+    flex-basis: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .qtable-notification-actor-name,
+  .qtable-notification-type-tag {
+    display: none;
+  }
+
+  .qtable-notification-summary-card {
+    grid-template-columns: 1fr 1fr;
+  }
+}

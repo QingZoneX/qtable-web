@@ -1,0 +1,173 @@
+@import "tailwindcss";
+
+@theme {
+  --color-qtable-primary: var(--qtable-color-primary);
+  --color-qtable-primary-hover: var(--qtable-color-primary-hover);
+  --color-qtable-primary-soft: var(--qtable-color-primary-soft);
+  --color-qtable-text: var(--qtable-color-text);
+  --color-qtable-text-secondary: var(--qtable-color-text-secondary);
+  --color-qtable-text-tertiary: var(--qtable-color-text-tertiary);
+  --color-qtable-border: var(--qtable-color-border);
+  --color-qtable-border-strong: var(--qtable-color-border-strong);
+  --color-qtable-bg: var(--qtable-color-background);
+  --color-qtable-bg-layout: var(--qtable-color-background-layout);
+  --color-qtable-success: var(--qtable-color-success);
+  --color-qtable-warning: var(--qtable-color-warning);
+  --color-qtable-danger: var(--qtable-color-danger);
+  --color-qtable-ai: var(--qtable-color-ai);
+  --radius-qtable-sm: var(--qtable-radius-sm);
+  --radius-qtable-md: var(--qtable-radius-md);
+  --radius-qtable-lg: var(--qtable-radius-lg);
+}
+
+:root {
+  font-family: var(--qtable-font-family);
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--qtable-color-text);
+  background-color: var(--qtable-color-background);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--qtable-color-background);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+:where(
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  [role="button"],
+  [role="menuitem"],
+  [role="tab"],
+  [tabindex]
+):focus-visible {
+  outline: 2px solid var(--qtable-color-primary, #2f6fed);
+  outline-offset: 2px;
+}
+
+.qtable-visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.4; transform: scale(0.75); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.qtable-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--qtable-color-background-layout) 0%,
+    var(--qtable-color-border) 40%,
+    var(--qtable-color-background-layout) 80%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+
+.qtable-skeleton-rounded {
+  border-radius: var(--qtable-radius-md);
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes progress-indeterminate {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .qtable-skeleton {
+    animation: none;
+  }
+}
+
+.dashboard-workbench-grid .react-grid-item .react-resizable-handle {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  background-image: none;
+  background: rgba(255, 255, 255, 0.6);
+  border: none;
+  border-radius: var(--qtable-radius-sm);
+  box-shadow: none;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.dashboard-workbench-grid .react-grid-item .react-resizable-handle-se {
+  right: 6px;
+  bottom: 6px;
+}
+
+.dashboard-workbench-grid .react-grid-item .react-resizable-handle::after {
+  content: "";
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 9px;
+  height: 9px;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--qtable-color-text-tertiary) 0 1px,
+    transparent 1px 3px
+  );
+  border-bottom-right-radius: 4px;
+}
+
+.dashboard-workbench-grid .react-grid-item:hover .react-resizable-handle,
+.dashboard-workbench-grid .react-grid-item.is-selected:hover .react-resizable-handle {
+  opacity: 1;
+  transform: scale(1.03);
+  pointer-events: auto;
+}

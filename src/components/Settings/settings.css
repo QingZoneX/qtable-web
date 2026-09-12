@@ -1,0 +1,154 @@
+.qtable-settings-center {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  padding: 28px 32px 48px;
+  box-sizing: border-box;
+}
+
+.qtable-settings-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.qtable-settings-header h2,
+.qtable-settings-section-title h4 {
+  margin: 0;
+}
+
+.qtable-settings-header p {
+  margin: 6px 0 0;
+  max-width: 760px;
+}
+
+.qtable-settings-account {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 220px;
+  padding: 10px 12px;
+  border: 1px solid var(--qtable-border, #e5e7eb);
+  border-radius: 10px;
+  background: var(--qtable-surface, #fff);
+}
+
+.qtable-settings-account > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.qtable-settings-account .ant-typography {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qtable-settings-section {
+  margin-top: 28px;
+}
+
+.qtable-settings-section-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.qtable-settings-section-title > .anticon {
+  margin-top: 5px;
+  font-size: 17px;
+}
+
+.qtable-settings-section-title > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.qtable-settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.qtable-settings-card {
+  height: 100%;
+}
+
+.qtable-settings-full-width {
+  width: 100%;
+}
+
+.qtable-settings-help-copy {
+  margin: 4px 0 10px;
+}
+
+.qtable-settings-subsection {
+  padding-top: 14px;
+  border-top: 1px solid var(--qtable-border, #e5e7eb);
+}
+
+.qtable-settings-select {
+  width: 220px;
+  max-width: 100%;
+}
+
+.qtable-settings-workspace-select {
+  width: min(420px, 100%);
+}
+
+.qtable-settings-workspace-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.qtable-settings-workspace-summary > div,
+.qtable-settings-about-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--qtable-surface-subtle, #f8fafc);
+}
+
+.qtable-settings-about-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.qtable-settings-links {
+  margin-top: 18px;
+}
+
+@media (max-width: 900px) {
+  .qtable-settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .qtable-settings-header {
+    flex-direction: column;
+  }
+
+  .qtable-settings-account {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 640px) {
+  .qtable-settings-center {
+    padding: 20px 16px 36px;
+  }
+
+  .qtable-settings-workspace-summary,
+  .qtable-settings-about-grid {
+    grid-template-columns: 1fr;
+  }
+}

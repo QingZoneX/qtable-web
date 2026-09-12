@@ -1,0 +1,162 @@
+.qtable-home-simple-start {
+  position: relative;
+  padding: 20px;
+  overflow: hidden;
+  border: 1px solid var(--qtable-color-primary-border);
+  border-radius: var(--qtable-radius-lg);
+  background:
+    radial-gradient(circle at 92% 4%, var(--qtable-color-primary-soft), transparent 34%),
+    var(--qtable-color-background);
+}
+
+.qtable-home-simple-start-copy {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.qtable-home-simple-start-icon {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--qtable-radius-md);
+  color: var(--qtable-color-primary);
+  background: var(--qtable-color-primary-soft);
+  font-size: 19px;
+}
+
+.qtable-home-simple-start h3.ant-typography {
+  margin: 0 0 3px;
+  font-size: 17px;
+  line-height: 24px;
+}
+
+.qtable-home-simple-start p.ant-typography {
+  margin: 0;
+  max-width: 760px;
+  color: var(--qtable-color-text-secondary);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.qtable-home-simple-action-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.qtable-home-simple-action {
+  min-width: 0;
+  min-height: 96px;
+  padding: 13px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-md);
+  color: var(--qtable-color-text);
+  background: var(--qtable-color-background);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    transform 120ms ease,
+    background-color 120ms ease;
+}
+
+.qtable-home-simple-action:hover:not(:disabled) {
+  border-color: var(--qtable-color-primary-border);
+  box-shadow: 0 6px 18px rgba(16, 24, 40, 0.06);
+  transform: translateY(-1px);
+}
+
+.qtable-home-simple-action.is-primary {
+  border-color: var(--qtable-color-primary-border);
+  background: var(--qtable-color-primary-soft);
+}
+
+.qtable-home-simple-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.qtable-home-simple-action-icon {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--qtable-radius-sm);
+  color: var(--qtable-color-primary);
+  background: var(--qtable-color-primary-soft);
+  font-size: 15px;
+}
+
+.qtable-home-simple-action.is-primary .qtable-home-simple-action-icon {
+  color: var(--qtable-color-background);
+  background: var(--qtable-color-primary);
+}
+
+.qtable-home-simple-action strong,
+.qtable-home-simple-action small {
+  display: block;
+}
+
+.qtable-home-simple-action strong {
+  margin-bottom: 5px;
+  font-size: 13px;
+  line-height: 19px;
+}
+
+.qtable-home-simple-action small {
+  color: var(--qtable-color-text-secondary);
+  font-size: 11px;
+  line-height: 17px;
+}
+
+.qtable-home-simple-start-status {
+  margin-top: 10px;
+  color: var(--qtable-color-text-tertiary);
+  font-size: 11px;
+}
+
+@media (max-width: 1180px) {
+  .qtable-home-simple-action-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .qtable-home-simple-start {
+    padding: 15px;
+  }
+
+  .qtable-home-simple-start-copy {
+    gap: 9px;
+  }
+
+  .qtable-home-simple-start-icon {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+  }
+
+  .qtable-home-simple-action-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .qtable-home-simple-action {
+    min-height: 82px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qtable-home-simple-action {
+    transition: none;
+  }
+}

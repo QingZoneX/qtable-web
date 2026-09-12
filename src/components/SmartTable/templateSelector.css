@@ -1,0 +1,653 @@
+.qtable-template-selector-modal .ant-modal {
+  max-width: calc(100vw - 32px);
+}
+
+.qtable-template-selector-modal .ant-modal-content {
+  max-height: calc(100dvh - 32px);
+  overflow: hidden;
+}
+
+.qtable-template-selector-modal .ant-modal-body {
+  min-height: 0;
+}
+
+.qtable-template-tabs {
+  margin-bottom: 6px;
+}
+
+.qtable-template-center-layout {
+  display: grid;
+  grid-template-columns: 164px minmax(0, 1fr) 340px;
+  gap: 16px;
+  height: min(760px, calc(100dvh - 230px));
+  min-height: 500px;
+  min-width: 0;
+}
+
+.qtable-template-category-rail {
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 2px 10px 2px 0;
+  border-right: 1px solid #eef0f3;
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+}
+
+.qtable-template-category-item {
+  appearance: none;
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 4px;
+  padding: 8px 8px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #374151;
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
+}
+
+.qtable-template-category-item:hover {
+  background: #f7f8fa;
+}
+
+.qtable-template-category-item:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 1px;
+}
+
+.qtable-template-category-item.is-selected {
+  background: #eef2ff;
+  color: #4f46e5;
+  font-weight: 600;
+}
+
+.qtable-template-category-icon {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--cover-bg-a), var(--cover-bg-b));
+  color: var(--cover-ink);
+  font-size: 14px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.58);
+}
+
+.qtable-template-category-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qtable-template-category-count {
+  color: #9ca3af;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.qtable-template-category-item.is-selected .qtable-template-category-count {
+  color: #818cf8;
+}
+
+.qtable-template-list-pane {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.qtable-template-controls {
+  flex: 0 0 auto;
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.qtable-template-controls .ant-input-search {
+  width: 100%;
+  min-width: 0;
+}
+
+.qtable-template-list-region {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+}
+
+.qtable-template-card-grid {
+  display: grid;
+  padding-top: 2px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  align-content: start;
+}
+
+.qtable-template-card {
+  appearance: none;
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 1px 1px rgba(15, 23, 42, 0.02);
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    transform 120ms ease,
+    background-color 120ms ease;
+}
+
+.qtable-template-card:hover {
+  border-color: #c7d2fe;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+  transform: translateY(-1px);
+}
+
+.qtable-template-card:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+.qtable-template-card.is-selected {
+  border-color: #6366f1;
+  background: #fbfbff;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.09);
+}
+
+.qtable-template-cover {
+  --cover-bg-a: #eef2ff;
+  --cover-bg-b: #ddd6fe;
+  --cover-ink: #4f46e5;
+  --cover-accent: #818cf8;
+  position: relative;
+  height: 116px;
+  flex: 0 0 116px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 82% 20%, rgba(255, 255, 255, 0.82), transparent 31%),
+    linear-gradient(135deg, var(--cover-bg-a), var(--cover-bg-b));
+}
+
+.qtable-template-cover-glow {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  top: -42px;
+  right: -20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
+  filter: blur(1px);
+}
+
+.qtable-template-cover-sheet {
+  position: absolute;
+  left: 18px;
+  top: 19px;
+  width: 58%;
+  height: 78px;
+  padding: 15px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 9px 24px rgba(15, 23, 42, 0.11);
+  transform: rotate(-1.5deg);
+}
+
+.qtable-template-cover-line {
+  display: block;
+  height: 5px;
+  margin-bottom: 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--cover-ink) 18%, white);
+}
+
+.qtable-template-cover-line.is-title {
+  width: 58%;
+  height: 7px;
+  background: color-mix(in srgb, var(--cover-ink) 42%, white);
+}
+
+.qtable-template-cover-line.is-short {
+  width: 72%;
+}
+
+.qtable-template-cover-icon {
+  position: absolute;
+  right: 22px;
+  top: 32px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.68);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.76);
+  color: var(--cover-ink);
+  font-size: 24px;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.1);
+  backdrop-filter: blur(4px);
+}
+
+.qtable-template-cover-accent {
+  position: absolute;
+  right: 16px;
+  bottom: 13px;
+  width: 64px;
+  height: 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--cover-accent) 45%, transparent);
+}
+
+.qtable-template-cover.variant-1 .qtable-template-cover-sheet {
+  left: 24px;
+  top: 15px;
+  transform: rotate(1.8deg);
+}
+
+.qtable-template-cover.variant-1 .qtable-template-cover-icon {
+  right: 18px;
+  top: 39px;
+}
+
+.qtable-template-cover.variant-2 .qtable-template-cover-sheet {
+  left: 15px;
+  top: 23px;
+  width: 62%;
+  transform: rotate(-2.4deg);
+}
+
+.qtable-template-cover.variant-2 .qtable-template-cover-icon {
+  right: 25px;
+  top: 27px;
+}
+
+.qtable-template-cover.variant-3 .qtable-template-cover-sheet {
+  left: 22px;
+  top: 20px;
+  width: 55%;
+  transform: rotate(2.2deg);
+}
+
+.qtable-template-cover.variant-3 .qtable-template-cover-accent {
+  right: 23px;
+  width: 52px;
+}
+
+.qtable-template-card.is-blank-template .qtable-template-cover-sheet {
+  opacity: 0.48;
+}
+
+.qtable-template-card.is-blank-template .qtable-template-cover-icon {
+  width: 56px;
+  height: 56px;
+  right: calc(50% - 28px);
+  top: 30px;
+  font-size: 28px;
+}
+
+.qtable-template-card.is-blank-template .qtable-template-cover-accent {
+  display: none;
+}
+
+.qtable-template-card-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 12px 13px 13px;
+}
+
+.qtable-template-card-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+}
+
+.qtable-template-card-title-icon {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  background: #f3f4f6;
+  color: #6366f1;
+  font-size: 13px;
+}
+
+.qtable-template-card-heading {
+  min-width: 0;
+  max-width: calc(100% - 34px);
+  margin-bottom: 5px;
+}
+
+.qtable-template-card-description {
+  min-height: 36px;
+  margin-bottom: 10px !important;
+  font-size: 12px;
+}
+
+.qtable-template-card-meta {
+  margin-top: 9px;
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+.qtable-template-state {
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qtable-template-preview {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.qtable-template-preview-shell {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.qtable-template-preview-header,
+.qtable-template-preview-metrics,
+.qtable-template-preview-footer {
+  flex: 0 0 auto;
+}
+
+.qtable-template-preview-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.qtable-template-preview-metric {
+  padding: 9px 10px;
+  border: 1px solid #eef0f3;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.qtable-template-preview-metric-label {
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+.qtable-template-preview-metric-value {
+  margin-top: 2px;
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.qtable-template-preview-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+}
+
+.qtable-template-preview-empty-copy {
+  padding: 8px 0 12px;
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+.qtable-template-field-list {
+  margin: 8px 0 14px;
+}
+
+.qtable-template-field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 12px;
+}
+
+.qtable-template-field-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qtable-template-view-list {
+  margin-top: 8px;
+}
+
+.qtable-template-view-row {
+  display: flex !important;
+  padding: 4px 0;
+}
+
+.qtable-template-view-icon {
+  color: #6366f1;
+}
+
+.qtable-template-view-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qtable-template-preview-footer {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #e5e7eb;
+  background: #fafafa;
+}
+
+.qtable-template-preview-footer-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+.category-all {
+  --cover-bg-a: #eef2ff;
+  --cover-bg-b: #e0e7ff;
+  --cover-ink: #4f46e5;
+  --cover-accent: #818cf8;
+}
+
+.category-general {
+  --cover-bg-a: #f8fafc;
+  --cover-bg-b: #e2e8f0;
+  --cover-ink: #475569;
+  --cover-accent: #94a3b8;
+}
+
+.category-project {
+  --cover-bg-a: #eef2ff;
+  --cover-bg-b: #ddd6fe;
+  --cover-ink: #5b21b6;
+  --cover-accent: #8b5cf6;
+}
+
+.category-product {
+  --cover-bg-a: #ecfeff;
+  --cover-bg-b: #dbeafe;
+  --cover-ink: #0369a1;
+  --cover-accent: #38bdf8;
+}
+
+.category-sales {
+  --cover-bg-a: #fff7ed;
+  --cover-bg-b: #ffedd5;
+  --cover-ink: #c2410c;
+  --cover-accent: #fb923c;
+}
+
+.category-operations {
+  --cover-bg-a: #fdf2f8;
+  --cover-bg-b: #fae8ff;
+  --cover-ink: #a21caf;
+  --cover-accent: #e879f9;
+}
+
+.category-people {
+  --cover-bg-a: #ecfdf5;
+  --cover-bg-b: #d1fae5;
+  --cover-ink: #047857;
+  --cover-accent: #34d399;
+}
+
+.category-finance {
+  --cover-bg-a: #fffbeb;
+  --cover-bg-b: #fef3c7;
+  --cover-ink: #b45309;
+  --cover-accent: #f59e0b;
+}
+
+.category-asset {
+  --cover-bg-a: #eff6ff;
+  --cover-bg-b: #e0f2fe;
+  --cover-ink: #1d4ed8;
+  --cover-accent: #60a5fa;
+}
+
+.category-other {
+  --cover-bg-a: #f5f3ff;
+  --cover-bg-b: #ede9fe;
+  --cover-ink: #6d28d9;
+  --cover-accent: #a78bfa;
+}
+
+@media (max-height: 720px) {
+  .qtable-template-center-layout {
+    height: calc(100dvh - 210px);
+    min-height: 360px;
+  }
+}
+
+@media (max-width: 1120px) {
+  .qtable-template-center-layout {
+    grid-template-columns: 150px minmax(0, 1fr);
+    height: min(760px, calc(100dvh - 210px));
+    min-height: 0;
+    overflow-y: auto;
+    align-content: start;
+    padding-right: 4px;
+    scrollbar-gutter: stable;
+  }
+
+  .qtable-template-category-rail {
+    max-height: 560px;
+  }
+
+  .qtable-template-list-pane {
+    min-height: 560px;
+  }
+
+  .qtable-template-preview {
+    grid-column: 1 / -1;
+    min-height: 500px;
+  }
+}
+
+@media (max-width: 760px) {
+  .qtable-template-center-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .qtable-template-category-rail {
+    display: flex;
+    gap: 6px;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0 0 8px;
+    border-right: 0;
+    border-bottom: 1px solid #eef0f3;
+    scrollbar-gutter: auto;
+  }
+
+  .qtable-template-category-item {
+    width: auto;
+    flex: 0 0 auto;
+    grid-template-columns: 24px auto auto;
+    margin: 0;
+    padding: 7px 9px;
+  }
+
+  .qtable-template-category-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 7px;
+    font-size: 12px;
+  }
+
+  .qtable-template-list-pane {
+    min-height: 500px;
+  }
+
+  .qtable-template-preview {
+    grid-column: auto;
+    min-height: 480px;
+  }
+}
+
+@media (max-width: 560px) {
+  .qtable-template-selector-modal .ant-modal {
+    max-width: calc(100vw - 16px);
+    margin: 8px auto;
+  }
+
+  .qtable-template-card-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .qtable-template-cover {
+    height: 108px;
+    flex-basis: 108px;
+  }
+}

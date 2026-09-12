@@ -1,0 +1,251 @@
+.qtable-table-chrome {
+  flex: 0 0 auto;
+  min-width: 0;
+  background: var(--qtable-color-background);
+  border-bottom: 1px solid var(--qtable-color-border);
+}
+
+.qtable-table-page-header {
+  min-height: 58px;
+  padding: 8px 16px 8px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.qtable-table-title-block,
+.qtable-table-title-row,
+.qtable-table-header-actions,
+.qtable-table-view-tab,
+.qtable-table-view-tabs,
+.qtable-table-toolbar-main,
+.qtable-table-toolbar-side,
+.qtable-table-state-strip,
+.qtable-table-state-chip {
+  display: flex;
+  align-items: center;
+}
+
+.qtable-table-title-block {
+  min-width: 0;
+  gap: 11px;
+}
+
+.qtable-table-title-icon {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--qtable-radius-md);
+  color: var(--qtable-color-primary);
+  background: var(--qtable-color-primary-soft);
+  font-size: 16px;
+}
+
+.qtable-table-title-copy { min-width: 0; }
+.qtable-table-title-row { min-width: 0; gap: 8px; }
+.qtable-table-title {
+  max-width: 360px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--qtable-color-text);
+  font-size: 17px;
+  line-height: 24px;
+  font-weight: 650;
+}
+
+.qtable-table-title-meta {
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--qtable-color-text-tertiary);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.qtable-table-save-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--qtable-color-text-secondary);
+}
+
+.qtable-table-save-state::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--qtable-color-success);
+}
+
+.qtable-table-save-state.is-readonly::before { background: var(--qtable-color-text-tertiary); }
+
+.qtable-table-header-actions {
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.qtable-table-primary .ant-btn { height: 36px; }
+
+.qtable-table-view-row {
+  height: 42px;
+  padding: 0 12px 0 20px;
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  border-top: 1px solid var(--qtable-color-border);
+}
+
+.qtable-table-view-viewport {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.qtable-table-view-tabs {
+  min-width: 0;
+  height: 100%;
+  gap: 2px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.qtable-table-view-tab {
+  position: relative;
+  min-width: 0;
+  max-width: 210px;
+  height: 100%;
+  padding: 0 11px;
+  gap: 7px;
+  border: 0;
+  color: var(--qtable-color-text-secondary);
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.qtable-table-view-tab:hover { color: var(--qtable-color-text); background: var(--qtable-color-surface-hover); }
+.qtable-table-view-tab.is-active { color: var(--qtable-color-primary); font-weight: 600; }
+.qtable-table-view-tab.is-active::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px 2px 0 0;
+  background: var(--qtable-color-primary);
+}
+
+.qtable-table-view-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.qtable-table-view-tools {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.qtable-table-view-tools .ant-btn { height: 30px; }
+
+.qtable-table-toolbar {
+  min-height: 42px;
+  padding: 5px 12px 5px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid var(--qtable-color-border);
+  background: var(--qtable-color-background);
+}
+
+.qtable-table-toolbar-main,
+.qtable-table-toolbar-side { min-width: 0; gap: 4px; }
+.qtable-table-toolbar-main { flex: 1; flex-wrap: wrap; }
+.qtable-table-toolbar-side { flex: 0 0 auto; }
+.qtable-table-toolbar .ant-btn { min-height: 30px; }
+
+.qtable-table-state-strip {
+  min-height: 34px;
+  padding: 2px 12px 5px 20px;
+  gap: 6px;
+  overflow: hidden;
+  border-top: 1px solid var(--qtable-color-border);
+  background: var(--qtable-color-background-layout);
+}
+
+.qtable-table-state-strip.is-empty { display: none; }
+
+.qtable-table-state-chip {
+  max-width: 280px;
+  height: 26px;
+  flex: 0 0 auto;
+  gap: 5px;
+  padding: 0 8px;
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-pill);
+  color: var(--qtable-color-text-secondary);
+  background: var(--qtable-color-background);
+  font-size: 11px;
+  line-height: 24px;
+}
+
+.qtable-table-state-chip strong {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--qtable-color-text);
+  font-weight: 600;
+}
+
+.qtable-table-state-chip.is-filter { border-color: var(--qtable-color-primary-border); background: var(--qtable-color-primary-soft); }
+.qtable-table-state-chip.is-sort,
+.qtable-table-state-chip.is-group { color: var(--qtable-color-text); }
+.qtable-table-state-chip .ant-btn { width: 20px; min-width: 20px; height: 20px; padding: 0; }
+
+.qtable-table-state-overflow {
+  flex: 0 0 auto;
+  color: var(--qtable-color-primary);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.qtable-table-readonly-note {
+  flex: 0 0 auto;
+  color: var(--qtable-color-text-tertiary);
+  font-size: 11px;
+}
+
+.qtable-table-collaborators { display: flex; align-items: center; }
+
+@media (max-width: 1280px) {
+  .qtable-table-page-header { padding-left: 16px; }
+  .qtable-table-view-row,
+  .qtable-table-toolbar,
+  .qtable-table-state-strip { padding-left: 16px; }
+  .qtable-table-title { max-width: 260px; }
+  .qtable-table-state-chip { max-width: 220px; }
+}
+
+@media (max-width: 960px) {
+  .qtable-table-title-meta .qtable-table-secondary-meta { display: none; }
+  .qtable-table-page-header { align-items: flex-start; }
+  .qtable-table-header-actions { flex-wrap: wrap; justify-content: flex-end; }
+  .qtable-table-toolbar { align-items: flex-start; }
+  .qtable-table-toolbar-side { padding-top: 1px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qtable-table-view-tab { transition: none; }
+}

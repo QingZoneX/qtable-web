@@ -1,0 +1,69 @@
+name: QTableUI Container Distribution
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "Dockerfile"
+      - "docker-entrypoint.sh"
+      - "nginx.conf.template"
+      - "nginx-security-headers.conf"
+      - "package.json"
+      - "package-lock.json"
+      - "VERSION"
+      - "LICENSE"
+      - "NOTICE"
+      - "docs/docker-hub.md"
+      - "scripts/check-container-distribution-contract.mjs"
+      - "scripts/check-docker-runtime.py"
+      - ".github/workflows/container-distribution.yml"
+      - ".github/workflows/docker-publish.yml"
+  push:
+    branches: [main]
+    paths:
+      - "Dockerfile"
+      - "docker-entrypoint.sh"
+      - "nginx.conf.template"
+      - "nginx-security-headers.conf"
+      - "package.json"
+      - "package-lock.json"
+      - "VERSION"
+      - "LICENSE"
+      - "NOTICE"
+      - "docs/docker-hub.md"
+      - "scripts/check-container-distribution-contract.mjs"
+      - "scripts/check-docker-runtime.py"
+      - ".github/workflows/container-distribution.yml"
+      - ".github/workflows/docker-publish.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout exact head
+        uses: actions/checkout@v7
+
+      - name: Distribution contract
+        run: node scripts/check-container-distribution-contract.mjs
+
+      - name: Build runtime image
+        run: |
+          docker build \
+            --build-arg QTABLE_UI_VERSION="$(cat VERSION)" \
+            --build-arg QTABLE_UI_REVISION="${GITHUB_SHA}" \
+            --build-arg QTABLE_UI_CREATED="1970-01-01T00:00:00Z" \
+            -t qtable-ui-distribution:${GITHUB_SHA} .
+
+      - name: Runtime proxy and health smoke
+        run: python3 scripts/check-docker-runtime.py qtable-ui-distribution:${GITHUB_SHA}
+
+      - name: Verify image metadata and license payload
+        run: |
+          test "$(docker image inspect qtable-ui-distribution:${GITHUB_SHA} --format '{{ index .Config.Labels \"org.opencontainers.image.licenses\" }}')" = "Apache-2.0"
+          test "$(docker image inspect qtable-ui-distribution:${GITHUB_SHA} --format '{{ index .Config.Labels \"org.opencontainers.image.revision\" }}')" = "${GITHUB_SHA}"
+          docker image inspect qtable-ui-distribution:${GITHUB_SHA} --format '{{json .Config.Healthcheck}}' | grep -q '/healthz'
+          docker run --rm --entrypoint sh qtable-ui-distribution:${GITHUB_SHA} -c 'test -f /usr/share/licenses/qtable-ui/LICENSE && test -f /usr/share/licenses/qtable-ui/NOTICE'

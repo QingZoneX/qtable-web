@@ -1,0 +1,69 @@
+.qtable-home-experience {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Home is a workspace surface, not a centered marketing page. Keep the
+   breathing room in padding while allowing wide desktops to use the full
+   AppShell content width. */
+.qtable-home-experience .qtable-home-page,
+.qtable-home-simple-start-wrap {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+}
+
+.qtable-home-simple-start-wrap {
+  min-width: 0;
+  padding: 24px 24px 0;
+}
+
+.qtable-home-experience.is-simple .qtable-home-page {
+  padding-top: 18px;
+}
+
+.qtable-home-experience.is-simple .qtable-home-landing-setting {
+  display: none;
+}
+
+.qtable-home-experience.is-simple .qtable-home-hero {
+  align-items: center;
+}
+
+.qtable-home-experience.is-simple .qtable-home-scope-hint {
+  max-width: 760px;
+}
+
+.qtable-home-experience.is-simple .qtable-home-grid-bottom {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.qtable-home-experience.is-simple .qtable-home-insights {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 1280px) {
+  .qtable-home-simple-start-wrap {
+    padding: 20px 20px 0;
+  }
+}
+
+@media (max-width: 980px) {
+  .qtable-home-experience.is-simple .qtable-home-grid-bottom {
+    grid-template-columns: 1fr;
+  }
+
+  .qtable-home-experience.is-simple .qtable-home-insights {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .qtable-home-simple-start-wrap {
+    padding: 14px 14px 0;
+  }
+
+  .qtable-home-experience.is-simple .qtable-home-page {
+    padding-top: 14px;
+  }
+}

@@ -1,0 +1,382 @@
+.qtable-home-page {
+  width: min(1480px, 100%);
+  min-width: 0;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  color: var(--qtable-color-text);
+}
+
+.qtable-home-page-error {
+  min-height: 360px;
+  justify-content: center;
+}
+
+.qtable-home-hero {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.qtable-home-hero h2.ant-typography {
+  margin: 0 0 4px;
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 650;
+}
+
+.qtable-home-hero p.ant-typography {
+  margin: 0;
+  color: var(--qtable-color-text-secondary);
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.qtable-home-scope-hint {
+  margin-top: 8px;
+  color: var(--qtable-color-text-tertiary);
+  font-size: 12px;
+}
+
+.qtable-home-hero-actions,
+.qtable-home-landing-setting,
+.qtable-home-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qtable-home-landing-setting {
+  padding: 4px 4px 4px 10px;
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-md);
+  color: var(--qtable-color-text-secondary);
+  background: var(--qtable-color-background-layout);
+  font-size: 12px;
+}
+
+.qtable-home-card {
+  min-width: 0;
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-lg);
+  background: var(--qtable-color-background);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
+  overflow: hidden;
+}
+
+.qtable-home-card-header {
+  min-height: 54px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--qtable-color-border);
+}
+
+.qtable-home-card-header h4.ant-typography {
+  margin: 0;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.qtable-home-kpi-frame > .qtable-home-card-header {
+  display: none;
+}
+
+.qtable-home-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.qtable-home-kpi {
+  min-width: 0;
+  min-height: 112px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-right: 1px solid var(--qtable-color-border);
+}
+
+.qtable-home-kpi:last-child { border-right: 0; }
+
+.qtable-home-kpi-icon {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: var(--qtable-color-primary);
+  background: var(--qtable-color-primary-soft);
+  font-size: 18px;
+}
+
+.qtable-home-kpi.is-danger .qtable-home-kpi-icon {
+  color: var(--qtable-color-danger, #d92d20);
+  background: #fff1f0;
+}
+
+.qtable-home-kpi span {
+  display: block;
+  color: var(--qtable-color-text-secondary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.qtable-home-kpi strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 28px;
+  line-height: 34px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.qtable-home-grid {
+  min-width: 0;
+  display: grid;
+  gap: 18px;
+}
+
+.qtable-home-grid-top { grid-template-columns: minmax(0, 1.55fr) minmax(340px, 0.8fr); }
+.qtable-home-grid-bottom { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+.qtable-home-section-skeleton,
+.qtable-home-section-error,
+.qtable-home-card > .ant-empty {
+  padding: 24px 18px;
+}
+
+.qtable-home-inline-alert { margin: 12px 14px 0; }
+.qtable-home-list,
+.qtable-home-due-list,
+.qtable-home-project-list,
+.qtable-home-activity-list { display: flex; flex-direction: column; }
+
+.qtable-home-task-row,
+.qtable-home-due-row,
+.qtable-home-project-row,
+.qtable-home-activity-row {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  border-bottom: 1px solid var(--qtable-color-border);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+.qtable-home-task-row:last-child,
+.qtable-home-due-row:last-child,
+.qtable-home-project-row:last-child,
+.qtable-home-activity-row:last-child { border-bottom: 0; }
+
+.qtable-home-task-row:hover,
+.qtable-home-due-row:hover,
+.qtable-home-project-row:hover,
+.qtable-home-activity-row:hover { background: var(--qtable-color-surface-hover); }
+
+.qtable-home-task-row {
+  min-height: 62px;
+  padding: 10px 14px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 100px 18px;
+  align-items: center;
+  gap: 12px;
+}
+
+.qtable-home-task-title-line { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.qtable-home-task-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; font-weight: 600; }
+.qtable-home-task-meta { margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px 10px; color: var(--qtable-color-text-secondary); font-size: 11px; }
+.qtable-home-task-progress .ant-progress { margin: 0; }
+.qtable-home-row-arrow { color: var(--qtable-color-text-tertiary); }
+
+.qtable-home-due-row {
+  min-height: 58px;
+  padding: 9px 14px;
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.qtable-home-due-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--qtable-color-primary); }
+.qtable-home-due-dot.is-danger { background: var(--qtable-color-danger, #d92d20); }
+.qtable-home-due-copy { min-width: 0; }
+.qtable-home-due-copy strong,
+.qtable-home-due-copy small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.qtable-home-due-copy strong { font-size: 13px; }
+.qtable-home-due-copy small { margin-top: 3px; color: var(--qtable-color-text-secondary); font-size: 11px; }
+
+.qtable-home-recent-grid {
+  padding: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.qtable-home-recent-card {
+  min-width: 0;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 10px 8px 10px 10px;
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-md);
+  background: var(--qtable-color-background);
+  cursor: pointer;
+  transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+}
+
+.qtable-home-recent-card:hover {
+  border-color: var(--qtable-color-border-strong);
+  box-shadow: 0 4px 14px rgba(16, 24, 40, 0.06);
+  transform: translateY(-1px);
+}
+
+.qtable-home-recent-open {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  display: flex;
+  gap: 10px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.qtable-home-recent-icon {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: var(--qtable-color-primary);
+  background: var(--qtable-color-primary-soft);
+}
+
+.qtable-home-recent-copy { min-width: 0; }
+.qtable-home-recent-copy strong,
+.qtable-home-recent-copy span,
+.qtable-home-recent-copy small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.qtable-home-recent-copy strong { font-size: 13px; }
+.qtable-home-recent-copy span { margin-top: 2px; color: var(--qtable-color-text-secondary); font-size: 11px; }
+.qtable-home-recent-copy small { margin-top: 5px; color: var(--qtable-color-text-tertiary); font-size: 10px; }
+.qtable-home-favorite-mark { position: absolute; right: 8px; bottom: 8px; color: #f5a623; font-size: 11px; }
+
+.qtable-home-project-row { padding: 12px 14px; }
+.qtable-home-project-topline { margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.qtable-home-project-topline strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+.qtable-home-project-meta { margin-top: 6px; display: flex; gap: 12px; color: var(--qtable-color-text-secondary); font-size: 10px; }
+
+.qtable-home-activity-row {
+  min-height: 58px;
+  padding: 9px 14px;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+}
+
+.qtable-home-activity-avatar {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--qtable-color-primary);
+  background: var(--qtable-color-primary-soft);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.qtable-home-activity-copy { min-width: 0; }
+.qtable-home-activity-copy strong,
+.qtable-home-activity-copy small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.qtable-home-activity-copy strong { font-size: 11px; font-weight: 600; }
+.qtable-home-activity-copy small { margin-top: 3px; color: var(--qtable-color-text-secondary); font-size: 10px; }
+.qtable-home-activity-row time { color: var(--qtable-color-text-tertiary); font-size: 10px; white-space: nowrap; }
+
+.qtable-home-insights { min-height: 100%; }
+.qtable-home-insight-action,
+.qtable-home-insight-empty { padding: 18px; }
+.qtable-home-insight-action { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 12px; }
+.qtable-home-insight-action .ant-btn { grid-column: 2; justify-self: start; }
+.qtable-home-insight-icon { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 10px; color: #b54708; background: #fffaeb; }
+.qtable-home-insight-action strong,
+.qtable-home-insight-empty strong { display: block; font-size: 13px; }
+.qtable-home-insight-action p,
+.qtable-home-insight-empty p { margin: 6px 0 10px; color: var(--qtable-color-text-secondary); font-size: 12px; line-height: 19px; }
+.qtable-home-insight-action small { color: var(--qtable-color-text-tertiary); font-size: 10px; }
+.qtable-home-insight-empty > .anticon { margin-bottom: 12px; color: var(--qtable-color-text-tertiary); font-size: 24px; }
+
+.qtable-home-onboarding {
+  padding: 18px 20px;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid var(--qtable-color-primary-soft);
+  border-radius: var(--qtable-radius-lg);
+  background: linear-gradient(135deg, var(--qtable-color-primary-soft), var(--qtable-color-background));
+}
+
+.qtable-home-onboarding-icon { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 11px; color: var(--qtable-color-primary); background: var(--qtable-color-background); font-size: 19px; }
+.qtable-home-onboarding h3.ant-typography { margin: 0 0 3px; font-size: 15px; }
+.qtable-home-onboarding p.ant-typography { margin: 0; color: var(--qtable-color-text-secondary); font-size: 12px; }
+
+.qtable-home-page button:focus-visible,
+.qtable-home-page .ant-btn:focus-visible,
+.qtable-home-page .ant-segmented:focus-within {
+  outline: 2px solid var(--qtable-color-primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 1280px) {
+  .qtable-home-page { padding: 20px; }
+  .qtable-home-grid-top { grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.8fr); }
+  .qtable-home-grid-bottom { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .qtable-home-insights { grid-column: 1 / -1; }
+}
+
+@media (max-width: 980px) {
+  .qtable-home-hero { flex-direction: column; }
+  .qtable-home-hero-actions { width: 100%; justify-content: space-between; }
+  .qtable-home-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .qtable-home-kpi:nth-child(2) { border-right: 0; }
+  .qtable-home-kpi:nth-child(-n + 2) { border-bottom: 1px solid var(--qtable-color-border); }
+  .qtable-home-grid-top,
+  .qtable-home-grid-bottom { grid-template-columns: 1fr; }
+  .qtable-home-insights { grid-column: auto; }
+  .qtable-home-recent-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 720px) {
+  .qtable-home-page { padding: 14px; }
+  .qtable-home-hero-actions,
+  .qtable-home-card-actions { align-items: stretch; flex-direction: column; }
+  .qtable-home-landing-setting { justify-content: space-between; }
+  .qtable-home-kpi-grid,
+  .qtable-home-recent-grid { grid-template-columns: 1fr; }
+  .qtable-home-kpi { border-right: 0; border-bottom: 1px solid var(--qtable-color-border); }
+  .qtable-home-kpi:last-child { border-bottom: 0; }
+  .qtable-home-task-row { grid-template-columns: minmax(0, 1fr) 18px; }
+  .qtable-home-task-progress { display: none; }
+  .qtable-home-onboarding { grid-template-columns: 40px minmax(0, 1fr); }
+  .qtable-home-onboarding .ant-btn { grid-column: 1 / -1; justify-self: start; }
+}

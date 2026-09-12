@@ -1,0 +1,167 @@
+.qtable-help-page {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  padding: 28px 32px 48px;
+}
+
+.qtable-help-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px;
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-lg);
+  background: var(--qtable-color-background);
+}
+
+.qtable-help-hero h2 {
+  margin: 10px 0 8px;
+}
+
+.qtable-help-lead {
+  max-width: 780px;
+  margin-bottom: 0;
+  white-space: normal;
+}
+
+.qtable-help-section {
+  margin-top: 28px;
+}
+
+.qtable-help-section-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.qtable-help-section-heading > span[role="img"] {
+  margin-top: 5px;
+  font-size: 18px;
+  color: var(--qtable-color-primary);
+}
+
+.qtable-help-section-heading h4 {
+  margin: 0 0 2px;
+}
+
+.qtable-help-shortcut-grid,
+.qtable-help-guide-grid,
+.qtable-help-feedback-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.qtable-help-shortcut-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.qtable-help-guide-grid,
+.qtable-help-feedback-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.qtable-help-shortcut-card,
+.qtable-help-guide-card,
+.qtable-help-feedback-card,
+.qtable-help-resource-list,
+.qtable-help-privacy-note {
+  border-radius: var(--qtable-radius-lg);
+}
+
+.qtable-help-shortcut-topline,
+.qtable-help-resource-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.qtable-help-shortcut-topline {
+  margin-bottom: 12px;
+}
+
+.qtable-help-kbd {
+  display: inline-flex;
+  min-width: 28px;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border: 1px solid var(--qtable-color-border-strong);
+  border-bottom-width: 2px;
+  border-radius: var(--qtable-radius-sm);
+  background: var(--qtable-color-background-layout);
+  color: var(--qtable-color-text-secondary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.qtable-help-block-text {
+  display: block;
+  margin-top: 2px;
+}
+
+.qtable-help-card-copy,
+.qtable-help-resource-copy {
+  margin-top: 12px;
+  margin-bottom: 14px;
+}
+
+.qtable-help-guide-card h5,
+.qtable-help-feedback-card h5 {
+  margin-top: 0;
+  margin-bottom: 2px;
+}
+
+.qtable-help-resource-list .ant-divider {
+  margin: 14px 0;
+}
+
+.qtable-help-resource-row > div:first-child {
+  min-width: 0;
+}
+
+.qtable-help-resource-copy {
+  margin-bottom: 0;
+}
+
+.qtable-help-feedback-icon {
+  margin-top: 4px;
+  font-size: 20px;
+  color: var(--qtable-color-primary);
+}
+
+.qtable-help-privacy-note {
+  margin-top: 14px;
+  background: var(--qtable-color-background-layout);
+}
+
+.qtable-help-privacy-note .ant-typography {
+  margin-bottom: 0;
+}
+
+@media (max-width: 1100px) {
+  .qtable-help-shortcut-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .qtable-help-page {
+    padding: 20px 16px 36px;
+  }
+
+  .qtable-help-hero {
+    flex-direction: column;
+    padding: 18px;
+  }
+
+  .qtable-help-shortcut-grid,
+  .qtable-help-guide-grid,
+  .qtable-help-feedback-grid {
+    grid-template-columns: 1fr;
+  }
+}

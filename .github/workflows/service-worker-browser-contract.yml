@@ -1,0 +1,68 @@
+name: Service Worker Private Cache Contract
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/service-worker-browser-contract.yml"
+      - "public/sw.js"
+      - "nginx.conf.template"
+      - "e2e/run_service_worker_private_cache_gate.py"
+      - "e2e/webdriver_client.py"
+      - "src/lib/serviceWorkerCache.ts"
+      - "src/store/authStore.ts"
+      - "scripts/check-service-worker-cache-contract.mjs"
+      - "scripts/test-service-worker-cache-model.mjs"
+      - "scripts/check-docker-runtime.py"
+      - "package.json"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/service-worker-browser-contract.yml"
+      - "public/sw.js"
+      - "nginx.conf.template"
+      - "e2e/run_service_worker_private_cache_gate.py"
+      - "e2e/webdriver_client.py"
+      - "src/lib/serviceWorkerCache.ts"
+      - "src/store/authStore.ts"
+      - "scripts/check-service-worker-cache-contract.mjs"
+      - "scripts/test-service-worker-cache-model.mjs"
+      - "scripts/check-docker-runtime.py"
+      - "package.json"
+
+permissions:
+  contents: read
+
+jobs:
+  browser-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact head
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Compile E2E Python sources
+        run: python3 -m py_compile e2e/*.py scripts/check-docker-runtime.py
+
+      - name: Run static and model cache contracts
+        run: |
+          npm run check:service-worker-cache
+          npm run test:service-worker-cache
+
+      - name: Run real Chrome private-cache lifecycle
+        run: |
+          python3 e2e/run_service_worker_private_cache_gate.py \
+            --result .e2e-service-worker-result.json
+
+      - name: Upload browser evidence on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: service-worker-private-cache-${{ github.sha }}
+          path: .e2e-service-worker-result.json
+          if-no-files-found: ignore

@@ -1,0 +1,249 @@
+name: Frontend CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Dependency vulnerability gate
+        run: |
+          mkdir -p .oss-reports
+          npm audit --audit-level=low --json > .oss-reports/npm-audit.json
+
+      - name: Dependency license policy regression tests
+        run: npm run test:license-policy
+
+      - name: Dependency license gate and SBOM
+        run: |
+          npm run check:licenses
+          npm sbom --sbom-format=cyclonedx > .oss-reports/sbom.cdx.json
+
+      - name: XLSX export regression tests
+        run: |
+          for timezone in UTC Asia/Shanghai America/New_York; do
+            TZ="$timezone" npm run test:xlsx-export
+          done
+
+      - name: Secret and credential scan
+        run: node scripts/check-secrets.mjs --history
+
+      - name: Open-source readiness contract
+        run: node scripts/check-open-source-readiness.mjs
+
+      - name: Production security header contract
+        run: node scripts/check-security-headers-contract.mjs
+
+      - name: OAuth contract checks
+        run: node scripts/check-oauth-contract.mjs
+
+      - name: Password reset security contract
+        run: |
+          npm run check:password-reset
+          npm run test:password-reset
+
+      - name: Global search contract checks
+        run: node scripts/check-global-search-contract.mjs
+
+      - name: Goal workspace contract checks
+        run: node scripts/check-goal-workspace-contract.mjs
+
+      - name: Task planning contract checks
+        run: node scripts/check-task-planning-contract.mjs
+
+      - name: Workload planning contract checks
+        run: node scripts/check-workload-planning-contract.mjs
+
+      - name: Project steward contract checks
+        run: node scripts/check-project-steward-contract.mjs
+
+      - name: AI visual design contract checks
+        run: node scripts/check-ai-visual-design-contract.mjs
+
+      - name: Member field contract checks
+        run: node scripts/check-member-field-contract.mjs
+
+      - name: Source inbox contract checks
+        run: node scripts/check-source-inbox-contract.mjs
+
+      - name: Commercial Kanban contract checks
+        run: node scripts/check-kanban-contract.mjs
+
+      - name: Design system contract checks
+        run: npm run check:design-system
+
+      - name: App Shell contract checks
+        run: npm run check:app-shell
+
+      - name: i18n accessibility and responsive quality contract
+        run: npm run check:ui-quality
+
+      - name: Template selector layout contract checks
+        run: npm run check:template-selector
+
+      - name: Task Profile UI contract checks
+        run: npm run check:task-profile-ui
+
+      - name: Record Workspace contract checks
+        run: npm run check:record-workspace
+
+      - name: Collaboration UI contract checks
+        run: npm run check:collaboration-ui
+
+      - name: Home / My Work closure tests
+        run: |
+          npm run check:home-my-work
+          npm run test:home-risk-insights
+
+      - name: Table workspace contract checks
+        run: npm run check:table-workspace
+
+      - name: AI-first experience-mode contract checks
+        run: npm run check:experience-mode
+
+      - name: Unified AI experience contract checks
+        run: npm run check:ai-ux
+
+      - name: Automation Center contract checks
+        run: npm run check:automation-ui
+
+      - name: Attachment storage contract checks
+        run: npm run check:attachment-storage
+
+      - name: Core data write closure tests
+        run: npm run test:data-write-closure
+
+      - name: Grid row menu closure tests
+        run: npm run test:grid-row-menu
+
+      - name: Dashboard Center closure tests
+        run: |
+          npm run check:dashboard-center
+          npm run test:dashboard-center
+
+      - name: Dashboard Experience closure tests
+        run: |
+          npm run check:dashboard-experience
+          npm run test:dashboard-experience
+          npm run test:dashboard-chart-rendering
+
+      - name: Projects Center closure tests
+        run: |
+          npm run check:projects-center
+          npm run test:projects-center
+
+      - name: Recycle Bin closure tests
+        run: |
+          npm run check:recycle-bin
+          npm run test:recycle-bin
+
+      - name: Settings Center closure tests
+        run: |
+          npm run check:settings-center
+          npm run test:settings-center
+
+      - name: Help Center closure tests
+        run: |
+          npm run check:help-center
+          npm run test:help-center
+
+      - name: Navigation release gate
+        run: npm run check:navigation-release
+
+      - name: ESLint auth entrypoints
+        run: npx eslint src/components/AuthPage.tsx src/store/authStore.ts src/store/passwordResetResponse.ts
+
+      - name: ESLint design-system shell and locale entrypoints
+        run: npx eslint src/App.tsx src/main.tsx src/styles/tokens.ts src/components/AppShell/*.tsx src/lib/shellEvents.ts src/lib/i18nRuntime.ts src/lib/useLanguage.ts src/store/workspaceNavigationStore.ts
+
+      - name: ESLint Task Profile entrypoints
+        run: npx eslint src/components/TaskProfile/*.ts src/components/TaskProfile/*.tsx
+
+      - name: ESLint Record Workspace entrypoints
+        run: npx eslint src/components/SmartTable/RowDetailDrawer.tsx src/components/SmartTable/recordWorkspaceGraphql.ts
+
+      - name: ESLint Collaboration UI entrypoints
+        run: npx eslint src/components/Notifications/*.ts src/components/Notifications/*.tsx
+
+      - name: ESLint Home / My Work entrypoints
+        run: npx eslint src/components/Home/*.ts src/components/Home/*.tsx
+
+      - name: ESLint AI-first experience entrypoints
+        run: npx eslint src/components/ExperienceMode/*.ts src/components/ExperienceMode/*.tsx src/components/SourceInbox/SourceInboxLauncher.tsx src/components/SourceInbox/sourceInboxEvents.ts
+
+      - name: ESLint Table workspace entrypoints
+        run: npx eslint src/components/SmartTable/Header.tsx src/components/SmartTable/controls/Toolbar.tsx src/components/SmartTable/controls/toolbar/FieldsPopover.tsx src/components/SmartTable/tableWorkspaceEvents.ts src/components/SmartTable/tableWorkspaceI18n.ts
+
+      - name: ESLint Template selector entrypoint
+        run: npx eslint src/components/SmartTable/TemplateSelector.tsx
+
+      - name: ESLint Unified AI UX entrypoints
+        run: npx eslint src/components/AiCenter/*.tsx
+
+      - name: ESLint Automation Center entrypoints
+        run: npx eslint src/components/Automations/*.ts src/components/Automations/*.tsx
+
+      - name: ESLint Attachment entrypoints
+        run: npx eslint src/components/SmartTable/attachments/*.ts src/components/SmartTable/editors/AttachmentEditor.tsx src/components/SmartTable/editors/ReactEditor.tsx src/components/SmartTable/renderers/renderAttachment.tsx
+
+      - name: ESLint Grid row menu entrypoints
+        run: npx eslint src/components/SmartTable/RowContextMenu.tsx src/components/SmartTable/views/GridView.tsx src/components/SmartTable/utils/clipboard.ts
+
+      - name: ESLint Dashboard Center entrypoints
+        run: npx eslint src/components/DashboardCenter/*.ts src/components/DashboardCenter/*.tsx src/components/AppShell/ShellPages.tsx
+
+      - name: ESLint Dashboard Experience entrypoints
+        run: npx eslint src/components/Dashboard/*.ts src/components/Dashboard/*.tsx src/components/DashboardWorkbench.tsx
+
+      - name: ESLint Projects Center entrypoints
+        run: npx eslint src/components/ProjectsCenter/*.ts src/components/ProjectsCenter/*.tsx src/components/AppShell/ShellPages.tsx
+
+      - name: ESLint Recycle Bin entrypoints
+        run: npx eslint src/components/RecycleBin/*.ts src/components/RecycleBin/*.tsx src/components/AppShell/ShellPages.tsx
+
+      - name: ESLint Settings Center entrypoints
+        run: npx eslint src/components/Settings/*.ts src/components/Settings/*.tsx src/components/AppShell/ShellPages.tsx src/components/Home/homePreferences.ts src/components/WorkspaceMembersPage.tsx vite.config.ts
+
+      - name: ESLint Help Center entrypoints
+        run: npx eslint src/components/Help/*.ts src/components/Help/*.tsx src/components/AppShell/ShellPages.tsx
+
+      - name: ESLint Kanban entrypoints
+        run: npx eslint src/components/SmartTable/views/KanbanView.tsx src/components/SmartTable/views/kanban/*.ts src/components/SmartTable/views/kanban/*.tsx
+
+      - name: TypeScript and production build
+        run: npm run build
+
+      - name: Docker image smoke build
+        run: docker build -t qtable-ui-ci:${{ github.sha }} .
+
+      - name: Docker runtime smoke test
+        run: python3 scripts/check-docker-runtime.py qtable-ui-ci:${{ github.sha }}
+
+      - name: Upload dependency audit evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: dependency-audit-${{ github.sha }}
+          path: .oss-reports/*.json
+          include-hidden-files: true
+          if-no-files-found: warn

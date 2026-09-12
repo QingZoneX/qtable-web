@@ -1,0 +1,115 @@
+.qtable-record-source-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.qtable-record-source-icon {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--qtable-radius-md);
+  color: var(--qtable-color-primary);
+  background: var(--qtable-color-primary-soft);
+}
+
+.qtable-record-source-title {
+  min-width: 0;
+  flex: 1 1 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-top: 2px;
+}
+
+.qtable-record-source-title .ant-typography {
+  max-width: 100%;
+  color: var(--qtable-color-text);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.qtable-record-source-kind {
+  color: var(--qtable-color-text-tertiary);
+  font-size: 10px;
+  line-height: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.qtable-record-source-actions {
+  flex: 0 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.qtable-record-source-actions .ant-btn {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.qtable-record-source-actions .ant-btn:first-child {
+  border-color: var(--qtable-color-primary-border);
+  color: var(--qtable-color-primary);
+  background: var(--qtable-color-primary-soft);
+}
+
+.qtable-record-source-actions .ant-btn:first-child:hover {
+  border-color: var(--qtable-color-primary);
+  color: var(--qtable-color-primary);
+  background: var(--qtable-color-primary-soft);
+}
+
+.qtable-record-source-annotation {
+  margin-top: 8px;
+  color: var(--qtable-color-text-secondary);
+  font-size: 12px;
+  line-height: 18px;
+  overflow-wrap: anywhere;
+}
+
+.qtable-record-source-loading {
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px dashed var(--qtable-color-border-strong);
+  border-radius: var(--qtable-radius-lg);
+  color: var(--qtable-color-text-secondary);
+  background: var(--qtable-color-background-layout);
+  font-size: 12px;
+}
+
+@media (max-width: 620px) {
+  .qtable-record-source-head {
+    flex-wrap: wrap;
+  }
+
+  .qtable-record-source-title {
+    flex-basis: calc(100% - 40px);
+  }
+
+  .qtable-record-source-actions {
+    width: 100%;
+    justify-content: flex-start;
+    padding-left: 40px;
+  }
+}
+
+@media (max-width: 420px) {
+  .qtable-record-source-actions {
+    padding-left: 0;
+  }
+
+  .qtable-record-source-actions .ant-btn {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+}

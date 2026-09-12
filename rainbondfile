@@ -1,0 +1,3 @@
+ports:
+  - port: 9100
+    protocol: http

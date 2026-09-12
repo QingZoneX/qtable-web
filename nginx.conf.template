@@ -1,0 +1,87 @@
+server {
+    listen ${PORT};
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Canonical browser security policy. Nginx stops inheriting parent add_header
+    # directives when a child location defines its own add_header, so the few
+    # cache/health locations below include the same snippet explicitly.
+    include /etc/nginx/snippets/qtable-security-headers.conf;
+
+    # Rainbond 存活探针。它不依赖后端，以免后端短暂重启导致前端组件被重建。
+    location = /healthz {
+        access_log off;
+        include /etc/nginx/snippets/qtable-security-headers.conf;
+        add_header Content-Type text/plain;
+        return 200 "ok\n";
+    }
+
+    # Service Worker 本身是安全策略代码，不能继承普通 .js 的长期 immutable 缓存。
+    # 浏览器必须能及时获取新版本，才能执行 activate 中的历史私有 cache 迁移清理。
+    location = /sw.js {
+        expires off;
+        include /etc/nginx/snippets/qtable-security-headers.conf;
+        add_header Cache-Control "no-store, no-cache, must-revalidate" always;
+        add_header Service-Worker-Allowed "/" always;
+        try_files $uri =404;
+    }
+
+    # 静态资源缓存。Vite /assets/ 构建产物使用内容 hash；普通公开图片/字体也不含
+    # QTable 权限语义。/sw.js 已由上面的精确 location 排除。
+    location ~* \.(js|css|png|jpg|jpeg|gif|svg|ico|woff2?|ttf|eot)$ {
+        expires 30d;
+        include /etc/nginx/snippets/qtable-security-headers.conf;
+        add_header Cache-Control "public, immutable";
+        try_files $uri =404;
+    }
+
+    # SPA 路由 fallback：所有非文件请求回落到 index.html
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # REST API
+    location /api/ {
+        proxy_pass http://${QTABLE_HOST}:${QTABLE_PORT};
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # GraphQL（HTTP + WebSocket 订阅）
+    location /graphql {
+        proxy_pass http://${QTABLE_HOST}:${QTABLE_PORT};
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 300s;
+    }
+
+    # WebSocket（GraphQL 订阅 /ws）
+    location /ws {
+        proxy_pass http://${QTABLE_HOST}:${QTABLE_PORT};
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_read_timeout 300s;
+    }
+
+    # Auth
+    location /auth {
+        proxy_pass http://${QTABLE_HOST}:${QTABLE_PORT};
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # OAuth
+    location /oauth {
+        proxy_pass http://${QTABLE_HOST}:${QTABLE_PORT};
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}

@@ -1,0 +1,357 @@
+.qtable-app-shell {
+  width: 100%;
+  height: 100vh;
+  min-width: 0;
+  display: flex;
+  overflow: hidden;
+  background: var(--qtable-color-background);
+}
+
+.qtable-primary-rail {
+  width: 64px;
+  min-width: 64px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 8px;
+  gap: 8px;
+  border-right: 1px solid var(--qtable-color-border);
+  background: var(--qtable-color-background);
+  z-index: 30;
+}
+
+.qtable-primary-rail-brand,
+.qtable-primary-rail-item {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border: 0;
+  border-radius: var(--qtable-radius-md);
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--qtable-color-text-secondary);
+  background: transparent;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease,
+    transform 120ms ease;
+}
+
+.qtable-primary-rail-brand {
+  margin-bottom: 8px;
+  color: var(--qtable-color-background);
+  background: var(--qtable-color-primary);
+}
+
+.qtable-primary-rail-item:hover {
+  background: var(--qtable-color-surface-hover);
+  color: var(--qtable-color-text);
+}
+
+.qtable-primary-rail-item.is-active {
+  color: var(--qtable-color-primary);
+  background: var(--qtable-color-primary-soft);
+}
+
+.qtable-primary-rail-brand:active,
+.qtable-primary-rail-item:active {
+  transform: translateY(1px);
+}
+
+.qtable-primary-rail-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.qtable-primary-rail-spacer {
+  flex: 1;
+}
+
+.qtable-primary-rail-utilities {
+  padding-top: 8px;
+  border-top: 1px solid var(--qtable-color-border);
+}
+
+.qtable-context-sidebar-host {
+  flex: 0 0 auto;
+  min-width: 0;
+  height: 100%;
+  overflow: visible;
+  border-right: 1px solid var(--qtable-color-border);
+  background: var(--qtable-color-background);
+}
+
+.qtable-context-sidebar-host.is-hidden {
+  display: none;
+}
+
+.qtable-shell-main {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--qtable-color-background);
+}
+
+.qtable-top-app-bar {
+  height: var(--qtable-size-app-bar);
+  min-height: var(--qtable-size-app-bar);
+  padding: 0 var(--qtable-space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--qtable-space-4);
+  border-bottom: 1px solid var(--qtable-color-border);
+  background: var(--qtable-color-background);
+  z-index: 25;
+}
+
+.qtable-top-app-bar-left,
+.qtable-top-app-bar-actions {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.qtable-top-app-bar-left {
+  flex: 1;
+  gap: var(--qtable-space-2);
+  overflow: hidden;
+}
+
+.qtable-top-app-bar-actions {
+  flex-shrink: 0;
+  gap: 4px;
+}
+
+.qtable-topbar-icon-button {
+  width: 36px !important;
+  min-width: 36px !important;
+  height: 36px !important;
+  padding: 0 !important;
+  border-radius: var(--qtable-radius-md) !important;
+  color: var(--qtable-color-text-secondary) !important;
+}
+
+.qtable-breadcrumbs {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.qtable-breadcrumb-item {
+  min-width: 0;
+  max-width: 220px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--qtable-color-text-secondary);
+  font-size: var(--qtable-font-size-label);
+}
+
+.qtable-breadcrumb-item:last-child {
+  color: var(--qtable-color-text);
+  font-weight: 600;
+}
+
+.qtable-breadcrumb-separator {
+  flex: 0 0 auto;
+  padding: 0 8px;
+  color: var(--qtable-color-text-tertiary);
+}
+
+.qtable-global-search-trigger {
+  width: min(320px, 28vw);
+  height: 36px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-md);
+  color: var(--qtable-color-text-secondary);
+  background: var(--qtable-color-background-layout);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.qtable-global-search-trigger:hover {
+  border-color: var(--qtable-color-border-strong);
+  background: var(--qtable-color-background);
+}
+
+.qtable-global-search-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--qtable-font-size-label);
+}
+
+.qtable-global-search-shortcut {
+  flex-shrink: 0;
+  padding: 1px 6px;
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-sm);
+  color: var(--qtable-color-text-tertiary);
+  background: var(--qtable-color-background);
+  font-size: var(--qtable-font-size-micro);
+}
+
+.qtable-topbar-divider {
+  height: 22px;
+  margin-inline: 6px !important;
+}
+
+.qtable-workspace-topbar-switcher {
+  max-width: 210px;
+  height: 36px !important;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+  padding-inline: 8px !important;
+  border-radius: var(--qtable-radius-md) !important;
+}
+
+.qtable-workspace-topbar-avatar {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: var(--qtable-radius-sm);
+  color: var(--qtable-color-primary);
+  background: var(--qtable-color-primary-soft);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.qtable-workspace-topbar-name {
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--qtable-color-text);
+  font-size: var(--qtable-font-size-label);
+  font-weight: 600;
+}
+
+.qtable-user-menu-trigger {
+  width: 38px !important;
+  min-width: 38px !important;
+  height: 38px !important;
+  padding: 3px !important;
+  border-radius: var(--qtable-radius-pill) !important;
+}
+
+.qtable-user-avatar {
+  color: var(--qtable-color-background) !important;
+  background: var(--qtable-color-text) !important;
+  font-size: 12px !important;
+  font-weight: 700;
+}
+
+.qtable-offline-banner {
+  flex: 0 0 auto;
+  border-bottom: 1px solid var(--qtable-color-border);
+}
+
+.qtable-shell-content {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  position: relative;
+  background: var(--qtable-color-background);
+}
+
+.qtable-shell-content > .qtable-page-fill {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+}
+
+.qtable-shell-loading {
+  width: min(760px, calc(100% - 48px));
+  margin: 48px auto;
+}
+
+.qtable-shell-state-page {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 1279px) {
+  .qtable-global-search-trigger {
+    width: 220px;
+  }
+
+  .qtable-workspace-topbar-switcher {
+    max-width: 160px;
+  }
+
+  .qtable-workspace-topbar-name {
+    max-width: 88px;
+  }
+
+  .qtable-breadcrumb-item {
+    max-width: 150px;
+  }
+}
+
+@media (max-width: 1099px) {
+  .qtable-top-app-bar {
+    padding-inline: var(--qtable-space-3);
+    gap: var(--qtable-space-2);
+  }
+
+  .qtable-global-search-trigger {
+    width: 36px;
+    min-width: 36px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .qtable-global-search-label,
+  .qtable-global-search-shortcut {
+    display: none;
+  }
+
+  .qtable-workspace-topbar-name {
+    display: none;
+  }
+
+  .qtable-workspace-topbar-switcher {
+    width: 44px;
+    min-width: 44px;
+    padding-inline: 6px !important;
+    gap: 2px;
+  }
+
+  .qtable-breadcrumb-item {
+    max-width: 120px;
+  }
+}
+
+@media (max-width: 860px) {
+  .qtable-breadcrumb-item:not(:last-child) {
+    display: none;
+  }
+
+  .qtable-topbar-divider {
+    display: none;
+  }
+}

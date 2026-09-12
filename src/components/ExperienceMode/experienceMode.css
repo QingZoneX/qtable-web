@@ -1,0 +1,53 @@
+.qtable-experience-mode-host {
+  display: inline-flex;
+  align-items: center;
+}
+
+.qtable-experience-mode-control {
+  min-width: 76px;
+  height: 36px !important;
+  padding-inline: 10px !important;
+  border: 1px solid var(--qtable-color-border) !important;
+  border-radius: var(--qtable-radius-md) !important;
+  color: var(--qtable-color-text-secondary) !important;
+  background: var(--qtable-color-background) !important;
+}
+
+.qtable-experience-mode-control:hover {
+  border-color: var(--qtable-color-primary-border) !important;
+  color: var(--qtable-color-primary) !important;
+  background: var(--qtable-color-primary-soft) !important;
+}
+
+.qtable-experience-mode-control[data-experience-mode="simple"] {
+  color: var(--qtable-color-primary) !important;
+  background: var(--qtable-color-primary-soft) !important;
+}
+
+.qtable-experience-mode-control.is-compact {
+  min-width: 36px;
+  width: 36px;
+  padding-inline: 0 !important;
+}
+
+.qtable-experience-mode-control.is-compact .qtable-experience-mode-label {
+  display: none;
+}
+
+@media (max-width: 1099px) {
+  .qtable-top-app-bar .qtable-experience-mode-control {
+    min-width: 36px;
+    width: 36px;
+    padding-inline: 0 !important;
+  }
+
+  .qtable-top-app-bar .qtable-experience-mode-label {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qtable-experience-mode-control {
+    transition: none !important;
+  }
+}

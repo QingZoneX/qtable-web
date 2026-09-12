@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.git/
+.gitignore
+.env
+.env.*
+*.log
+.DS_Store
+.vscode/
+.idea/
+.e2e-backend/
+.e2e-attachment-result.json

@@ -1,0 +1,114 @@
+name: Attachment Browser Contract
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/attachment-browser-contract.yml"
+      - "e2e/**"
+      - "src/components/AuthPage.tsx"
+      - "src/components/SmartTable/attachments/**"
+      - "src/components/SmartTable/editors/AttachmentEditor.tsx"
+      - "src/components/SmartTable/editors/ReactEditor.tsx"
+      - "src/components/SmartTable/renderers/renderAttachment.tsx"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/attachment-browser-contract.yml"
+      - "e2e/**"
+      - "src/components/AuthPage.tsx"
+      - "src/components/SmartTable/attachments/**"
+      - "src/components/SmartTable/editors/AttachmentEditor.tsx"
+      - "src/components/SmartTable/editors/ReactEditor.tsx"
+      - "src/components/SmartTable/renderers/renderAttachment.tsx"
+
+permissions:
+  contents: read
+
+jobs:
+  browser-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      QTABLE_E2E_ALICE_EMAIL: attachment-e2e-alice@example.test
+      QTABLE_E2E_BOB_EMAIL: attachment-e2e-bob@example.test
+      QTABLE_E2E_MANAGER_EMAIL: attachment-e2e-manager@example.test
+      QTABLE_E2E_PASSWORD: browser-contract-only
+
+    steps:
+      - name: Checkout exact head
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Compile E2E Python sources
+        run: python3 -m py_compile e2e/*.py
+
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Start attachment contract server
+        run: |
+          python3 e2e/attachment_contract_server.py > attachment-contract-server.log 2>&1 &
+          echo $! > attachment-contract-server.pid
+          for attempt in $(seq 1 40); do
+            if curl --fail --silent http://127.0.0.1:9000/healthz >/dev/null; then
+              exit 0
+            fi
+            sleep 0.25
+          done
+          cat attachment-contract-server.log
+          exit 1
+
+      - name: Start real QTableUI development server
+        run: |
+          npm run dev -- --host 127.0.0.1 > attachment-ui.log 2>&1 &
+          echo $! > attachment-ui.pid
+          for attempt in $(seq 1 120); do
+            if curl --fail --silent http://127.0.0.1:9100/login >/dev/null; then
+              exit 0
+            fi
+            sleep 0.5
+          done
+          cat attachment-ui.log
+          exit 1
+
+      - name: Run Chrome attachment lifecycle contract
+        run: |
+          python3 e2e/run_attachment_release_gate.py \
+            --base-url http://127.0.0.1:9100 \
+            --result .e2e-attachment-result.json
+
+      - name: Verify contract backend reached permanent purge
+        run: |
+          python3 - <<'PY'
+          import json
+          import urllib.request
+          with urllib.request.urlopen('http://127.0.0.1:9000/__test__/state') as response:
+              state = json.load(response)
+          assert state['purged'] is True, state
+          assert state['recycled'] is True, state
+          assert state['attachment']['attachmentId'] == 'att-browser-contract-1', state
+          print('[attachment-browser-contract] permanent purge state verified')
+          PY
+
+      - name: Upload browser evidence on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: attachment-browser-contract-${{ github.sha }}
+          path: |
+            attachment-contract-server.log
+            attachment-ui.log
+            .e2e-attachment-result.json
+          if-no-files-found: ignore
+
+      - name: Stop local services
+        if: always()
+        run: |
+          if [ -f attachment-ui.pid ]; then kill "$(cat attachment-ui.pid)" 2>/dev/null || true; fi
+          if [ -f attachment-contract-server.pid ]; then kill "$(cat attachment-contract-server.pid)" 2>/dev/null || true; fi

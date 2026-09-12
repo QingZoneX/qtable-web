@@ -1,0 +1,135 @@
+.qtable-dashboard-experience {
+  flex: 1 1 0%;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--qtable-color-background-layout);
+}
+
+.qtable-dashboard-experience-bar,
+.qtable-dashboard-filter-bar {
+  width: 100%;
+  flex: 0 0 auto;
+  border-bottom: 1px solid var(--qtable-color-border);
+  background: var(--qtable-color-background);
+}
+
+.qtable-dashboard-experience-bar {
+  min-height: 44px;
+  padding: var(--qtable-space-2) var(--qtable-space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--qtable-space-3);
+}
+
+.qtable-dashboard-experience-mode,
+.qtable-dashboard-experience-status {
+  display: flex;
+  align-items: center;
+  gap: var(--qtable-space-2);
+  min-width: 0;
+}
+
+.qtable-dashboard-filter-bar {
+  padding: var(--qtable-space-3) var(--qtable-space-4);
+}
+
+.qtable-dashboard-filter-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--qtable-space-3);
+  margin-bottom: var(--qtable-space-2);
+}
+
+.qtable-dashboard-filter-editor {
+  display: grid;
+  grid-template-columns: minmax(140px, 0.9fr) minmax(150px, 1fr) minmax(120px, 0.75fr) minmax(160px, 1fr) auto auto;
+  gap: var(--qtable-space-2);
+  align-items: center;
+}
+
+.qtable-dashboard-filter-value,
+.qtable-dashboard-filter-value .ant-select,
+.qtable-dashboard-filter-value .ant-input {
+  width: 100%;
+}
+
+.qtable-dashboard-filter-chips {
+  margin-top: var(--qtable-space-2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--qtable-space-1);
+}
+
+.qtable-dashboard-share-risk {
+  margin-top: var(--qtable-space-2);
+}
+
+.qtable-dashboard-core-wrap {
+  width: 100%;
+  flex: 1 1 0%;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  overflow: hidden;
+}
+
+.qtable-dashboard-core-wrap > * {
+  width: 100%;
+  max-width: 100%;
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+.qtable-dashboard-experience[data-dashboard-mode="view"] .qtable-dashboard-core-wrap .react-resizable-handle {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+.qtable-dashboard-experience[data-dashboard-mode="view"] .qtable-dashboard-core-wrap .dashboard-widget-drag-handle {
+  cursor: default !important;
+}
+
+/* The legacy workbench keeps the proven edit actions. View mode removes only
+   authoring-only entry points while preserving refresh/share/export/fullscreen. */
+.qtable-dashboard-experience[data-dashboard-mode="view"] .qtable-dashboard-core-wrap .ant-btn:has(.anticon-plus),
+.qtable-dashboard-experience[data-dashboard-mode="view"] .qtable-dashboard-core-wrap .ant-btn:has(.anticon-robot) {
+  display: none;
+}
+
+@media (max-width: 1280px) {
+  .qtable-dashboard-filter-editor {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1024px) {
+  .qtable-dashboard-experience-bar,
+  .qtable-dashboard-filter-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .qtable-dashboard-filter-editor {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .qtable-dashboard-experience-mode,
+  .qtable-dashboard-experience-status {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .qtable-dashboard-filter-editor {
+    grid-template-columns: 1fr;
+  }
+}

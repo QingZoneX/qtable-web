@@ -1,0 +1,97 @@
+#root {
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  background-color: var(--qtable-color-background);
+}
+
+.App {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  color: var(--qtable-color-text);
+  background: var(--qtable-color-background);
+}
+
+.qtable-workbench-root {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  min-width: 0;
+  background: var(--qtable-color-background);
+}
+
+.qtable-page-loading,
+.qtable-page-message {
+  padding: var(--qtable-space-6);
+  color: var(--qtable-color-text-secondary);
+}
+
+.qtable-page-message h2 {
+  margin: 0 0 var(--qtable-space-2);
+  color: var(--qtable-color-text);
+  font-size: var(--qtable-font-size-section-title);
+  line-height: 24px;
+}
+
+.qtable-page-message p {
+  margin: 0;
+  font-size: var(--qtable-font-size-body);
+  line-height: var(--qtable-line-height-body);
+}
+
+/* Layering for data-table editors and popovers. */
+.ant-select-dropdown {
+  z-index: 9999 !important;
+}
+
+.vtable-editor-popup {
+  z-index: 10000 !important;
+}
+
+.vtable-editor-wrapper {
+  border: 2px solid var(--qtable-color-primary);
+  border-radius: var(--qtable-radius-sm);
+  box-shadow: var(--qtable-shadow-focus);
+  background: var(--qtable-color-background);
+}
+
+/* Compact neutral scrollbars for high-density work surfaces. */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--qtable-color-background-layout);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--qtable-color-border-strong);
+  border-radius: var(--qtable-radius-pill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--qtable-color-text-tertiary);
+}
+
+/* Do not remove the browser/AntD focus state. This fallback guarantees that
+   custom clickable elements also remain visible to keyboard users. */
+:where(
+  button,
+  a[href],
+  input,
+  textarea,
+  select,
+  [role="button"],
+  [role="menuitem"],
+  [tabindex]:not([tabindex="-1"])
+):focus-visible {
+  outline: 2px solid var(--qtable-color-primary);
+  outline-offset: 2px;
+  box-shadow: var(--qtable-shadow-focus);
+}

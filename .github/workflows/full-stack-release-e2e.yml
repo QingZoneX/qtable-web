@@ -1,0 +1,175 @@
+name: Full-Stack Release E2E
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/full-stack-release-e2e.yml"
+      - "e2e/**"
+      - "public/sw.js"
+      - "src/**"
+      - "package.json"
+      - "package-lock.json"
+      - "Dockerfile"
+      - "nginx.conf.template"
+      - "docker-entrypoint.sh"
+      - ".dockerignore"
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: full-stack-release-e2e-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release-browser-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      QTABLE_BACKEND_SHA: d2ebecc06fb670f211620e2a5dc5eedc825bd34b
+      QTABLE_UI_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      APP_ENV: production
+      PASSWORD_RESET_DEBUG_TOKEN_ENABLED: "false"
+      PASSWORD_RESET_RATE_LIMIT_ENABLED: "true"
+      SMTP_HOST: ""
+      POSTGRES_USER: release_e2e
+      POSTGRES_PASSWORD: release-e2e-db-${{ github.run_id }}-${{ github.run_attempt }}
+      POSTGRES_DB: qtable_release_e2e
+      ATTACHMENT_S3_ACCESS_KEY: releasee2eaccess${{ github.run_id }}
+      ATTACHMENT_S3_SECRET_KEY: releasee2estorage${{ github.run_id }}${{ github.run_attempt }}
+      ATTACHMENT_S3_BUCKET: qtable-release-e2e
+      SECRET_KEY: release-e2e-jwt-${{ github.run_id }}-${{ github.run_attempt }}-qtable
+      QTABLE_UI_CONTEXT: ..
+      QTABLE_UI_PORT: "9100"
+      QTABLE_API_PORT: "9000"
+      POSTGRES_HOST_PORT: "5432"
+      REDIS_HOST_PORT: "6379"
+      MINIO_API_HOST_PORT: "9001"
+      MINIO_CONSOLE_HOST_PORT: "9002"
+      QTABLE_RELEASE_E2E_ALICE: release-alice-${{ github.run_id }}@example.test
+      QTABLE_RELEASE_E2E_BOB: release-bob-${{ github.run_id }}@example.test
+      QTABLE_RELEASE_E2E_PASSWORD: release-${{ github.run_id }}-${{ github.run_attempt }}-QTable
+      QTABLE_E2E_ALICE_EMAIL: attachment-alice-${{ github.run_id }}@example.test
+      QTABLE_E2E_BOB_EMAIL: attachment-bob-${{ github.run_id }}@example.test
+      QTABLE_E2E_MANAGER_EMAIL: attachment-manager-${{ github.run_id }}@example.test
+      QTABLE_E2E_PASSWORD: attachment-${{ github.run_id }}-${{ github.run_attempt }}-QTable
+
+    steps:
+      - name: Checkout QTableUI exact revision
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ env.QTABLE_UI_SHA }}
+
+      - name: Export QTable backend exact revision
+        uses: QingZoneX/QTable/.github/actions/export-source@d2ebecc06fb670f211620e2a5dc5eedc825bd34b
+        with:
+          destination: .e2e-backend
+
+      - name: Record exact tested revisions
+        run: |
+          set -euo pipefail
+          ACTUAL_UI_SHA="$(git rev-parse HEAD)"
+          test "$ACTUAL_UI_SHA" = "$QTABLE_UI_SHA"
+          test -f .e2e-backend/docker-compose.yml
+          test -f .e2e-backend/app/main.py
+          mkdir -p .release-e2e-artifacts
+          {
+            echo "QTableUI=$ACTUAL_UI_SHA"
+            echo "QTable=$QTABLE_BACKEND_SHA"
+            echo "event=${GITHUB_EVENT_NAME}"
+            echo "ref=${GITHUB_REF}"
+          } | tee .release-e2e-artifacts/revisions.txt
+
+      - name: Validate release gate source
+        run: python3 -m py_compile e2e/*.py
+
+      - name: Reset previous stack state
+        working-directory: .e2e-backend
+        run: docker compose down -v --remove-orphans || true
+
+      - name: Build and start canonical fresh stack
+        working-directory: .e2e-backend
+        run: docker compose up -d --build
+
+      - name: Verify UI API database Redis and object storage health
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 120); do
+            if \
+              curl --fail --silent http://127.0.0.1:9100/healthz >/dev/null && \
+              curl --fail --silent http://127.0.0.1:9000/ >/dev/null && \
+              curl --fail --silent http://127.0.0.1:9001/minio/health/live >/dev/null && \
+              docker compose -f .e2e-backend/docker-compose.yml exec -T redis redis-cli ping | grep -q PONG && \
+              docker compose -f .e2e-backend/docker-compose.yml exec -T db pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" >/dev/null; then
+              docker compose -f .e2e-backend/docker-compose.yml ps
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose -f .e2e-backend/docker-compose.yml ps
+          docker compose -f .e2e-backend/docker-compose.yml logs --no-color
+          exit 1
+
+      - name: Run primary fresh-install two-user browser release gate
+        run: |
+          python3 e2e/run_full_stack_release_gate.py \
+            --base-url http://127.0.0.1:9100 \
+            --artifacts .release-e2e-artifacts
+
+      - name: Run private-cache browser regression gate
+        run: |
+          python3 e2e/run_service_worker_private_cache_gate.py \
+            --result .release-e2e-artifacts/service-worker-result.json
+
+      - name: Seed attachment permission fixture for full main/tag verification
+        if: github.event_name != 'pull_request'
+        working-directory: .e2e-backend
+        run: |
+          docker compose exec -T \
+            -e QTABLE_E2E_PASSWORD="$QTABLE_E2E_PASSWORD" \
+            qtable python - < ../e2e/seed_attachment_release_gate.py
+
+      - name: Run attachment upload refresh permission recycle purge lifecycle
+        if: github.event_name != 'pull_request'
+        run: |
+          python3 e2e/run_attachment_editor_release_gate.py \
+            --base-url http://127.0.0.1:9100 \
+            --result .release-e2e-artifacts/attachment-result.json
+
+      - name: Verify attachment registry and physical object purge
+        if: github.event_name != 'pull_request'
+        working-directory: .e2e-backend
+        run: |
+          ATTACHMENT_ID="$(python3 -c 'import json; print(json.load(open("../.release-e2e-artifacts/attachment-result.json"))["attachmentId"])')"
+          OBJECT_KEY="$(python3 -c 'import json; print(json.load(open("../.release-e2e-artifacts/attachment-result.json"))["objectKey"])')"
+          docker compose exec -T qtable \
+            python - "$ATTACHMENT_ID" "$OBJECT_KEY" \
+            < ../e2e/verify_attachment_cleanup.py
+
+      - name: Capture canonical stack logs on failure
+        if: failure()
+        run: |
+          docker compose -f .e2e-backend/docker-compose.yml ps > .release-e2e-artifacts/compose-ps.txt || true
+          docker compose -f .e2e-backend/docker-compose.yml logs --no-color > .release-e2e-artifacts/compose.log || true
+
+      - name: Upload exact revision trace and screenshot evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: full-stack-release-e2e-${{ env.QTABLE_UI_SHA }}
+          path: .release-e2e-artifacts/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Tear down canonical stack and fresh volumes
+        if: always()
+        run: |
+          if [ -f .e2e-backend/docker-compose.yml ]; then
+            docker compose -f .e2e-backend/docker-compose.yml down -v --remove-orphans
+          fi

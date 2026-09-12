@@ -1,0 +1,28 @@
+/* VTable editor select spacing tuning */
+.vtable-editor-select .ant-select-selector {
+  padding: 4px 8px !important;
+}
+
+.vtable-editor-select .ant-select-selection-overflow {
+  margin: 0 !important;
+}
+
+.vtable-editor-select .ant-select-selection-overflow-item {
+  margin: 2px 4px 2px 0 !important;
+}
+
+.vtable-editor-select .ant-select-selection-search {
+  margin-left: 0 !important;
+}
+
+.vtable-editor-select .ant-select-selection-placeholder {
+  margin-left: 0 !important;
+}
+
+/* Hide VTable default editor border */
+.vtable-editor-container {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background-color: transparent !important;
+}

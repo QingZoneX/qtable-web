@@ -1,0 +1,591 @@
+.qtable-record-workspace .ant-drawer-body {
+  padding: 0;
+  background: var(--qtable-color-background);
+}
+
+.qtable-record-workspace-shell {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.qtable-record-workspace-header {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  padding: 18px 24px 14px;
+  border-bottom: 1px solid var(--qtable-color-border);
+  background: color-mix(in srgb, var(--qtable-color-background) 96%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.qtable-record-workspace-toolbar,
+.qtable-record-workspace-title-row,
+.qtable-record-workspace-meta,
+.qtable-record-workspace-section-title,
+.qtable-record-attachment,
+.qtable-record-subtask {
+  display: flex;
+  align-items: center;
+}
+
+.qtable-record-workspace-toolbar {
+  justify-content: space-between;
+  min-height: 32px;
+  margin-bottom: 12px;
+}
+
+.qtable-record-workspace-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.qtable-record-workspace-context {
+  min-width: 0;
+  color: var(--qtable-color-text-tertiary);
+  font-size: var(--qtable-font-size-label);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qtable-record-workspace-title-row {
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.qtable-record-workspace-title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  color: var(--qtable-color-text);
+  font-size: 22px;
+  line-height: 30px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.qtable-record-workspace-title-input.ant-input {
+  padding: 0 4px;
+  border-color: transparent;
+  box-shadow: none;
+  font-size: 22px;
+  line-height: 30px;
+  font-weight: 700;
+}
+
+.qtable-record-workspace-title-input.ant-input:hover,
+.qtable-record-workspace-title-input.ant-input:focus {
+  border-color: var(--qtable-color-border-strong);
+  background: var(--qtable-color-background-layout);
+}
+
+.qtable-record-workspace-meta {
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.qtable-record-save-state {
+  margin-left: auto;
+  color: var(--qtable-color-text-tertiary);
+  font-size: var(--qtable-font-size-micro);
+}
+
+.qtable-record-save-state.is-saving { color: var(--qtable-color-primary); }
+.qtable-record-save-state.is-error { color: var(--qtable-color-danger); }
+.qtable-record-save-state.is-saved { color: var(--qtable-color-success); }
+
+.qtable-record-workspace-tabs .ant-tabs-nav {
+  position: sticky;
+  top: 123px;
+  z-index: 3;
+  margin: 0;
+  padding: 0 24px;
+  background: var(--qtable-color-background);
+}
+
+.qtable-record-workspace-tabs .ant-tabs-content-holder {
+  padding: 22px 24px 40px;
+}
+
+.qtable-record-workspace-section {
+  margin-bottom: 28px;
+}
+
+.qtable-record-workspace-section-title {
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.qtable-record-workspace-section-title h3 {
+  margin: 0;
+  color: var(--qtable-color-text);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 650;
+}
+
+.qtable-record-property-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 16px;
+}
+
+.qtable-record-property {
+  min-width: 0;
+}
+
+.qtable-record-property.is-wide {
+  grid-column: 1 / -1;
+}
+
+.qtable-record-property-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--qtable-color-text-secondary);
+  font-size: var(--qtable-font-size-label);
+  line-height: 18px;
+}
+
+.qtable-record-readonly-control {
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-md);
+  background: var(--qtable-color-background-layout);
+  color: var(--qtable-color-text-secondary);
+}
+
+.qtable-record-workspace-empty {
+  padding: 20px;
+  border: 1px dashed var(--qtable-color-border-strong);
+  border-radius: var(--qtable-radius-lg);
+  color: var(--qtable-color-text-secondary);
+  background: var(--qtable-color-background-layout);
+  text-align: center;
+  font-size: var(--qtable-font-size-label);
+}
+
+.qtable-record-workspace-empty .ant-btn {
+  margin-top: 10px;
+}
+
+.qtable-record-source-card {
+  padding: 14px;
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-lg);
+  background: var(--qtable-color-background);
+}
+
+.qtable-record-source-card + .qtable-record-source-card {
+  margin-top: 8px;
+}
+
+.qtable-record-source-quote {
+  margin: 8px 0 0;
+  padding-left: 12px;
+  border-left: 2px solid var(--qtable-color-primary-border);
+  color: var(--qtable-color-text-secondary);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.qtable-record-attachment-list,
+.qtable-record-subtask-list,
+.qtable-record-activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.qtable-record-attachment,
+.qtable-record-subtask {
+  gap: 10px;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-md);
+  background: var(--qtable-color-background);
+}
+
+.qtable-record-subtask {
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
+}
+
+.qtable-record-attachment-main,
+.qtable-record-subtask-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.qtable-record-attachment-name,
+.qtable-record-subtask-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--qtable-color-text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.qtable-record-attachment-meta,
+.qtable-record-subtask-meta {
+  margin-top: 2px;
+  color: var(--qtable-color-text-tertiary);
+  font-size: 11px;
+}
+
+.qtable-record-activity-list {
+  gap: 0;
+}
+
+.qtable-record-activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--qtable-color-border);
+}
+
+.qtable-record-activity-item:last-child {
+  border-bottom: 0;
+}
+
+.qtable-record-activity-avatar {
+  flex: 0 0 auto;
+  color: var(--qtable-color-primary) !important;
+  background: var(--qtable-color-primary-soft) !important;
+  font-size: 10px !important;
+}
+
+.qtable-record-activity-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.qtable-record-activity-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--qtable-color-text);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.qtable-record-activity-head > div {
+  min-width: 0;
+}
+
+.qtable-record-activity-head strong {
+  margin-right: 6px;
+  font-weight: 650;
+}
+
+.qtable-record-activity-head time {
+  flex: 0 0 auto;
+  color: var(--qtable-color-text-tertiary);
+  font-size: 11px;
+}
+
+.qtable-record-activity-meta {
+  margin-top: 7px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.qtable-record-activity-meta .ant-tag {
+  margin: 0;
+  border-radius: var(--qtable-radius-pill);
+  color: var(--qtable-color-text-secondary);
+  background: var(--qtable-color-background-layout);
+  font-size: 10px;
+}
+
+.qtable-record-activity-meta .ant-tag.is-ai {
+  color: var(--qtable-color-ai);
+  background: var(--qtable-color-ai-soft);
+}
+
+.qtable-record-activity-meta .ant-tag.is-warning {
+  color: var(--qtable-color-warning);
+  background: var(--qtable-color-warning-soft);
+}
+
+.qtable-record-activity-load-more,
+.qtable-comment-load-more {
+  display: flex;
+  justify-content: center;
+  padding-top: 16px;
+}
+
+.qtable-record-collab-loading,
+.qtable-comment-loading {
+  min-height: 180px;
+  display: grid;
+  place-items: center;
+}
+
+.qtable-comment-composer {
+  padding: 14px;
+  border: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-lg);
+  background: var(--qtable-color-background-layout);
+}
+
+.qtable-comment-composer .ant-input-textarea-show-count::after {
+  color: var(--qtable-color-text-tertiary);
+  font-size: 10px;
+}
+
+.qtable-comment-replying {
+  min-height: 32px;
+  margin-bottom: 10px;
+  padding: 5px 8px 5px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-left: 2px solid var(--qtable-color-primary);
+  border-radius: var(--qtable-radius-sm);
+  color: var(--qtable-color-text-secondary);
+  background: var(--qtable-color-primary-soft);
+  font-size: 12px;
+}
+
+.qtable-comment-composer-actions {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.qtable-comment-mention-select {
+  width: min(330px, 55%);
+}
+
+.qtable-comment-shortcut {
+  color: var(--qtable-color-text-tertiary);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.qtable-comment-thread {
+  margin-top: 20px;
+}
+
+.qtable-comment {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 4px;
+  border-bottom: 1px solid var(--qtable-color-border);
+  border-radius: var(--qtable-radius-md);
+  transition:
+    background-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.qtable-comment.is-reply {
+  margin-left: 38px;
+}
+
+.qtable-comment.is-highlighted {
+  margin-inline: -8px;
+  padding-inline: 12px;
+  background: var(--qtable-color-primary-soft);
+  box-shadow: inset 3px 0 0 var(--qtable-color-primary);
+}
+
+.qtable-comment.is-deleted {
+  opacity: 0.72;
+}
+
+.qtable-comment-avatar {
+  flex: 0 0 auto;
+  color: var(--qtable-color-primary) !important;
+  background: var(--qtable-color-primary-soft) !important;
+  font-size: 11px !important;
+  font-weight: 700;
+}
+
+.qtable-comment-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.qtable-comment-head {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.qtable-comment-head > div {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.qtable-comment-head strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--qtable-color-text);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.qtable-comment-head > span {
+  flex: 0 0 auto;
+  color: var(--qtable-color-text-tertiary);
+  font-size: 10px;
+}
+
+.qtable-comment-head .ant-tag {
+  margin: 0;
+  border-radius: var(--qtable-radius-pill);
+  font-size: 9px;
+}
+
+.qtable-safe-markdown {
+  margin-top: 7px;
+  color: var(--qtable-color-text-secondary);
+  font-size: 13px;
+  line-height: 20px;
+  overflow-wrap: anywhere;
+}
+
+.qtable-safe-markdown strong {
+  color: var(--qtable-color-text);
+}
+
+.qtable-safe-markdown code {
+  padding: 1px 5px;
+  border: 1px solid var(--qtable-color-border);
+  border-radius: 4px;
+  background: var(--qtable-color-background-layout);
+  font-size: 12px;
+}
+
+.qtable-safe-markdown a {
+  color: var(--qtable-color-primary);
+  text-decoration: none;
+}
+
+.qtable-safe-markdown a:hover {
+  text-decoration: underline;
+}
+
+.qtable-comment-mentions,
+.qtable-comment-actions {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.qtable-comment-mentions .ant-tag {
+  margin: 0;
+  border-radius: var(--qtable-radius-pill);
+  color: var(--qtable-color-primary);
+  background: var(--qtable-color-primary-soft);
+  font-size: 10px;
+}
+
+.qtable-comment-actions .ant-btn {
+  height: 24px;
+  padding-inline: 0;
+  font-size: 11px;
+}
+
+.qtable-comment-deleted-copy {
+  margin-top: 7px;
+  color: var(--qtable-color-text-tertiary);
+  font-size: 12px;
+  font-style: italic;
+}
+
+.qtable-comment-empty {
+  padding-block: 56px;
+}
+
+@media (max-width: 860px) {
+  .qtable-record-workspace-header {
+    padding-inline: 16px;
+  }
+
+  .qtable-record-workspace-tabs .ant-tabs-nav,
+  .qtable-record-workspace-tabs .ant-tabs-content-holder {
+    padding-inline: 16px;
+  }
+
+  .qtable-record-property-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .qtable-record-property.is-wide {
+    grid-column: auto;
+  }
+
+  .qtable-comment-composer-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .qtable-comment-mention-select {
+    width: 100%;
+  }
+
+  .qtable-comment-composer-actions > .ant-space {
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 560px) {
+  .qtable-record-workspace-header {
+    padding: 14px 12px 12px;
+  }
+
+  .qtable-record-workspace-toolbar {
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .qtable-record-workspace-toolbar-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .qtable-record-workspace-tabs .ant-tabs-nav,
+  .qtable-record-workspace-tabs .ant-tabs-content-holder {
+    padding-inline: 12px;
+  }
+
+  .qtable-comment.is-reply {
+    margin-left: 18px;
+  }
+
+  .qtable-comment-shortcut {
+    display: none;
+  }
+
+  .qtable-record-activity-head {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
