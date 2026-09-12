@@ -10,7 +10,7 @@ WORKDIR /app
 ARG NPM_REGISTRY=https://registry.npmjs.org
 ENV npm_config_registry=${NPM_REGISTRY}
 
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json .npmrc ./
 # Install the locked JavaScript toolchain without package lifecycle scripts.
 RUN npm ci --ignore-scripts --no-audit --no-fund
 
