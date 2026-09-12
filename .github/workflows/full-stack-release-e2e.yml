@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
-      QTABLE_BACKEND_SHA: d2ebecc06fb670f211620e2a5dc5eedc825bd34b
+      QTABLE_BACKEND_SHA: 86a348ecc843f2bc3eb1451a9cd4ddcd31defa49
       QTABLE_UI_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       APP_ENV: production
       PASSWORD_RESET_DEBUG_TOKEN_ENABLED: "false"
@@ -67,7 +67,7 @@ jobs:
           ref: ${{ env.QTABLE_UI_SHA }}
 
       - name: Export QTable backend exact revision
-        uses: QingZoneX/QTable/.github/actions/export-source@d2ebecc06fb670f211620e2a5dc5eedc825bd34b
+        uses: QingZoneX/qtable-server/.github/actions/export-source@86a348ecc843f2bc3eb1451a9cd4ddcd31defa49
         with:
           destination: .e2e-backend
 
@@ -80,8 +80,8 @@ jobs:
           test -f .e2e-backend/app/main.py
           mkdir -p .release-e2e-artifacts
           {
-            echo "QTableUI=$ACTUAL_UI_SHA"
-            echo "QTable=$QTABLE_BACKEND_SHA"
+            echo "qtable-web=$ACTUAL_UI_SHA"
+            echo "qtable-server=$QTABLE_BACKEND_SHA"
             echo "event=${GITHUB_EVENT_NAME}"
             echo "ref=${GITHUB_REF}"
           } | tee .release-e2e-artifacts/revisions.txt
