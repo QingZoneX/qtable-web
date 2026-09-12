@@ -20,6 +20,11 @@ RUN npm run build
 # ---- 运行阶段 ----
 FROM ${NGINX_IMAGE}
 
+# Keep the rolling Alpine base fully patched before publishing. The upstream
+# nginx:alpine tag can briefly reference a package revision with known CVEs
+# even when fixed packages are already available from the same repository.
+RUN apk upgrade --no-cache
+
 ARG QTABLE_UI_VERSION=0.0.0-dev
 ARG QTABLE_UI_REVISION=unknown
 ARG QTABLE_UI_CREATED=1970-01-01T00:00:00Z
