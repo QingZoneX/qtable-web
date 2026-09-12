@@ -76,7 +76,7 @@ for (const requirement of [
   "assigneeFieldId",
   "dueDateFieldId",
   "startDateFieldId",
-  "看板需要显式业务语义",
+  't("kanban.semanticRequired")',
 ]) {
   if (!kanban.includes(requirement)) {
     fail(`Kanban is not consuming the saved profile correctly: ${requirement}`);
