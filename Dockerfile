@@ -20,6 +20,10 @@ RUN npm run build
 # ---- 运行阶段 ----
 FROM ${NGINX_IMAGE}
 
+# Keep Alpine runtime packages current so the final image picks up security
+# fixes published after the floating nginx:alpine base image was built.
+RUN apk upgrade --no-cache
+
 ARG QTABLE_UI_VERSION=0.0.0-dev
 ARG QTABLE_UI_REVISION=unknown
 ARG QTABLE_UI_CREATED=1970-01-01T00:00:00Z
