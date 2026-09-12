@@ -142,13 +142,14 @@ def check_image(image, port, custom_port):
 
         docker("exec", name, "nginx", "-t")
         config = docker("exec", name, "cat", "/etc/nginx/conf.d/default.conf")
-        for variable in ("$host", "$http_host", "$remote_addr", "$http_upgrade", "$uri"):
+        for variable in ("$host", "$remote_addr", "$http_upgrade", "$uri"):
             assert variable in config, f"Nginx variable was substituted: {variable}"
         for variable in ("${PORT}", "${QTABLE_HOST}", "${QTABLE_PORT}"):
             assert variable not in config, f"runtime variable was not rendered: {variable}"
         security_snippet = docker(
             "exec", name, "cat", "/etc/nginx/snippets/qtable-security-headers.conf"
         )
+        assert "$http_host" in security_snippet, "Nginx variable was substituted: $http_host"
         assert "Content-Security-Policy" in security_snippet
         assert "unsafe-eval" not in security_snippet
 
