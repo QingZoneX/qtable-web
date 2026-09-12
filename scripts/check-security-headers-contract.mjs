@@ -62,11 +62,12 @@ if (!html.includes('src="/src/main.tsx"')) fail("index.html must load the Vite e
 
 for (const token of [
   "import.meta.env.PROD",
-  "navigator.serviceWorker.register(\"/sw.js\")",
   "navigator.serviceWorker.getRegistrations()",
 ]) {
   if (!main.includes(token)) fail(`Service Worker bootstrap contract is missing: ${token}`);
 }
+if (!/navigator\.serviceWorker\s*\.?\s*register\(\s*["']\/sw\.js["']\s*\)/s.test(main))
+  fail('Service Worker bootstrap contract is missing registration for "/sw.js"');
 
 for (const token of [
   "## Production browser security headers",
