@@ -26,9 +26,9 @@ ARG QTABLE_UI_CREATED=1970-01-01T00:00:00Z
 
 LABEL org.opencontainers.image.title="QTableUI" \
       org.opencontainers.image.description="React frontend for the QTable AI-native multidimensional-table system" \
-      org.opencontainers.image.source="https://github.com/QingZoneX/QTableUI" \
-      org.opencontainers.image.url="https://github.com/QingZoneX/QTableUI" \
-      org.opencontainers.image.documentation="https://github.com/QingZoneX/QTableUI#readme" \
+      org.opencontainers.image.source="https://github.com/QingZoneX/qtable-web" \
+      org.opencontainers.image.url="https://github.com/QingZoneX/qtable-web" \
+      org.opencontainers.image.documentation="https://github.com/QingZoneX/qtable-web#readme" \
       org.opencontainers.image.licenses="Apache-2.0" \
       org.opencontainers.image.version="${QTABLE_UI_VERSION}" \
       org.opencontainers.image.revision="${QTABLE_UI_REVISION}" \
