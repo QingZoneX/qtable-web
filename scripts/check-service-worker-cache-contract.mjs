@@ -52,7 +52,7 @@ assert.match(authStore, /res\.status === 401 \|\| res\.status === 403[\s\S]*?awa
 assert.match(authStore, /handleAuthExpired[\s\S]*?await clearPrivateBusinessCaches\(\)/);
 
 const swLocationStart = nginx.indexOf("location = /sw.js");
-const staticLocationStart = nginx.indexOf("location ~* \\\\.(js|css", swLocationStart);
+const staticLocationStart = nginx.indexOf("location ~* \\.(js|css", swLocationStart);
 assert.ok(swLocationStart >= 0, "nginx must have an exact /sw.js location");
 assert.ok(staticLocationStart > swLocationStart, "/sw.js exact location must precede immutable JS rule");
 const swLocation = nginx.slice(swLocationStart, staticLocationStart);
