@@ -30,6 +30,7 @@ import {
 import { useNavigate } from "react-router-dom";
 
 import { GLOBAL_SEARCH } from "../lib/graphql";
+import { useLanguage } from "../lib/useLanguage";
 import {
   loadRecentTargets,
   rememberRecentTarget,
@@ -37,6 +38,7 @@ import {
 } from "../lib/recentTargets";
 import { useAuthStore } from "../store/authStore";
 import { GLOBAL_SEARCH_OPEN_EVENT } from "../lib/shellEvents";
+import { commandPaletteT } from "./commandPaletteI18n";
 
 type SearchContext = {
   id: string;
@@ -70,14 +72,6 @@ const SEARCH_DEBOUNCE_MS = 250;
 const SEARCH_PAGE_SIZE = 20;
 
 const GROUP_ORDER = ["record", "table", "dashboard", "folder", "workspace"] as const;
-const GROUP_LABELS: Record<string, string> = {
-  record: "记录与任务",
-  table: "数据表",
-  dashboard: "仪表盘",
-  folder: "文件夹",
-  workspace: "工作空间",
-  recent: "最近访问",
-};
 
 const entityIcon = (entityType: string): ReactNode => {
   if (entityType === "record") return <FileTextOutlined />;
@@ -115,6 +109,7 @@ const fromRecentTarget = (item: RecentSearchTarget): GlobalSearchResult => ({
 });
 
 export function GlobalCommandPalette() {
+  useLanguage();
   const apollo = useApolloClient();
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
@@ -249,7 +244,7 @@ export function GlobalCommandPalette() {
         setHasMore(false);
         setTruncated(false);
         setError(
-          reason instanceof Error ? reason.message : "全局搜索暂时不可用",
+          reason instanceof Error ? reason.message : commandPaletteT("unavailable"),
         );
       } finally {
         if (requestId === requestSeqRef.current) setLoading(false);
@@ -308,7 +303,7 @@ export function GlobalCommandPalette() {
       setTruncated(Boolean(payload?.truncated));
     } catch (reason) {
       if (requestId !== requestSeqRef.current) return;
-      setError(reason instanceof Error ? reason.message : "加载更多失败");
+      setError(reason instanceof Error ? reason.message : commandPaletteT("loadMoreFailed"));
     } finally {
       if (requestId === requestSeqRef.current) setLoadingMore(false);
     }
@@ -367,7 +362,7 @@ export function GlobalCommandPalette() {
               {navigator.platform.toLowerCase().includes("mac") ? "⌘K" : "Ctrl K"}
             </Tag>
           }
-          placeholder="搜索项目、数据表、任务或记录…"
+          placeholder={commandPaletteT("placeholder")}
           onChange={(event) => setKeyword(event.target.value)}
           onKeyDown={handleInputKeyDown}
         />
@@ -384,7 +379,7 @@ export function GlobalCommandPalette() {
           <Alert
             type="error"
             showIcon
-            message="搜索失败"
+            message={commandPaletteT("searchFailed")}
             description={error}
             style={{ margin: 8 }}
           />
@@ -394,7 +389,7 @@ export function GlobalCommandPalette() {
           <Alert
             type="warning"
             showIcon
-            message="匹配内容较多，结果已达到安全扫描上限。请增加关键词缩小范围。"
+            message={commandPaletteT("truncated")}
             style={{ margin: 8 }}
           />
         ) : null}
@@ -408,8 +403,8 @@ export function GlobalCommandPalette() {
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={
               keyword.trim()
-                ? "没有找到可访问的匹配内容"
-                : "还没有最近访问记录，开始打开一张表后这里会自动出现"
+                ? commandPaletteT("noMatches")
+                : commandPaletteT("noRecent")
             }
             style={{ padding: "34px 0" }}
           />
@@ -426,7 +421,12 @@ export function GlobalCommandPalette() {
                   letterSpacing: "0.04em",
                 }}
               >
-                {GROUP_LABELS[group.key] || group.key.toUpperCase()}
+                {(() => {
+                  const key = `group.${group.key}` as Parameters<typeof commandPaletteT>[0];
+                  return ["record", "table", "dashboard", "folder", "workspace", "recent"].includes(group.key)
+                    ? commandPaletteT(key)
+                    : group.key.toUpperCase();
+                })()}
               </Typography.Text>
               {group.items.map((item) => {
                 flatIndex += 1;
@@ -523,7 +523,7 @@ export function GlobalCommandPalette() {
         {!loading && keyword.trim() && hasMore && nextCursor ? (
           <div style={{ padding: "10px 8px 2px", textAlign: "center" }}>
             <Button loading={loadingMore} onClick={() => void loadMore()}>
-              加载更多
+              {commandPaletteT("loadMore")}
             </Button>
           </div>
         ) : null}
@@ -539,9 +539,9 @@ export function GlobalCommandPalette() {
           fontSize: 10,
         }}
       >
-        <span>↑↓ 选择</span>
-        <span>Enter 打开</span>
-        <span>Esc 关闭</span>
+        <span>{commandPaletteT("keyboardSelect")}</span>
+        <span>{commandPaletteT("keyboardOpen")}</span>
+        <span>{commandPaletteT("keyboardClose")}</span>
       </div>
     </Modal>
   );

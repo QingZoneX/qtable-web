@@ -25,6 +25,7 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GET_WORKSPACES } from "../../lib/graphql";
 import { GET_AI_CONFIGS } from "../../lib/aiApi";
+import { useLanguage } from "../../lib/useLanguage";
 import { useWorkspaceAccess } from "../../hooks/useWorkspaceAccess";
 import { useAuthStore } from "../../store/authStore";
 import { useWorkspaceNavigationStore } from "../../store/workspaceNavigationStore";
@@ -44,6 +45,7 @@ import {
   workspaceRoleLabel,
   type WorkspacesPayload,
 } from "./settingsModel";
+import { settingsT } from "./settingsI18n";
 import "./settings.css";
 
 const { Paragraph, Text, Title } = Typography;
@@ -61,9 +63,10 @@ type AiConfigsQueryData = {
 };
 
 const experienceLabel = (mode: ExperienceMode) =>
-  mode === "advanced" ? "高级模式" : "简洁模式";
+  mode === "advanced" ? settingsT("advancedMode") : settingsT("simpleMode");
 
 export function SettingsCenterPage() {
+  useLanguage();
   const navigate = useNavigate();
   const token = useAuthStore((state) => state.token);
   const user = useAuthStore((state) => state.user);
@@ -131,11 +134,11 @@ export function SettingsCenterPage() {
 
   const handleLandingPreference = (value: LandingPreference) => {
     if (!setLandingPreference(value)) {
-      message.error("启动页偏好未能写入此浏览器，请检查浏览器存储权限");
+      message.error(settingsT("landingSaveFailed"));
       return;
     }
     setLandingPreferenceState(value);
-    message.success("启动页偏好已保存到此浏览器");
+    message.success(settingsT("landingSaved"));
   };
 
   const handlePersonalMode = async (value: "follow" | ExperienceMode) => {
@@ -143,12 +146,12 @@ export function SettingsCenterPage() {
       await setPersonalMode(value === "follow" ? null : value);
       message.success(
         value === "follow"
-          ? "已改为跟随工作区默认体验模式"
-          : `你的界面已切换为${experienceLabel(value)}`,
+          ? settingsT("followSaved")
+          : settingsT("personalModeSaved", { mode: experienceLabel(value) }),
       );
     } catch (reason) {
       message.error(
-        reason instanceof Error ? reason.message : "体验模式更新失败",
+        reason instanceof Error ? reason.message : settingsT("experienceUpdateFailed"),
       );
     }
   };
@@ -156,10 +159,10 @@ export function SettingsCenterPage() {
   const handleWorkspaceDefault = async (value: ExperienceMode) => {
     try {
       await setWorkspaceDefaultMode(value);
-      message.success(`工作区默认已设为${experienceLabel(value)}`);
+      message.success(settingsT("workspaceDefaultSaved", { mode: experienceLabel(value) }));
     } catch (reason) {
       message.error(
-        reason instanceof Error ? reason.message : "工作区默认模式更新失败",
+        reason instanceof Error ? reason.message : settingsT("workspaceDefaultFailed"),
       );
     }
   };
@@ -171,15 +174,13 @@ export function SettingsCenterPage() {
     <div className="qtable-settings-center">
       <header className="qtable-settings-header">
         <div>
-          <Title level={2}>设置</Title>
-          <Paragraph type="secondary">
-            这里仅收口当前已经真实存在的配置能力。不同设置会明确标注浏览器级或服务端持久化作用域。
-          </Paragraph>
+          <Title level={2}>{settingsT("title")}</Title>
+          <Paragraph type="secondary">{settingsT("description")}</Paragraph>
         </div>
-        <div className="qtable-settings-account" aria-label="当前账号">
+        <div className="qtable-settings-account" aria-label={settingsT("currentAccount")}>
           <UserOutlined />
           <div>
-            <Text strong>{user?.name || user?.email || "当前用户"}</Text>
+            <Text strong>{user?.name || user?.email || settingsT("currentUser")}</Text>
             {user?.email ? <Text type="secondary">{user.email}</Text> : null}
           </div>
         </div>
@@ -189,16 +190,14 @@ export function SettingsCenterPage() {
         <div className="qtable-settings-section-title">
           <HomeOutlined />
           <div>
-            <Title level={4} id="settings-personal-title">个人偏好</Title>
-            <Text type="secondary">启动行为与当前工作区体验模式</Text>
+            <Title level={4} id="settings-personal-title">{settingsT("personalTitle")}</Title>
+            <Text type="secondary">{settingsT("personalSubtitle")}</Text>
           </div>
         </div>
 
         <div className="qtable-settings-grid">
-          <Card title="启动页" className="qtable-settings-card">
-            <Paragraph type="secondary">
-              此偏好仅保存在此浏览器，不会同步到其他设备或账号会话。
-            </Paragraph>
+          <Card title={settingsT("landingTitle")} className="qtable-settings-card">
+            <Paragraph type="secondary">{settingsT("landingHelp")}</Paragraph>
             <Radio.Group
               value={landingPreference}
               onChange={(event) =>
@@ -206,38 +205,38 @@ export function SettingsCenterPage() {
               }
             >
               <Space direction="vertical">
-                <Radio value="home">始终进入 Home</Radio>
-                <Radio value="last_workbench">返回最近一次数据工作台</Radio>
+                <Radio value="home">{settingsT("landingHome")}</Radio>
+                <Radio value="last_workbench">{settingsT("landingLastWorkbench")}</Radio>
               </Space>
             </Radio.Group>
           </Card>
 
-          <Card title="体验模式" className="qtable-settings-card">
+          <Card title={settingsT("experienceTitle")} className="qtable-settings-card">
             {!workspaceId ? (
-              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="请先选择一个工作区" />
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={settingsT("chooseWorkspace")} />
             ) : experienceLoading && !experiencePreference ? (
               <Skeleton active paragraph={{ rows: 3 }} />
             ) : experienceError ? (
               <Alert
                 type="error"
                 showIcon
-                message="体验模式读取失败"
+                message={settingsT("experienceLoadFailed")}
                 description={experienceError.message}
-                action={<Button onClick={() => void refreshExperience()}>重试</Button>}
+                action={<Button onClick={() => void refreshExperience()}>{settingsT("retry")}</Button>}
               />
             ) : !experiencePersistent ? (
               <Alert
                 type="warning"
                 showIcon
-                message="当前存储后端不支持持久化体验偏好"
-                description="为避免制造假保存，本页不会提供不可持久化的修改操作。"
+                message={settingsT("experiencePersistenceUnavailable")}
+                description={settingsT("experiencePersistenceHelp")}
               />
             ) : (
               <Space direction="vertical" size={14} className="qtable-settings-full-width">
                 <div>
-                  <Text strong>我的界面</Text>
+                  <Text strong>{settingsT("myInterface")}</Text>
                   <Paragraph type="secondary" className="qtable-settings-help-copy">
-                    个人选择由服务端保存；跟随工作区时会采用管理员设置的默认模式。
+                    {settingsT("myInterfaceHelp")}
                   </Paragraph>
                   <Radio.Group
                     value={personalModeValue}
@@ -249,10 +248,12 @@ export function SettingsCenterPage() {
                     }
                   >
                     <Space direction="vertical">
-                      <Radio value="simple">简洁模式</Radio>
-                      <Radio value="advanced">高级模式</Radio>
+                      <Radio value="simple">{settingsT("simpleMode")}</Radio>
+                      <Radio value="advanced">{settingsT("advancedMode")}</Radio>
                       <Radio value="follow">
-                        跟随工作区（{experienceLabel(experiencePreference?.workspaceDefaultMode || "simple")}）
+                        {settingsT("followWorkspace", {
+                          mode: experienceLabel(experiencePreference?.workspaceDefaultMode || "simple"),
+                        })}
                       </Radio>
                     </Space>
                   </Radio.Group>
@@ -260,7 +261,7 @@ export function SettingsCenterPage() {
 
                 <div className="qtable-settings-subsection">
                   <Space size={8} wrap>
-                    <Text strong>当前生效</Text>
+                    <Text strong>{settingsT("currentEffective")}</Text>
                     <Tag color={effectiveMode === "advanced" ? "purple" : "blue"}>
                       {experienceLabel(effectiveMode)}
                     </Tag>
@@ -270,17 +271,17 @@ export function SettingsCenterPage() {
 
                 {experiencePreference?.canManageWorkspaceDefault ? (
                   <div className="qtable-settings-subsection">
-                    <Text strong>工作区默认模式</Text>
+                    <Text strong>{settingsT("workspaceDefaultMode")}</Text>
                     <Paragraph type="secondary" className="qtable-settings-help-copy">
-                      只有具备管理权限的用户可以修改，保存以后端响应为准。
+                      {settingsT("workspaceDefaultHelp")}
                     </Paragraph>
                     <Select<ExperienceMode>
                       value={experiencePreference.workspaceDefaultMode}
                       disabled={experienceSaving}
                       onChange={(value) => void handleWorkspaceDefault(value)}
                       options={[
-                        { value: "simple", label: "简洁模式" },
-                        { value: "advanced", label: "高级模式" },
+                        { value: "simple", label: settingsT("simpleMode") },
+                        { value: "advanced", label: settingsT("advancedMode") },
                       ]}
                       className="qtable-settings-select"
                     />
@@ -289,8 +290,8 @@ export function SettingsCenterPage() {
                   <Alert
                     type="info"
                     showIcon
-                    message="工作区默认模式为只读"
-                    description="你可以修改自己的体验模式，但当前角色不能修改工作区默认值。"
+                    message={settingsT("workspaceDefaultReadonly")}
+                    description={settingsT("workspaceDefaultReadonlyHelp")}
                   />
                 )}
               </Space>
@@ -303,8 +304,8 @@ export function SettingsCenterPage() {
         <div className="qtable-settings-section-title">
           <TeamOutlined />
           <div>
-            <Title level={4} id="settings-workspace-title">Workspace</Title>
-            <Text type="secondary">选择当前设置作用域，并进入真实成员管理</Text>
+            <Title level={4} id="settings-workspace-title">{settingsT("workspaceTitle")}</Title>
+            <Text type="secondary">{settingsT("workspaceSubtitle")}</Text>
           </div>
         </div>
 
@@ -315,45 +316,49 @@ export function SettingsCenterPage() {
             <Alert
               type="error"
               showIcon
-              message="工作区读取失败"
+              message={settingsT("workspaceLoadFailed")}
               description={workspacesError.message}
-              action={<Button onClick={() => void refetchWorkspaces()}>重试</Button>}
+              action={<Button onClick={() => void refetchWorkspaces()}>{settingsT("retry")}</Button>}
             />
           ) : workspaces.length === 0 ? (
-            <Empty description="当前账号没有可访问的工作区" />
+            <Empty description={settingsT("noWorkspaces")} />
           ) : (
             <Space direction="vertical" size={16} className="qtable-settings-full-width">
               <div>
-                <Text strong>当前工作区</Text>
+                <Text strong>{settingsT("currentWorkspace")}</Text>
                 <Paragraph type="secondary" className="qtable-settings-help-copy">
-                  切换会更新 QTable 当前工作区上下文，并影响工作区级设置和 AI 请求上下文。
+                  {settingsT("currentWorkspaceHelp")}
                 </Paragraph>
                 <Select
                   value={workspaceId || undefined}
                   onChange={setWorkspaceId}
                   options={workspaces.map((item) => ({
                     value: item.id,
-                    label: `${item.name}${item.owned ? " · 我的工作区" : " · 已加入"}`,
+                    label: `${item.name}${item.owned ? ` · ${settingsT("ownedWorkspace")}` : ` · ${settingsT("joinedWorkspace")}`}`,
                   }))}
                   className="qtable-settings-workspace-select"
-                  aria-label="选择设置工作区"
+                  aria-label={settingsT("selectSettingsWorkspace")}
                 />
               </div>
 
               <div className="qtable-settings-workspace-summary">
                 <div>
-                  <Text type="secondary">名称</Text>
+                  <Text type="secondary">{settingsT("name")}</Text>
                   <Text strong>{workspace?.name || workspaceId}</Text>
                 </div>
                 <div>
-                  <Text type="secondary">当前角色</Text>
+                  <Text type="secondary">{settingsT("currentRole")}</Text>
                   <Text strong>
-                    {membersLoading ? "读取中…" : workspaceRoleLabel(currentRole)}
+                    {membersLoading ? settingsT("loading") : workspaceRoleLabel(currentRole)}
                   </Text>
                 </div>
                 <div>
-                  <Text type="secondary">成员</Text>
-                  <Text strong>{membersLoading ? "读取中…" : `${members.length} 人`}</Text>
+                  <Text type="secondary">{settingsT("members")}</Text>
+                  <Text strong>
+                    {membersLoading
+                      ? settingsT("loading")
+                      : settingsT("memberCount", { count: members.length })}
+                  </Text>
                 </div>
               </div>
 
@@ -361,16 +366,16 @@ export function SettingsCenterPage() {
                 <Alert
                   type="warning"
                   showIcon
-                  message="没有权限读取工作区成员"
-                  description="成员详情不会展示，也不会提供无效的管理操作。"
+                  message={settingsT("membersDenied")}
+                  description={settingsT("membersDeniedHelp")}
                 />
               ) : membersError ? (
                 <Alert
                   type="error"
                   showIcon
-                  message="成员信息读取失败"
+                  message={settingsT("membersLoadFailed")}
                   description={membersError.message}
-                  action={<Button onClick={() => void refetchMembers()}>重试</Button>}
+                  action={<Button onClick={() => void refetchMembers()}>{settingsT("retry")}</Button>}
                 />
               ) : null}
 
@@ -380,7 +385,7 @@ export function SettingsCenterPage() {
                   disabled={!workspaceId || membersAccessDenied}
                   onClick={() => navigate(`/workspace/${workspaceId}`)}
                 >
-                  打开成员与权限管理
+                  {settingsT("openMembers")}
                 </Button>
               </div>
             </Space>
@@ -392,8 +397,8 @@ export function SettingsCenterPage() {
         <div className="qtable-settings-section-title">
           <RobotOutlined />
           <div>
-            <Title level={4} id="settings-ai-title">AI / 集成</Title>
-            <Text type="secondary">只展示当前真实可保存的 AI 模型配置</Text>
+            <Title level={4} id="settings-ai-title">{settingsT("aiTitle")}</Title>
+            <Text type="secondary">{settingsT("aiSubtitle")}</Text>
           </div>
         </div>
 
@@ -403,8 +408,8 @@ export function SettingsCenterPage() {
               type="info"
               showIcon
               icon={<ApiOutlined />}
-              message="API Key 不会从服务端回显"
-              description="QTable 只读取模型配置的 provider、model 和标识信息；编辑密钥时必须重新输入。"
+              message={settingsT("apiKeyHidden")}
+              description={settingsT("apiKeyHiddenHelp")}
             />
 
             {aiConfigsLoading && !aiConfigsData ? (
@@ -413,14 +418,14 @@ export function SettingsCenterPage() {
               <Alert
                 type="error"
                 showIcon
-                message="AI 模型配置读取失败"
+                message={settingsT("aiConfigLoadFailed")}
                 description={aiConfigsError.message}
-                action={<Button onClick={() => void refetchAiConfigs()}>重试</Button>}
+                action={<Button onClick={() => void refetchAiConfigs()}>{settingsT("retry")}</Button>}
               />
             ) : aiConfigs.length === 0 ? (
               <Empty
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description="尚未配置 AI 模型"
+                description={settingsT("aiNotConfigured")}
               />
             ) : (
               <List
@@ -440,7 +445,7 @@ export function SettingsCenterPage() {
 
             <div>
               <Button type="primary" onClick={() => setAiConfigOpen(true)}>
-                管理 AI 模型配置
+                {settingsT("manageAiConfig")}
               </Button>
             </div>
           </Space>
@@ -451,8 +456,8 @@ export function SettingsCenterPage() {
         <div className="qtable-settings-section-title">
           <InfoCircleOutlined />
           <div>
-            <Title level={4} id="settings-about-title">About / Version</Title>
-            <Text type="secondary">当前前端构建与开源支持入口</Text>
+            <Title level={4} id="settings-about-title">{settingsT("aboutTitle")}</Title>
+            <Text type="secondary">{settingsT("aboutSubtitle")}</Text>
           </div>
         </div>
 
@@ -473,7 +478,7 @@ export function SettingsCenterPage() {
               target="_blank"
               rel="noreferrer"
             >
-              开源仓库
+              {settingsT("repository")}
             </Typography.Link>
             <Typography.Link
               href="https://github.com/QingZoneX/QTableUI/blob/main/LICENSE"
@@ -487,7 +492,7 @@ export function SettingsCenterPage() {
               target="_blank"
               rel="noreferrer"
             >
-              反馈问题
+              {settingsT("reportIssue")}
             </Typography.Link>
           </Space>
         </Card>

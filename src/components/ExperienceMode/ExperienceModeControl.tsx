@@ -6,11 +6,10 @@ import {
 } from "@ant-design/icons";
 import { Button, Dropdown, Tooltip, message } from "antd";
 import type { MenuProps } from "antd";
+import { useLanguage } from "../../lib/useLanguage";
 import { useWorkspaceExperienceMode, type ExperienceMode } from "./useWorkspaceExperienceMode";
+import { experienceModeLabel, experienceModeT } from "./experienceModeI18n";
 import "./experienceMode.css";
-
-const modeLabel = (mode: ExperienceMode) =>
-  mode === "advanced" ? "高级" : "简洁";
 
 export function ExperienceModeControl({
   workspaceId,
@@ -19,6 +18,7 @@ export function ExperienceModeControl({
   workspaceId?: string | null;
   compact?: boolean;
 }) {
+  useLanguage();
   const {
     preference,
     effectiveMode,
@@ -37,12 +37,12 @@ export function ExperienceModeControl({
       await setPersonalMode(mode);
       message.success(
         mode
-          ? `已切换为${modeLabel(mode)}模式，仅影响你的界面`
-          : "已改为跟随工作区默认模式",
+          ? experienceModeT("switchedPersonal", { mode: experienceModeLabel(mode) })
+          : experienceModeT("followSaved"),
       );
     } catch (reason) {
       message.error(
-        reason instanceof Error ? reason.message : "体验模式更新失败，请稍后重试",
+        reason instanceof Error ? reason.message : experienceModeT("updateFailed"),
       );
     }
   };
@@ -50,10 +50,12 @@ export function ExperienceModeControl({
   const changeWorkspaceDefault = async (mode: ExperienceMode) => {
     try {
       await setWorkspaceDefaultMode(mode);
-      message.success(`工作区默认已设为${modeLabel(mode)}模式`);
+      message.success(
+        experienceModeT("workspaceDefaultSaved", { mode: experienceModeLabel(mode) }),
+      );
     } catch (reason) {
       message.error(
-        reason instanceof Error ? reason.message : "工作区默认模式更新失败",
+        reason instanceof Error ? reason.message : experienceModeT("workspaceDefaultFailed"),
       );
     }
   };
@@ -61,13 +63,13 @@ export function ExperienceModeControl({
   const personalItems: MenuProps["items"] = [
     {
       type: "group",
-      label: "我的界面",
+      label: experienceModeT("myInterface"),
       children: [
         {
           key: "personal:simple",
           icon:
             preference?.userMode === "simple" ? <CheckOutlined /> : <EyeOutlined />,
-          label: "简洁模式",
+          label: experienceModeLabel("simple"),
           disabled,
         },
         {
@@ -78,13 +80,15 @@ export function ExperienceModeControl({
             ) : (
               <ControlOutlined />
             ),
-          label: "高级模式",
+          label: experienceModeLabel("advanced"),
           disabled,
         },
         {
           key: "personal:follow",
           icon: preference?.userMode === null ? <CheckOutlined /> : undefined,
-          label: `跟随工作区（${modeLabel(preference?.workspaceDefaultMode || "simple")}）`,
+          label: experienceModeT("followWorkspace", {
+            mode: experienceModeLabel(preference?.workspaceDefaultMode || "simple"),
+          }),
           disabled,
         },
       ],
@@ -96,7 +100,7 @@ export function ExperienceModeControl({
         { type: "divider" },
         {
           type: "group",
-          label: "工作区默认",
+          label: experienceModeT("workspaceDefault"),
           children: [
             {
               key: "workspace:simple",
@@ -104,7 +108,7 @@ export function ExperienceModeControl({
                 preference.workspaceDefaultMode === "simple" ? (
                   <CheckOutlined />
                 ) : undefined,
-              label: "默认简洁模式",
+              label: experienceModeT("defaultSimple"),
               disabled,
             },
             {
@@ -113,7 +117,7 @@ export function ExperienceModeControl({
                 preference.workspaceDefaultMode === "advanced" ? (
                   <CheckOutlined />
                 ) : undefined,
-              label: "默认高级模式",
+              label: experienceModeT("defaultAdvanced"),
               disabled,
             },
           ],
@@ -133,12 +137,12 @@ export function ExperienceModeControl({
   };
 
   const unavailableHint = error
-    ? "体验偏好加载失败"
+    ? experienceModeT("loadFailed")
     : !persistent
-      ? "当前存储模式不支持持久化偏好"
+      ? experienceModeT("persistenceUnavailable")
       : effectiveMode === "simple"
-        ? "简洁模式：优先展示当前行动，高级能力按需展开"
-        : "高级模式：直接展示完整配置能力";
+        ? experienceModeT("simpleHint")
+        : experienceModeT("advancedHint");
 
   return (
     <Tooltip title={unavailableHint}>
@@ -151,10 +155,10 @@ export function ExperienceModeControl({
             loading={loading || saving}
             disabled={!persistent || Boolean(error)}
             data-experience-mode={effectiveMode}
-            aria-label={`体验模式：${modeLabel(effectiveMode)}`}
+            aria-label={experienceModeT("aria", { mode: experienceModeLabel(effectiveMode) })}
           >
             <span className="qtable-experience-mode-label">
-              {modeLabel(effectiveMode)}
+              {experienceModeLabel(effectiveMode, true)}
             </span>
           </Button>
         </Dropdown>

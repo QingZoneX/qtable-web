@@ -68,11 +68,13 @@ import {
   getTableLastViewId,
 } from "../../store/useSmartTableStore";
 import { t } from "../../lib/i18nRuntime";
+import { useLanguage } from "../../lib/useLanguage";
 import { TemplateSelector } from "./TemplateSelector";
 import { GoalWorkspaceModal } from "../GoalWorkspace/GoalWorkspaceModal";
 import { useLocation } from "react-router-dom";
 import { useWorkspaceNavigationStore } from "../../store/workspaceNavigationStore";
 import { WORKSPACE_MANAGER_OPEN_EVENT } from "../../lib/shellEvents";
+import { sidebarExtraT } from "./sidebarExtraI18n";
 import "./sidebar.css";
 
 type WorkspaceNode = {
@@ -145,6 +147,7 @@ function toTreeData(
 }
 
 export function Sidebar() {
+  const language = useLanguage();
   const navigate = useNavigate();
   const { tableId, dashboardId } = useParams();
   const location = useLocation();
@@ -261,7 +264,6 @@ export function Sidebar() {
   const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
   const effectiveExpandedKeys = useMemo(() => {
     if (searchQuery && root) {
-      // When searching, expand all keys to show matching results
       const allKeys: string[] = [];
       const collectKeys = (node: WorkspaceNode) => {
         allKeys.push(node.id);
@@ -374,7 +376,7 @@ export function Sidebar() {
         value: "manage",
         label: t("permission.canManage"),
         description:
-          t("permission.canManage") + " - " + "拥有该文件的所有操作权限",
+          t("permission.canManage") + " - " + sidebarExtraT("permission.manageDescription"),
       },
       {
         value: "edit",
@@ -382,7 +384,7 @@ export function Sidebar() {
         description:
           t("permission.canEdit") +
           " - " +
-          "在「只可更新」基础上，还可以编辑和分享文件",
+          sidebarExtraT("permission.editDescription"),
       },
       {
         value: "update",
@@ -390,16 +392,16 @@ export function Sidebar() {
         description:
           t("permission.canUpdate") +
           " - " +
-          "在「只可阅读」基础上，还可以新增和编辑记录",
+          sidebarExtraT("permission.updateDescription"),
       },
       {
         value: "read",
         label: t("permission.canRead"),
         description:
-          t("permission.canRead") + " - " + "只可查看该文件夹下的内容",
+          t("permission.canRead") + " - " + sidebarExtraT("permission.readDescription"),
       },
     ],
-    [],
+    [language],
   );
   const permissionSelectOptions = useMemo(
     () =>
@@ -430,7 +432,7 @@ export function Sidebar() {
         ),
       },
     ],
-    [permissionSelectOptions],
+    [language, permissionSelectOptions],
   );
   const itemAccessList = (itemAccessData?.itemAccess ?? []) as ItemAccessEntry[];
   const explicitAccessList = itemAccessList.filter((item) => !item.inherited);
@@ -908,7 +910,6 @@ export function Sidebar() {
     setTemplateCreateParentId(null);
   };
 
-  // Filter tree data based on search query
   const filterTreeBySearch = (query: string): WorkspaceNode | null => {
     if (!root) return null;
     if (!query.trim()) return root;
@@ -942,10 +943,9 @@ export function Sidebar() {
     if (!canManage) return;
     if (!itemId || itemId === rootId) return;
 
-    // Get the node to determine if it's a folder or table
     const node = root ? findInWorkspace(root, itemId) : null;
     const isFolder = node?.type === "folder";
-    const itemName = node?.name || "该项";
+    const itemName = node?.name || sidebarExtraT("itemFallback");
 
     const confirmMessage = isFolder
       ? t("action.confirmDeleteFolder").replace("{name}", itemName)
@@ -974,7 +974,6 @@ export function Sidebar() {
     if (!canManage) return;
     if (!itemId) return;
 
-    // Get current name to prefill
     const node = root ? findInWorkspace(root, itemId) : null;
     const currentName = node?.name || "";
 
@@ -1193,11 +1192,10 @@ export function Sidebar() {
     const startX = e.clientX;
     const startWidth =
       sidebarRef.current?.getBoundingClientRect().width || sidebarWidth;
-    let currentWidth = startWidth; // 视觉显示宽度（限制在120-500）
-    let virtualWidth = startWidth; // 虚拟宽度（允许小于120，用于判断收起）
+    let currentWidth = startWidth;
+    let virtualWidth = startWidth;
     let rafId: number | null = null;
 
-    // 添加全局样式，防止拖拽时选中文本
     setIsResizing(true);
     document.body.style.cursor = "col-resize";
     document.body.style.userSelect = "none";
@@ -1209,9 +1207,7 @@ export function Sidebar() {
 
       rafId = requestAnimationFrame(() => {
         const deltaX = moveEvent.clientX - startX;
-        // 虚拟宽度允许小于最小宽度
         virtualWidth = startWidth + deltaX;
-        // 视觉显示宽度被限制在最小和最大宽度之间
         currentWidth = clampDragWidth(virtualWidth);
         if (sidebarRef.current) {
           const value = `${currentWidth}px`;
@@ -1229,12 +1225,10 @@ export function Sidebar() {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
 
-      // 恢复样式
       setIsResizing(false);
       document.body.style.cursor = "";
       document.body.style.userSelect = "";
 
-      // 如果虚拟宽度小于80则折叠侧边栏
       if (virtualWidth < 80) {
         setSidebarCollapsed(true);
       } else {
@@ -1311,7 +1305,7 @@ export function Sidebar() {
             <div className="qtable-context-sidebar-heading">
               <div style={{ minWidth: 0 }}>
                 <Typography.Text strong className="qtable-context-sidebar-title">
-                  工作区内容
+                  {sidebarExtraT("workspaceContent")}
                 </Typography.Text>
                 <Typography.Text
                   type="secondary"
@@ -1321,11 +1315,11 @@ export function Sidebar() {
                   {currentWorkspaceName}
                 </Typography.Text>
               </div>
-              <Tooltip title="管理工作区">
+              <Tooltip title={sidebarExtraT("manageWorkspace")}>
                 <Button
                   type="text"
                   size="small"
-                  aria-label="管理工作区"
+                  aria-label={sidebarExtraT("manageWorkspace")}
                   icon={<SwapOutlined />}
                   onClick={() => setWorkspaceDrawerOpen(true)}
                 />
@@ -1509,7 +1503,6 @@ export function Sidebar() {
             </div>
           </>
         )}
-        {/* Resize handle */}
         {!collapsed && (
           <div
             onMouseDown={handleMouseDown}
@@ -1527,7 +1520,6 @@ export function Sidebar() {
           />
         )}
       </div>
-      {/* Modals and Drawers */}
       <Modal
         open={moveOpen}
         title={t("sidebar.moveTo")}

@@ -29,6 +29,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import { client } from "../../lib/apollo";
 import { t } from "../../lib/i18nRuntime";
+import { productDateTime, productLocaleCompare } from "../../lib/productI18n";
+import { useLanguage } from "../../lib/useLanguage";
 import { GET_WORKSPACE, GET_WORKSPACES } from "../../lib/graphql";
 import { useAuthStore } from "../../store/authStore";
 import {
@@ -46,6 +48,7 @@ import {
   type RecycleField,
   type WorkspaceNode,
 } from "./recycleBinModel";
+import { recycleBinT } from "./recycleBinI18n";
 import "./recycleBin.css";
 
 const { Paragraph, Text, Title } = Typography;
@@ -90,12 +93,21 @@ const readStorage = (key: string) => {
 };
 
 const formatDeletedAt = (value?: string | null) => {
-  if (!value) return "时间未知";
+  if (!value) return recycleBinT("timeUnknown");
   const parsed = dayjs(value);
-  return parsed.isValid() ? parsed.format("YYYY-MM-DD HH:mm:ss") : value;
+  if (!parsed.isValid()) return value;
+  return productDateTime(parsed.toDate(), {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
 };
 
 export function RecycleBinPage() {
+  useLanguage();
   const navigate = useNavigate();
   const token = useAuthStore((state) => state.token);
   const [workspacePreference, setWorkspacePreference] = useState(
@@ -137,7 +149,7 @@ export function RecycleBinPage() {
         seen.add(workspace.id);
         return true;
       })
-      .sort((left, right) => left.name.localeCompare(right.name, "zh-CN"));
+      .sort((left, right) => productLocaleCompare(left.name, right.name));
   }, [workspacesData?.workspaces?.invited, workspacesData?.workspaces?.owned]);
 
   const selectedWorkspaceId = useMemo(() => {
@@ -171,7 +183,7 @@ export function RecycleBinPage() {
     if (workspaceLoading) return [];
     return collectWorkspaceTables(workspaceData?.workspace?.root)
       .map((table) => ({ value: table.id, label: table.name }))
-      .sort((left, right) => left.label.localeCompare(right.label, "zh-CN"));
+      .sort((left, right) => productLocaleCompare(left.label, right.label));
   }, [workspaceData?.workspace?.root, workspaceLoading]);
 
   const selectedTableId = useMemo(() => {
@@ -236,7 +248,7 @@ export function RecycleBinPage() {
         });
         if (requestId !== recycleRequestIdRef.current) return;
         const page = response.data?.recycleBin;
-        if (!page) throw new Error("回收站服务没有返回有效数据");
+        if (!page) throw new Error(recycleBinT("invalidPage"));
         totalCount = Math.max(totalCount, Number(page.totalCount || 0));
         for (const item of page.items || []) {
           if (seen.has(item.recycleId)) continue;
@@ -246,7 +258,7 @@ export function RecycleBinPage() {
         hasMore = Boolean(page.hasMore);
         if (!hasMore) break;
         if (!page.items?.length) {
-          throw new Error("回收站分页返回异常：仍有更多数据但当前页为空");
+          throw new Error(recycleBinT("emptyPageWithMore"));
         }
         offset = Number(page.offset || offset) + page.items.length;
       }
@@ -258,7 +270,7 @@ export function RecycleBinPage() {
       if (requestId !== recycleRequestIdRef.current) return;
       setTrashItems([]);
       setTrashTotalCount(0);
-      setTrashError(errorMessage(reason, "读取回收站失败"));
+      setTrashError(errorMessage(reason, recycleBinT("readFailed")));
     } finally {
       if (requestId === recycleRequestIdRef.current) setTrashLoading(false);
     }
@@ -277,10 +289,10 @@ export function RecycleBinPage() {
 
   const selectedWorkspaceName =
     allWorkspaces.find((workspace) => workspace.id === selectedWorkspaceId)?.name ||
-    "当前工作区";
+    recycleBinT("currentWorkspace");
   const selectedTableName =
     tableOptions.find((table) => table.value === selectedTableId)?.label ||
-    "当前数据表";
+    recycleBinT("currentTable");
 
   const visibleItems = useMemo(
     () =>
@@ -315,17 +327,17 @@ export function RecycleBinPage() {
           variables: { tableId: entry.tableId, recordId: entry.recordId },
         });
         if (!response.data?.restoreRecord) {
-          throw new Error("该记录已不在回收站中，可能已被恢复或永久删除");
+          throw new Error(recycleBinT("restoreMissing"));
         }
         await loadRecycleBin();
-        message.success("记录已从服务端恢复");
+        message.success(recycleBinT("restored"));
         if (openAfterRestore) {
           navigate(
             `/workbench/${entry.tableId}?recordId=${encodeURIComponent(entry.recordId)}`,
           );
         }
       } catch (reason) {
-        message.error(errorMessage(reason, "恢复记录失败"));
+        message.error(errorMessage(reason, recycleBinT("restoreFailed")));
       } finally {
         setActionKey(null);
       }
@@ -346,14 +358,14 @@ export function RecycleBinPage() {
         },
       });
       if (response.data?.purgeRecord !== true) {
-        throw new Error("永久删除没有完成，该记录可能已经不在回收站中");
+        throw new Error(recycleBinT("purgeIncomplete"));
       }
       setPurgeTarget(null);
       setPurgeConfirmValue("");
       await loadRecycleBin();
-      message.success("记录已永久删除，历史数据快照也已清除");
+      message.success(recycleBinT("purged"));
     } catch (reason) {
-      message.error(errorMessage(reason, "永久删除失败"));
+      message.error(errorMessage(reason, recycleBinT("purgeFailed")));
       throw reason;
     } finally {
       setActionKey(null);
@@ -365,7 +377,7 @@ export function RecycleBinPage() {
       <div
         className="qtable-recycle-bin qtable-recycle-bin-state"
         role="status"
-        aria-label="回收站加载中"
+        aria-label={recycleBinT("loadingAria")}
       >
         <Skeleton active paragraph={{ rows: 8 }} />
       </div>
@@ -378,9 +390,9 @@ export function RecycleBinPage() {
         <Alert
           type="error"
           showIcon
-          message="无法读取工作区"
+          message={recycleBinT("workspaceLoadFailed")}
           description={workspacesError.message}
-          action={<Button onClick={() => void refetchWorkspaces()}>重试</Button>}
+          action={<Button onClick={() => void refetchWorkspaces()}>{recycleBinT("retry")}</Button>}
         />
       </div>
     );
@@ -391,33 +403,31 @@ export function RecycleBinPage() {
       <header className="qtable-recycle-bin-header">
         <div>
           <Space size={8} align="center">
-            <Title level={2}>回收站</Title>
-            <Tag color="blue">仅表管理者可访问</Tag>
+            <Title level={2}>{recycleBinT("title")}</Title>
+            <Tag color="blue">{recycleBinT("manageOnly")}</Tag>
           </Space>
-          <Paragraph type="secondary">
-            数据库记录删除后会从活动表中移除，并保留删除时快照。你可以恢复，或经过二次确认永久删除。
-          </Paragraph>
+          <Paragraph type="secondary">{recycleBinT("description")}</Paragraph>
         </div>
         <Button
           icon={<ReloadOutlined />}
           onClick={() => void refreshAll()}
           loading={trashLoading}
         >
-          刷新
+          {recycleBinT("refresh")}
         </Button>
       </header>
 
       <Alert
         type="info"
         showIcon
-        message="删除安全语义"
-        description="回收项会保留到被恢复、被永久删除或其数据表被删除；本页面不承诺固定保留天数。永久删除会清除该记录在回收站与变更历史中的可恢复数据快照，无法撤销。"
+        message={recycleBinT("deletionSemantics")}
+        description={recycleBinT("deletionSemanticsHelp")}
       />
 
       <div className="qtable-recycle-bin-toolbar">
         <Select
           value={selectedWorkspaceId || undefined}
-          placeholder="选择工作区"
+          placeholder={recycleBinT("selectWorkspace")}
           options={allWorkspaces.map((workspace) => ({
             value: workspace.id,
             label: workspace.name,
@@ -428,11 +438,11 @@ export function RecycleBinPage() {
             setSearch("");
           }}
           className="qtable-recycle-bin-workspace"
-          aria-label="选择工作区"
+          aria-label={recycleBinT("selectWorkspace")}
         />
         <Select
           value={selectedTableId || undefined}
-          placeholder={workspaceLoading ? "正在加载数据表" : "选择数据表"}
+          placeholder={workspaceLoading ? recycleBinT("loadingTables") : recycleBinT("selectTable")}
           loading={workspaceLoading}
           options={tableOptions}
           onChange={(value) => {
@@ -440,14 +450,14 @@ export function RecycleBinPage() {
             setSearch("");
           }}
           className="qtable-recycle-bin-table"
-          aria-label="选择数据表"
+          aria-label={recycleBinT("selectTable")}
         />
         <Input
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           prefix={<SearchOutlined />}
           allowClear
-          placeholder="搜索记录 ID、字段名或删除快照内容"
+          placeholder={recycleBinT("searchPlaceholder")}
           className="qtable-recycle-bin-search"
           disabled={!selectedTableId || trashLoading}
         />
@@ -457,9 +467,9 @@ export function RecycleBinPage() {
         <Alert
           type="error"
           showIcon
-          message="无法读取当前工作区的数据表"
+          message={recycleBinT("workspaceTablesFailed")}
           description={workspaceError.message}
-          action={<Button onClick={() => void refetchWorkspace()}>重试</Button>}
+          action={<Button onClick={() => void refetchWorkspace()}>{recycleBinT("retry")}</Button>}
         />
       ) : null}
 
@@ -467,22 +477,22 @@ export function RecycleBinPage() {
         <Alert
           type="warning"
           showIcon
-          message="当前字段元数据读取失败"
-          description="删除快照仍可恢复和永久删除，但字段将暂时以保存时的字段 ID 显示。"
+          message={recycleBinT("fieldsFailed")}
+          description={recycleBinT("fieldsFailedHelp")}
         />
       ) : null}
 
       {!allWorkspaces.length ? (
-        <Empty description="当前账号没有可访问的工作区" />
+        <Empty description={recycleBinT("noWorkspaces")} />
       ) : !workspaceLoading && selectedWorkspaceId && !tableOptions.length ? (
-        <Empty description={`${selectedWorkspaceName} 中没有可用的数据表`} />
+        <Empty description={recycleBinT("noTables", { workspace: selectedWorkspaceName })} />
       ) : !selectedTableId ? (
-        <Empty description="请选择一个数据表查看回收站" />
+        <Empty description={recycleBinT("chooseTable")} />
       ) : trashLoading ? (
         <div
           className="qtable-recycle-bin-grid"
           role="status"
-          aria-label="正在读取完整回收站"
+          aria-label={recycleBinT("loadingFullAria")}
         >
           {Array.from({ length: 4 }).map((_, index) => (
             <div
@@ -499,33 +509,36 @@ export function RecycleBinPage() {
           showIcon
           message={
             isRecyclePermissionError(trashError)
-              ? "需要数据表管理权限"
-              : "回收站读取失败"
+              ? recycleBinT("manageRequired")
+              : recycleBinT("recycleReadFailed")
           }
           description={
             isRecyclePermissionError(trashError)
-              ? `回收站可能包含完整的已删除记录快照。只有 ${selectedTableName} 的 manage 权限用户可以读取、恢复或永久删除。`
+              ? recycleBinT("manageRequiredHelp", { table: selectedTableName })
               : trashError
           }
-          action={<Button onClick={() => void loadRecycleBin()}>重试</Button>}
+          action={<Button onClick={() => void loadRecycleBin()}>{recycleBinT("retry")}</Button>}
         />
       ) : visibleItems.length === 0 ? (
         <Empty
           description={
             search
-              ? `没有匹配“${search}”的已删除记录`
-              : `${selectedTableName} 的回收站为空`
+              ? recycleBinT("noSearchMatch", { query: search })
+              : recycleBinT("emptyTable", { table: selectedTableName })
           }
         />
       ) : (
         <>
           <div className="qtable-recycle-bin-summary">
             <Text type="secondary">
-              {selectedWorkspaceName} / {selectedTableName} · 服务端共 {trashTotalCount}
-              条已删除记录
-              {search ? ` · 当前搜索命中 ${visibleItems.length} 条` : ""}
+              {recycleBinT("summary", {
+                workspace: selectedWorkspaceName,
+                table: selectedTableName,
+                count: trashTotalCount,
+              })}
+              {search ? recycleBinT("searchHits", { count: visibleItems.length }) : ""}
             </Text>
-            <Text type="secondary">搜索基于已自动拉取完成的全部回收站分页</Text>
+            <Text type="secondary">{recycleBinT("searchCompleteHint")}</Text>
           </div>
           <div className="qtable-recycle-bin-grid">
             {visibleItems.map((entry) => {
@@ -534,11 +547,14 @@ export function RecycleBinPage() {
               const restoreKey = `${entry.recycleId}:restore`;
               const openKey = `${entry.recycleId}:open`;
               const purgeKey = `${entry.recycleId}:purge`;
+              const deletedBy = entry.deletedByUserId == null
+                ? recycleBinT("unknown")
+                : recycleBinT("userId", { id: entry.deletedByUserId });
               return (
                 <article className="qtable-recycle-bin-card" key={entry.recycleId}>
                   <div className="qtable-recycle-bin-card-heading">
                     <div>
-                      <Text strong>记录 {entry.recordId}</Text>
+                      <Text strong>{recycleBinT("record", { id: entry.recordId })}</Text>
                       <Text
                         type="secondary"
                         className="qtable-recycle-bin-card-id"
@@ -546,22 +562,21 @@ export function RecycleBinPage() {
                         recycle: {entry.recycleId}
                       </Text>
                     </div>
-                    <Tag color="warning">已删除</Tag>
+                    <Tag color="warning">{recycleBinT("deleted")}</Tag>
                   </div>
 
                   <div className="qtable-recycle-bin-meta">
-                    <span>删除时间：{formatDeletedAt(entry.deletedAt)}</span>
+                    <span>{recycleBinT("deletedAt", { time: formatDeletedAt(entry.deletedAt) })}</span>
+                    <span>{recycleBinT("deletedBy", { value: deletedBy })}</span>
                     <span>
-                      删除者：
-                      {entry.deletedByUserId == null
-                        ? "未知"
-                        : `用户 ID ${entry.deletedByUserId}`}
+                      {recycleBinT("recordVersion", {
+                        version: entry.recordVersion ?? recycleBinT("unknown"),
+                      })}
                     </span>
-                    <span>记录版本：{entry.recordVersion ?? "未知"}</span>
                   </div>
 
                   <div className="qtable-recycle-bin-snapshot">
-                    <Text type="secondary">删除时数据快照</Text>
+                    <Text type="secondary">{recycleBinT("snapshotTitle")}</Text>
                     {shownSnapshot.length ? (
                       <dl>
                         {shownSnapshot.map((item) => (
@@ -572,13 +587,11 @@ export function RecycleBinPage() {
                         ))}
                       </dl>
                     ) : (
-                      <Text type="secondary">
-                        该记录的删除快照没有非空字段值。
-                      </Text>
+                      <Text type="secondary">{recycleBinT("snapshotEmpty")}</Text>
                     )}
                     {snapshot.length > shownSnapshot.length ? (
                       <Text type="secondary">
-                        另有 {snapshot.length - shownSnapshot.length} 个非空字段
+                        {recycleBinT("extraFields", { count: snapshot.length - shownSnapshot.length })}
                       </Text>
                     ) : null}
                   </div>
@@ -590,7 +603,7 @@ export function RecycleBinPage() {
                       disabled={Boolean(actionKey && actionKey !== restoreKey)}
                       onClick={() => void handleRestore(entry, false)}
                     >
-                      恢复
+                      {recycleBinT("restore")}
                     </Button>
                     <Button
                       type="primary"
@@ -599,7 +612,7 @@ export function RecycleBinPage() {
                       disabled={Boolean(actionKey && actionKey !== openKey)}
                       onClick={() => void handleRestore(entry, true)}
                     >
-                      恢复并打开
+                      {recycleBinT("restoreAndOpen")}
                     </Button>
                     <Button
                       danger
@@ -611,7 +624,7 @@ export function RecycleBinPage() {
                         setPurgeConfirmValue("");
                       }}
                     >
-                      永久删除
+                      {recycleBinT("deletePermanently")}
                     </Button>
                   </div>
                 </article>
@@ -623,7 +636,7 @@ export function RecycleBinPage() {
 
       <Modal
         open={Boolean(purgeTarget)}
-        title="永久删除记录"
+        title={recycleBinT("purgeTitle")}
         okText={t("common.deletePermanently")}
         cancelText={t("common.cancel")}
         centered
@@ -645,16 +658,16 @@ export function RecycleBinPage() {
           <Alert
             type="error"
             showIcon
-            message="此操作不可撤销"
-            description="永久删除会移除回收站快照，并清除该记录在变更历史中的可恢复 before/after 数据。普通 Undo 无法恢复。"
+            message={recycleBinT("irreversible")}
+            description={recycleBinT("irreversibleHelp")}
           />
           <Text>
-            请输入完整记录 ID <Text code>{purgeTarget?.recordId}</Text> 以确认。
+            {recycleBinT("confirmRecordId", { id: purgeTarget?.recordId || "" })}
           </Text>
           <Input
             value={purgeConfirmValue}
             onChange={(event) => setPurgeConfirmValue(event.target.value)}
-            placeholder={purgeTarget?.recordId || "记录 ID"}
+            placeholder={purgeTarget?.recordId || recycleBinT("recordIdPlaceholder")}
             autoComplete="off"
           />
         </Space>

@@ -4,6 +4,7 @@ import { FilterOutlined, ReloadOutlined } from "@ant-design/icons";
 import { useQuery } from "@apollo/client/react";
 import { useParams } from "react-router-dom";
 import { GET_DASHBOARD, GET_TABLE_DATA, GET_WORKSPACE } from "../../lib/graphql";
+import { useLanguage } from "../../lib/useLanguage";
 import { useAuthStore } from "../../store/authStore";
 import {
   permissionAllows,
@@ -11,6 +12,7 @@ import {
 } from "../../store/useSmartTableStore";
 import { DashboardWorkbench as DashboardWorkbenchCore } from "../DashboardWorkbenchCore";
 import { normalizeDashboardFilterValue } from "./dashboardExperienceModel";
+import { dashboardOperatorLabel, dashboardT } from "./dashboardI18n";
 import { walkTables } from "./utils";
 import {
   DashboardExperienceContext,
@@ -30,38 +32,38 @@ type DashboardField = {
 };
 
 function operatorsForField(field?: DashboardField) {
-  if (!field) return [{ value: "eq", label: "等于" }];
+  if (!field) return [{ value: "eq", label: dashboardOperatorLabel("eq") }];
   if (NUMERIC_FIELD_TYPES.has(field.type)) {
     return [
-      { value: "eq", label: "等于" },
-      { value: "neq", label: "不等于" },
-      { value: "gt", label: "大于" },
-      { value: "gte", label: "大于等于" },
-      { value: "lt", label: "小于" },
-      { value: "lte", label: "小于等于" },
-      { value: "in", label: "属于多个值" },
+      { value: "eq", label: dashboardOperatorLabel("eq") },
+      { value: "neq", label: dashboardOperatorLabel("neq") },
+      { value: "gt", label: dashboardOperatorLabel("gt") },
+      { value: "gte", label: dashboardOperatorLabel("gte") },
+      { value: "lt", label: dashboardOperatorLabel("lt") },
+      { value: "lte", label: dashboardOperatorLabel("lte") },
+      { value: "in", label: dashboardOperatorLabel("in") },
     ];
   }
   if (field.type === "date") {
     return [
-      { value: "eq", label: "等于" },
-      { value: "neq", label: "不等于" },
-      { value: "before", label: "早于" },
-      { value: "after", label: "晚于" },
+      { value: "eq", label: dashboardOperatorLabel("eq") },
+      { value: "neq", label: dashboardOperatorLabel("neq") },
+      { value: "before", label: dashboardOperatorLabel("before") },
+      { value: "after", label: dashboardOperatorLabel("after") },
     ];
   }
   if (["text", "url", "email"].includes(field.type)) {
     return [
-      { value: "eq", label: "等于" },
-      { value: "neq", label: "不等于" },
-      { value: "contains", label: "包含" },
-      { value: "in", label: "属于多个值" },
+      { value: "eq", label: dashboardOperatorLabel("eq") },
+      { value: "neq", label: dashboardOperatorLabel("neq") },
+      { value: "contains", label: dashboardOperatorLabel("contains") },
+      { value: "in", label: dashboardOperatorLabel("in") },
     ];
   }
   return [
-    { value: "eq", label: "等于" },
-    { value: "neq", label: "不等于" },
-    { value: "in", label: "属于多个值" },
+    { value: "eq", label: dashboardOperatorLabel("eq") },
+    { value: "neq", label: dashboardOperatorLabel("neq") },
+    { value: "in", label: dashboardOperatorLabel("in") },
   ];
 }
 
@@ -118,13 +120,14 @@ function filterValueInput(
   return (
     <Input
       value={String(value ?? "")}
-      placeholder={operator === "in" ? "多个值用逗号分隔" : "输入筛选值"}
+      placeholder={operator === "in" ? dashboardT("filters.multiValue") : dashboardT("filters.value")}
       onChange={(event) => onChange(event.target.value)}
     />
   );
 }
 
 export function DashboardExperienceShell({ embedded }: { embedded?: boolean }) {
+  useLanguage();
   const { dashboardId: routeDashboardId, tableId } = useParams();
   const dashboardId = routeDashboardId || tableId || "";
   const token = useAuthStore((state) => state.token);
@@ -228,7 +231,7 @@ export function DashboardExperienceShell({ embedded }: { embedded?: boolean }) {
         minute: "2-digit",
         second: "2-digit",
       })
-    : "等待组件数据";
+    : dashboardT("status.waitingData");
   const reportDataLoaded = useCallback(() => setLastDataLoadedAt(new Date()), []);
 
   const contextValue = useMemo(
@@ -243,46 +246,48 @@ export function DashboardExperienceShell({ embedded }: { embedded?: boolean }) {
   return (
     <DashboardExperienceContext.Provider value={contextValue}>
       <div className="qtable-dashboard-experience" data-dashboard-mode={effectiveMode}>
-        <section className="qtable-dashboard-experience-bar" aria-label="Dashboard analysis controls">
+        <section className="qtable-dashboard-experience-bar" aria-label={dashboardT("mode.title")}>
           <div className="qtable-dashboard-experience-mode">
-            <Typography.Text strong>仪表盘模式</Typography.Text>
+            <Typography.Text strong>{dashboardT("mode.title")}</Typography.Text>
             <Segmented
               size="small"
               value={effectiveMode}
               options={[
-                { value: "view", label: "查看" },
-                { value: "edit", label: "编辑", disabled: !canEdit },
+                { value: "view", label: dashboardT("mode.view") },
+                { value: "edit", label: dashboardT("mode.edit"), disabled: !canEdit },
               ]}
               onChange={(value) => setMode(String(value) as DashboardExperienceMode)}
             />
             <Tag color={effectiveMode === "edit" ? "blue" : "default"}>
-              {effectiveMode === "edit" ? "布局与配置可编辑" : "稳定查看，不拖动布局"}
+              {effectiveMode === "edit" ? dashboardT("mode.editable") : dashboardT("mode.stable")}
             </Tag>
           </div>
           <div className="qtable-dashboard-experience-status">
-            <Tag bordered={false}>实时订阅 + 手动刷新</Tag>
-            <Typography.Text type="secondary">最近成功数据：{lastDataLabel}</Typography.Text>
+            <Tag bordered={false}>{dashboardT("status.realtime")}</Tag>
+            <Typography.Text type="secondary">
+              {dashboardT("status.lastSuccess", { time: lastDataLabel })}
+            </Typography.Text>
           </div>
         </section>
 
-        <section className="qtable-dashboard-filter-bar" aria-label="Dashboard global filters">
+        <section className="qtable-dashboard-filter-bar" aria-label={dashboardT("filters.title")}>
           <div className="qtable-dashboard-filter-heading">
             <Space size={6}>
               <FilterOutlined />
-              <Typography.Text strong>全局筛选</Typography.Text>
+              <Typography.Text strong>{dashboardT("filters.title")}</Typography.Text>
               <Tag color={runtimeFilters.length ? "blue" : "default"}>
-                {runtimeFilters.length ? `已应用 ${runtimeFilters.length}` : "未修改"}
+                {runtimeFilters.length
+                  ? dashboardT("filters.applied", { count: runtimeFilters.length })
+                  : dashboardT("filters.unchanged")}
               </Tag>
             </Space>
-            <Typography.Text type="secondary">
-              服务端运行时筛选 · 仅作用于同一来源表的组件，不改写组件配置
-            </Typography.Text>
+            <Typography.Text type="secondary">{dashboardT("filters.help")}</Typography.Text>
           </div>
           <div className="qtable-dashboard-filter-editor">
             <Select
-              aria-label="筛选数据表"
+              aria-label={dashboardT("filters.tableAria")}
               value={filterTableId}
-              placeholder="来源表"
+              placeholder={dashboardT("filters.sourceTable")}
               showSearch
               optionFilterProp="label"
               options={filterTables.map((table) => ({ value: table.id, label: table.name }))}
@@ -294,9 +299,9 @@ export function DashboardExperienceShell({ embedded }: { embedded?: boolean }) {
               }}
             />
             <Select
-              aria-label="筛选字段"
+              aria-label={dashboardT("filters.fieldAria")}
               value={filterFieldId}
-              placeholder="字段"
+              placeholder={dashboardT("filters.field")}
               loading={fieldsLoading}
               disabled={!filterTableId}
               showSearch
@@ -313,7 +318,7 @@ export function DashboardExperienceShell({ embedded }: { embedded?: boolean }) {
               }}
             />
             <Select
-              aria-label="筛选操作符"
+              aria-label={dashboardT("filters.operatorAria")}
               value={filterOperator}
               disabled={!filterFieldId}
               options={operatorsForField(selectedField)}
@@ -326,14 +331,14 @@ export function DashboardExperienceShell({ embedded }: { embedded?: boolean }) {
               {filterValueInput(selectedField, filterOperator, filterValue, setFilterValue)}
             </div>
             <Button type="primary" onClick={addFilter} disabled={!filterFieldId}>
-              应用
+              {dashboardT("filters.apply")}
             </Button>
             <Button
               icon={<ReloadOutlined />}
               disabled={!runtimeFilters.length}
               onClick={() => setRuntimeFilters([])}
             >
-              重置
+              {dashboardT("filters.reset")}
             </Button>
           </div>
           {runtimeFilters.length ? (
@@ -348,7 +353,7 @@ export function DashboardExperienceShell({ embedded }: { embedded?: boolean }) {
                     )
                   }
                 >
-                  {filter.tableName} · {filter.fieldName} · {filter.operator} · {formatFilterValue(filter.value)}
+                  {filter.tableName} · {filter.fieldName} · {dashboardOperatorLabel(filter.operator)} · {formatFilterValue(filter.value)}
                 </Tag>
               ))}
             </div>
@@ -358,7 +363,7 @@ export function DashboardExperienceShell({ embedded }: { embedded?: boolean }) {
               type="warning"
               showIcon
               className="qtable-dashboard-share-risk"
-              message="公开分享不会暴露内部查询配置；公开组件数据仍按发布者当前可见权限计算。"
+              message={dashboardT("filters.publicWarning")}
             />
           ) : null}
         </section>

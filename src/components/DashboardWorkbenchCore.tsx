@@ -35,6 +35,7 @@ import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { useAuthStore } from "../store/authStore";
 import { t } from "../lib/i18nRuntime";
+import { useLanguage } from "../lib/useLanguage";
 import {
   DELETE_DASHBOARD_WIDGET,
   ENSURE_DASHBOARD_PUBLIC_TOKEN,
@@ -77,6 +78,11 @@ import type {
 } from "./Dashboard";
 
 import { WidgetDataSubscriber, DashboardWidgetCard } from "./Dashboard";
+import { dashboardOperatorLabel, dashboardT } from "./Dashboard/dashboardI18n";
+import {
+  dashboardPaletteLabel,
+  dashboardWorkbenchExtraT,
+} from "./Dashboard/dashboardWorkbenchExtraI18n";
 import { AiVisualDesignerModal } from "./AiVisualDesigner/AiVisualDesignerModal";
 
 const { Title, Text } = Typography;
@@ -125,45 +131,46 @@ function safeFilename(value: string) {
 function filterOperatorOptions(field?: DashboardField) {
   if (!field) {
     return [
-      { value: "eq", label: "等于" },
-      { value: "neq", label: "不等于" },
+      { value: "eq", label: dashboardOperatorLabel("eq") },
+      { value: "neq", label: dashboardOperatorLabel("neq") },
     ];
   }
   if (NUMERIC_FIELD_TYPES.has(field.type)) {
     return [
-      { value: "eq", label: "等于" },
-      { value: "neq", label: "不等于" },
-      { value: "gt", label: "大于" },
-      { value: "gte", label: "大于等于" },
-      { value: "lt", label: "小于" },
-      { value: "lte", label: "小于等于" },
-      { value: "in", label: "属于多个值" },
+      { value: "eq", label: dashboardOperatorLabel("eq") },
+      { value: "neq", label: dashboardOperatorLabel("neq") },
+      { value: "gt", label: dashboardOperatorLabel("gt") },
+      { value: "gte", label: dashboardOperatorLabel("gte") },
+      { value: "lt", label: dashboardOperatorLabel("lt") },
+      { value: "lte", label: dashboardOperatorLabel("lte") },
+      { value: "in", label: dashboardOperatorLabel("in") },
     ];
   }
   if (field.type === "date") {
     return [
-      { value: "eq", label: "等于" },
-      { value: "neq", label: "不等于" },
-      { value: "before", label: "早于" },
-      { value: "after", label: "晚于" },
+      { value: "eq", label: dashboardOperatorLabel("eq") },
+      { value: "neq", label: dashboardOperatorLabel("neq") },
+      { value: "before", label: dashboardOperatorLabel("before") },
+      { value: "after", label: dashboardOperatorLabel("after") },
     ];
   }
   if (field.type === "text" || field.type === "url" || field.type === "email") {
     return [
-      { value: "eq", label: "等于" },
-      { value: "neq", label: "不等于" },
-      { value: "contains", label: "包含" },
-      { value: "in", label: "属于多个值" },
+      { value: "eq", label: dashboardOperatorLabel("eq") },
+      { value: "neq", label: dashboardOperatorLabel("neq") },
+      { value: "contains", label: dashboardOperatorLabel("contains") },
+      { value: "in", label: dashboardOperatorLabel("in") },
     ];
   }
   return [
-    { value: "eq", label: "等于" },
-    { value: "neq", label: "不等于" },
-    { value: "in", label: "属于多个值" },
+    { value: "eq", label: dashboardOperatorLabel("eq") },
+    { value: "neq", label: dashboardOperatorLabel("neq") },
+    { value: "in", label: dashboardOperatorLabel("in") },
   ];
 }
 
 export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
+  useLanguage();
   const { dashboardId: routeDashboardId, tableId } = useParams();
   const dashboardId = routeDashboardId || tableId;
   const apollo = useApolloClient();
@@ -241,7 +248,7 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
             minute: "2-digit",
             second: "2-digit",
           })
-        : "等待数据刷新",
+        : dashboardT("workbench.waitingRefresh"),
     [lastRefreshAt],
   );
 
@@ -383,40 +390,40 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
     {
       key: "comparison",
       type: "group",
-      label: "比较",
+      label: dashboardT("workbench.group.comparison"),
       children: [
-        { key: "bar", icon: <AppstoreAddOutlined />, label: "柱状图" },
+        { key: "bar", icon: <AppstoreAddOutlined />, label: dashboardT("workbench.type.bar") },
         {
           key: "horizontalBar",
           icon: <AppstoreAddOutlined />,
-          label: "条形图",
+          label: dashboardT("workbench.type.horizontalBar"),
         },
-        { key: "table", icon: <AppstoreAddOutlined />, label: "统计表" },
+        { key: "table", icon: <AppstoreAddOutlined />, label: dashboardT("workbench.type.table") },
       ],
     },
     {
       key: "trend",
       type: "group",
-      label: "趋势",
+      label: dashboardT("workbench.group.trend"),
       children: [
-        { key: "line", icon: <AppstoreAddOutlined />, label: "折线图" },
+        { key: "line", icon: <AppstoreAddOutlined />, label: dashboardT("workbench.type.line") },
       ],
     },
     {
       key: "composition",
       type: "group",
-      label: "构成",
+      label: dashboardT("workbench.group.composition"),
       children: [
-        { key: "pie", icon: <AppstoreAddOutlined />, label: "饼图" },
+        { key: "pie", icon: <AppstoreAddOutlined />, label: dashboardT("workbench.type.pie") },
       ],
     },
     {
       key: "indicator",
       type: "group",
-      label: "指标",
+      label: dashboardT("workbench.group.indicator"),
       children: [
-        { key: "metric", icon: <AppstoreAddOutlined />, label: "指标卡" },
-        { key: "progress", icon: <AppstoreAddOutlined />, label: "进度条" },
+        { key: "metric", icon: <AppstoreAddOutlined />, label: dashboardT("workbench.type.metric") },
+        { key: "progress", icon: <AppstoreAddOutlined />, label: dashboardT("workbench.type.progress") },
       ],
     },
   ];
@@ -426,8 +433,8 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
     if (!canEditWidgets) {
       message.error(
         dashboard?.isPublic
-          ? "公开仪表盘仅管理员可以修改组件"
-          : "没有编辑权限",
+          ? dashboardT("workbench.publicAdminOnly")
+          : dashboardT("workbench.noEditPermission"),
       );
       return;
     }
@@ -451,7 +458,7 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
         setConfigOpen(true);
       }
     } catch (error) {
-      message.error(getErrorMessage(error, "创建组件失败"));
+      message.error(getErrorMessage(error, dashboardT("workbench.createFailed")));
     }
   };
 
@@ -467,7 +474,9 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
             dashboardId,
             widget: {
               type: source.type,
-              title: `${source.title || "未命名组件"} 副本`,
+              title: dashboardT("workbench.copySuffix", {
+                title: source.title || dashboardT("widget.unnamed"),
+              }),
               colorScheme: source.colorScheme,
               layout: {
                 ...layout,
@@ -490,9 +499,9 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
           setSelectedWidgetId(created.id);
           setConfigOpen(true);
         }
-        message.success("组件已复制");
+        message.success(dashboardT("workbench.copied"));
       } catch (error) {
-        message.error(getErrorMessage(error, "复制组件失败"));
+        message.error(getErrorMessage(error, dashboardT("workbench.copyFailed")));
       }
     },
     [
@@ -511,13 +520,13 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
       const blob = await res.blob();
       const widget = dashboard?.widgets?.find((item) => item.id === id);
       downloadBlob(
-        `${safeFilename(dashboard?.name || "仪表盘")}-${safeFilename(
-          widget?.title || "组件",
+        `${safeFilename(dashboard?.name || dashboardT("workbench.dashboardFilename"))}-${safeFilename(
+          widget?.title || dashboardT("workbench.widgetFilename"),
         )}.png`,
         blob,
       );
     } catch {
-      message.error("导出图片失败");
+      message.error(dashboardT("workbench.exportImageFailed"));
     }
   }, [dashboard?.name, dashboard?.widgets]);
 
@@ -532,13 +541,13 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
         const rows = (res.data?.dashboardWidgetData?.rows ?? []) as Record<string, unknown>[];
         const widget = dashboard?.widgets?.find((item) => item.id === id);
         exportRowsToXlsx(
-          `${safeFilename(dashboard?.name || "仪表盘")}-${safeFilename(
-            widget?.title || "组件",
+          `${safeFilename(dashboard?.name || dashboardT("workbench.dashboardFilename"))}-${safeFilename(
+            widget?.title || dashboardT("workbench.widgetFilename"),
           )}.xlsx`,
           rows,
         );
       } catch {
-        message.error("导出 Excel 失败");
+        message.error(dashboardT("workbench.exportExcelFailed"));
       }
     },
     [apollo, dashboard?.name, dashboard?.widgets, dashboardId],
@@ -552,7 +561,7 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
   const handleCopyShareLink = async () => {
     if (!dashboardId) return;
     if (!dashboard?.isPublic) {
-      message.warning("请先开启公开访问，再复制链接");
+      message.warning(dashboardT("workbench.enablePublicFirst"));
       return;
     }
     try {
@@ -562,14 +571,14 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
       ).data?.ensureDashboardPublicToken;
       const token = publicToken || dashboard?.publicToken || "";
       if (!token) {
-        message.error("生成公开链接失败");
+        message.error(dashboardT("workbench.publicLinkFailed"));
         return;
       }
       const url = `${window.location.origin}/share/dashboard/${token}`;
       await navigator.clipboard.writeText(url);
-      message.success("链接已复制");
+      message.success(dashboardT("workbench.linkCopied"));
     } catch {
-      message.error("复制链接失败");
+      message.error(dashboardT("workbench.linkCopyFailed"));
     }
   };
 
@@ -583,7 +592,7 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
       await refetch();
       return true;
     } catch (error) {
-      message.error(getErrorMessage(error, "更新失败"));
+      message.error(getErrorMessage(error, dashboardT("workbench.updateFailed")));
       return false;
     } finally {
       setShareSaving(false);
@@ -599,13 +608,17 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
     const ok = await applyMetaUpdates({
       description: shareDescription.trim(),
     });
-    if (ok) message.success("描述已保存");
+    if (ok) message.success(dashboardT("workbench.descriptionSaved"));
   };
 
   const handleTogglePublic = async (checked: boolean) => {
     const ok = await applyMetaUpdates({ isPublic: checked });
     if (ok) {
-      message.success(checked ? "公开访问已开启" : "公开访问已关闭");
+      message.success(
+        checked
+          ? dashboardT("workbench.publicEnabled")
+          : dashboardT("workbench.publicDisabled"),
+      );
     }
   };
 
@@ -753,10 +766,10 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
       await saveWidget({ variables: { widgetId: selectedWidget.id, updates } });
       await refetch();
       bumpRefresh();
-      message.success("已保存");
+      message.success(dashboardT("workbench.saved"));
       setConfigOpen(false);
     } catch (error) {
-      message.error(getErrorMessage(error, "保存失败"));
+      message.error(getErrorMessage(error, dashboardT("workbench.saveFailed")));
     }
   };
 
@@ -775,7 +788,7 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
           setConfigOpen(false);
           await refetch();
         } catch {
-          message.error("删除失败");
+          message.error(dashboardT("workbench.deleteFailed"));
         }
       },
     });
@@ -792,17 +805,17 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
   if (error) {
     return (
       <div style={{ padding: 24 }}>
-        <Text type="danger">加载失败</Text>
+        <Text type="danger">{dashboardT("workbench.loadFailed")}</Text>
       </div>
     );
   }
 
   if (loading || !dashboard) {
-    if (embedded) return <div style={{ padding: 24 }}>正在加载...</div>;
+    if (embedded) return <div style={{ padding: 24 }}>{dashboardT("workbench.loading")}</div>;
     return (
       <div style={{ height: "100vh", display: "flex" }}>
         <div style={{ padding: 24, color: "var(--qtable-color-text-secondary)" }}>
-          正在加载...
+          {dashboardT("workbench.loading")}
         </div>
       </div>
     );
@@ -836,7 +849,7 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
                 {dashboard.name}
               </Title>
               <Text style={{ fontSize: 12, color: "#6B7280" }} ellipsis>
-                {dashboard.description?.trim() ? dashboard.description : "未添加描述"}
+                {dashboard.description?.trim() ? dashboard.description : dashboardT("workbench.noDescription")}
               </Text>
             </div>
             <div style={{ flex: 1 }} />
@@ -844,23 +857,23 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
               <Alert
                 type="info"
                 showIcon
-                message="公开仪表盘仅管理员可修改组件"
+                message={dashboardT("workbench.publicAdminOnly")}
                 style={{ padding: "4px 10px" }}
               />
             ) : null}
             <Text style={{ fontSize: 11, color: "#98A2B3" }}>
-              最近刷新：{lastRefreshLabel}
+              {dashboardT("workbench.lastRefresh", { time: lastRefreshLabel })}
             </Text>
             <Space>
               <Button icon={<ReloadOutlined />} onClick={bumpRefresh}>
-                刷新
+                {dashboardT("workbench.refresh")}
               </Button>
               <Button
                 icon={<RobotOutlined />}
                 onClick={() => setAiVisualDesignerOpen(true)}
                 disabled={!canEditWidgets}
               >
-                AI 设计
+                {dashboardT("workbench.aiDesign")}
               </Button>
               <Dropdown menu={addMenu} trigger={["click"]}>
                 <Button
@@ -868,7 +881,7 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
                   icon={<PlusOutlined />}
                   disabled={!canEditWidgets}
                 >
-                  添加组件
+                  {dashboardT("workbench.addWidget")}
                 </Button>
               </Dropdown>
               <Button
@@ -876,91 +889,91 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
                 onClick={() => setShareOpen(true)}
                 disabled={!canManage}
               >
-                分享
+                {dashboardT("workbench.share")}
               </Button>
             </Space>
           </div>
 
           <div style={{ flex: 1, overflow: "auto", background: "#F9FAFB" }}>
             <div style={{ padding: 16 }} onMouseDown={handleCanvasMouseDown}>
-{(dashboard.widgets || []).length === 0 ? (
-              <div
-                style={{
-                  minHeight: 420,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Empty
-                  description={
-                    canEditWidgets
-                      ? "还没有组件，添加第一个指标或图表"
-                      : "当前仪表盘暂无组件"
-                  }
+              {(dashboard.widgets || []).length === 0 ? (
+                <div
+                  style={{
+                    minHeight: 420,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
                 >
-                  {canEditWidgets ? (
-                    <Dropdown menu={addMenu} trigger={["click"]}>
-                      <Button type="primary" icon={<PlusOutlined />}>
-                        添加组件
-                      </Button>
-                    </Dropdown>
-                  ) : null}
-                </Empty>
-              </div>
-            ) : (
-              <ResponsiveGridLayout
-                className="dashboard-workbench-grid"
-                layouts={layouts}
-                breakpoints={GRID_BREAKPOINTS}
-                cols={GRID_COLS}
-                rowHeight={GRID_ROW_HEIGHT}
-                margin={[12, 12]}
-                containerPadding={[0, 0]}
-                isDraggable={canEditWidgets}
-                isResizable={canEditWidgets}
-                draggableHandle=".dashboard-widget-drag-handle"
-                draggableCancel=".dashboard-widget-drag-cancel"
-                compactType="vertical"
-                preventCollision={false}
-                onBreakpointChange={(_breakpoint: string, cols: number) => setActiveCols(cols)}
-                onDragStop={(layout: Layout[]) => commitGridLayout(layout)}
-                onResizeStop={(layout: Layout[]) => commitGridLayout(layout)}
-              >
-                {(dashboard.widgets || []).map((w) => (
-                  <div
-                    key={w.id}
-                    className={
-                      w.id === selectedWidgetId
-                        ? "dashboard-workbench-item is-selected"
-                        : "dashboard-workbench-item"
+                  <Empty
+                    description={
+                      canEditWidgets
+                        ? dashboardT("workbench.emptyEditable")
+                        : dashboardT("workbench.emptyReadonly")
                     }
                   >
-                    <DashboardWidgetCard
-                      widget={w}
-                      dashboardId={dashboardId || undefined}
-                      canEdit={canEditWidgets}
-                      refreshSignal={refreshSignal}
-                      selected={w.id === selectedWidgetId}
-                      onSelect={(id) => {
-                        setSelectedWidgetId(id);
-                        setConfigOpen(false);
-                      }}
-                      onOpenConfig={openWidgetConfig}
-                      onExportExcel={handleExportExcel}
-                      onExportImage={handleExportImage}
-                      onFullscreen={handleFullscreen}
-                      onDuplicate={handleDuplicateWidget}
-                    />
-                  </div>
-                ))}
-              </ResponsiveGridLayout>
-            )}
+                    {canEditWidgets ? (
+                      <Dropdown menu={addMenu} trigger={["click"]}>
+                        <Button type="primary" icon={<PlusOutlined />}>
+                          {dashboardT("workbench.addWidget")}
+                        </Button>
+                      </Dropdown>
+                    ) : null}
+                  </Empty>
+                </div>
+              ) : (
+                <ResponsiveGridLayout
+                  className="dashboard-workbench-grid"
+                  layouts={layouts}
+                  breakpoints={GRID_BREAKPOINTS}
+                  cols={GRID_COLS}
+                  rowHeight={GRID_ROW_HEIGHT}
+                  margin={[12, 12]}
+                  containerPadding={[0, 0]}
+                  isDraggable={canEditWidgets}
+                  isResizable={canEditWidgets}
+                  draggableHandle=".dashboard-widget-drag-handle"
+                  draggableCancel=".dashboard-widget-drag-cancel"
+                  compactType="vertical"
+                  preventCollision={false}
+                  onBreakpointChange={(_breakpoint: string, cols: number) => setActiveCols(cols)}
+                  onDragStop={(layout: Layout[]) => commitGridLayout(layout)}
+                  onResizeStop={(layout: Layout[]) => commitGridLayout(layout)}
+                >
+                  {(dashboard.widgets || []).map((w) => (
+                    <div
+                      key={w.id}
+                      className={
+                        w.id === selectedWidgetId
+                          ? "dashboard-workbench-item is-selected"
+                          : "dashboard-workbench-item"
+                      }
+                    >
+                      <DashboardWidgetCard
+                        widget={w}
+                        dashboardId={dashboardId || undefined}
+                        canEdit={canEditWidgets}
+                        refreshSignal={refreshSignal}
+                        selected={w.id === selectedWidgetId}
+                        onSelect={(id) => {
+                          setSelectedWidgetId(id);
+                          setConfigOpen(false);
+                        }}
+                        onOpenConfig={openWidgetConfig}
+                        onExportExcel={handleExportExcel}
+                        onExportImage={handleExportImage}
+                        onFullscreen={handleFullscreen}
+                        onDuplicate={handleDuplicateWidget}
+                      />
+                    </div>
+                  ))}
+                </ResponsiveGridLayout>
+              )}
             </div>
           </div>
 
           <Drawer
-            title="组件配置"
+            title={dashboardT("workbench.configTitle")}
             open={configOpen && Boolean(selectedWidget)}
             onClose={() => setConfigOpen(false)}
             width={420}
@@ -968,7 +981,7 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
             extra={
               <Space>
                 <Button danger onClick={removeWidget} disabled={!canEditWidgets}>
-                  删除
+                  {dashboardT("workbench.delete")}
                 </Button>
                 <Button
                   type="primary"
@@ -976,17 +989,17 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
                   disabled={!canEditWidgets}
                   loading={saveWidgetLoading}
                 >
-                  保存
+                  {dashboardT("workbench.save")}
                 </Button>
               </Space>
             }
           >
             {!selectedWidget ? null : (
               <Form form={form} layout="vertical">
-                <Form.Item name="title" label="标题">
-                  <Input placeholder="输入组件标题" />
+                <Form.Item name="title" label={dashboardT("workbench.title")}>
+                  <Input placeholder={dashboardT("workbench.titlePlaceholder")} />
                 </Form.Item>
-                <Form.Item name="type" label="类型" rules={[{ required: true }]}>
+                <Form.Item name="type" label={dashboardT("workbench.type")} rules={[{ required: true }]}>
                   <Select
                     onChange={(nextType) => {
                       if (!DIMENSION_WIDGET_TYPES.has(nextType)) {
@@ -996,41 +1009,44 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
                     }}
                     options={[
                       {
-                        label: "比较",
+                        label: dashboardT("workbench.group.comparison"),
                         options: [
-                          { value: "bar", label: "柱状图" },
-                          { value: "horizontalBar", label: "条形图" },
-                          { value: "table", label: "统计表" },
+                          { value: "bar", label: dashboardT("workbench.type.bar") },
+                          { value: "horizontalBar", label: dashboardT("workbench.type.horizontalBar") },
+                          { value: "table", label: dashboardT("workbench.type.table") },
                         ],
                       },
                       {
-                        label: "趋势",
-                        options: [{ value: "line", label: "折线图" }],
+                        label: dashboardT("workbench.group.trend"),
+                        options: [{ value: "line", label: dashboardT("workbench.type.line") }],
                       },
                       {
-                        label: "构成",
-                        options: [{ value: "pie", label: "饼图" }],
+                        label: dashboardT("workbench.group.composition"),
+                        options: [{ value: "pie", label: dashboardT("workbench.type.pie") }],
                       },
                       {
-                        label: "指标",
+                        label: dashboardT("workbench.group.indicator"),
                         options: [
-                          { value: "metric", label: "指标卡" },
-                          { value: "progress", label: "进度条" },
+                          { value: "metric", label: dashboardT("workbench.type.metric") },
+                          { value: "progress", label: dashboardT("workbench.type.progress") },
                         ],
                       },
                     ]}
                   />
                 </Form.Item>
-                <Form.Item name="paletteId" label="配色方案" initialValue="default">
+                <Form.Item name="paletteId" label={dashboardT("workbench.palette")} initialValue="default">
                   <Select
-                    options={PALETTES.map((p) => ({ value: p.id, label: p.name }))}
+                    options={PALETTES.map((p) => ({
+                      value: p.id,
+                      label: dashboardPaletteLabel(p.id, p.name),
+                    }))}
                   />
                 </Form.Item>
                 <Divider />
                 <Form.Item
                   name="tableId"
-                  label="数据表"
-                  rules={[{ required: true, message: "请选择数据表" }]}
+                  label={dashboardT("workbench.table")}
+                  rules={[{ required: true, message: dashboardT("workbench.selectTableRequired") }]}
                 >
                   <Select
                     showSearch
@@ -1043,25 +1059,25 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
                       });
                     }}
                     optionFilterProp="label"
-                    placeholder="选择数据表"
+                    placeholder={dashboardT("workbench.selectTable")}
                     options={tables.map((t) => ({ value: t.id, label: t.name }))}
                   />
                 </Form.Item>
                 {needsDimension ? (
                   <Form.Item
                     name="dimensionFieldId"
-                    label="维度字段"
+                    label={dashboardT("workbench.dimensionField")}
                     rules={[
                       {
                         required: true,
-                        message: "当前图表类型需要选择维度字段",
+                        message: dashboardT("workbench.dimensionRequired"),
                       },
                     ]}
                   >
                     <Select
                       showSearch
                       optionFilterProp="label"
-                      placeholder="选择用于分组/分类的字段"
+                      placeholder={dashboardT("workbench.dimensionPlaceholder")}
                       options={fieldOptions}
                     />
                   </Form.Item>
@@ -1069,18 +1085,18 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
                   <Alert
                     type="info"
                     showIcon
-                    message="指标类组件直接展示聚合结果，不需要维度字段"
+                    message={dashboardT("workbench.noDimensionNeeded")}
                     style={{ marginBottom: 16 }}
                   />
                 )}
-                <Form.Item name="metricAggregation" label="聚合规则" initialValue="count">
+                <Form.Item name="metricAggregation" label={dashboardT("workbench.aggregation")} initialValue="count">
                   <Select
                     options={[
-                      { value: "count", label: "计数" },
-                      { value: "sum", label: "求和" },
-                      { value: "avg", label: "平均值" },
-                      { value: "max", label: "最大值" },
-                      { value: "min", label: "最小值" },
+                      { value: "count", label: dashboardT("aggregation.count") },
+                      { value: "sum", label: dashboardT("aggregation.sum") },
+                      { value: "avg", label: dashboardT("aggregation.avg") },
+                      { value: "max", label: dashboardT("aggregation.max") },
+                      { value: "min", label: dashboardT("aggregation.min") },
                     ]}
                   />
                 </Form.Item>
@@ -1088,26 +1104,26 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
                   <Alert
                     type="success"
                     showIcon
-                    message="计数会统计符合条件的记录数，无需选择数值字段"
+                    message={dashboardT("workbench.countHelp")}
                     style={{ marginBottom: 16 }}
                   />
                 ) : (
                   <Form.Item
                     name="metricFieldId"
-                    label="数值字段"
+                    label={dashboardT("workbench.metricField")}
                     rules={[
                       {
                         required: true,
-                        message: "当前聚合规则需要选择数值字段",
+                        message: dashboardT("workbench.metricFieldRequired"),
                       },
                     ]}
                   >
                     <Select
                       showSearch
                       optionFilterProp="label"
-                      placeholder="仅显示可数值聚合的字段"
+                      placeholder={dashboardT("workbench.metricFieldPlaceholder")}
                       options={numericFieldOptions}
-                      notFoundContent="当前数据表没有可聚合的数值字段"
+                      notFoundContent={dashboardT("workbench.noNumericFields")}
                     />
                   </Form.Item>
                 )}
@@ -1116,14 +1132,14 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
                   {(items, { add, remove }) => (
                     <Space direction="vertical" style={{ width: "100%" }} size={8}>
                       <div style={{ display: "flex", alignItems: "center" }}>
-                        <Text style={{ fontWeight: 700 }}>筛选条件</Text>
+                        <Text style={{ fontWeight: 700 }}>{dashboardT("workbench.filterConditions")}</Text>
                         <div style={{ flex: 1 }} />
                         <Button
                           size="small"
                           type="dashed"
                           onClick={() => add({ operator: "eq", value: "" })}
                         >
-                          添加
+                          {dashboardT("workbench.add")}
                         </Button>
                       </div>
                       {items.map((field) => {
@@ -1162,7 +1178,7 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
                               style={{ flex: 1, marginBottom: 0 }}
                             >
                               <Select
-                                placeholder="字段"
+                                placeholder={dashboardT("workbench.field")}
                                 options={fieldOptions}
                                 style={{ minWidth: 130 }}
                                 onChange={() => {
@@ -1206,7 +1222,7 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
                                       : undefined
                                   }
                                   allowClear
-                                  placeholder="选择值"
+                                  placeholder={dashboardWorkbenchExtraT("filter.selectValue")}
                                   options={selectOptions}
                                   style={{ minWidth: 130 }}
                                 />
@@ -1224,8 +1240,8 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
                                   }
                                   placeholder={
                                     operator === "in"
-                                      ? "多个值用逗号分隔"
-                                      : "输入筛选值"
+                                      ? dashboardT("filters.multiValue")
+                                      : dashboardT("filters.value")
                                   }
                                 />
                               )}
@@ -1235,7 +1251,7 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
                               type="text"
                               onClick={() => remove(field.name)}
                             >
-                              删除
+                              {dashboardT("workbench.delete")}
                             </Button>
                           </Space>
                         );
@@ -1245,41 +1261,45 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
                 </Form.List>
                 <Divider />
                 <Space style={{ width: "100%" }} size={12}>
-                  <Form.Item name="sortBy" label="排序" style={{ flex: 1 }}>
+                  <Form.Item name="sortBy" label={dashboardWorkbenchExtraT("sort.label")} style={{ flex: 1 }}>
                     <Select
                       options={[
-                        { value: "value", label: "按值" },
+                        { value: "value", label: dashboardWorkbenchExtraT("sort.value") },
                         ...(needsDimension
-                          ? [{ value: "dimension", label: "按维度" }]
+                          ? [{ value: "dimension", label: dashboardWorkbenchExtraT("sort.dimension") }]
                           : []),
                       ]}
                     />
                   </Form.Item>
-                  <Form.Item name="sortOrder" label="顺序" style={{ flex: 1 }}>
+                  <Form.Item name="sortOrder" label={dashboardWorkbenchExtraT("sort.order")} style={{ flex: 1 }}>
                     <Select
                       options={[
-                        { value: "desc", label: "降序" },
-                        { value: "asc", label: "升序" },
+                        { value: "desc", label: dashboardWorkbenchExtraT("sort.desc") },
+                        { value: "asc", label: dashboardWorkbenchExtraT("sort.asc") },
                       ]}
                     />
                   </Form.Item>
                 </Space>
-                <Form.Item name="limit" label="展示条数">
+                <Form.Item name="limit" label={dashboardWorkbenchExtraT("limit.label")}>
                   <Input type="number" min={1} max={1000} />
                 </Form.Item>
                 {selectedWidgetType === "progress" ? (
                   <Form.Item
                     name="targetValue"
-                    label="目标值"
-                    tooltip="进度 = 当前聚合值 / 目标值"
+                    label={dashboardWorkbenchExtraT("target.label")}
+                    tooltip={dashboardWorkbenchExtraT("target.tooltip")}
                     rules={[
                       {
                         required: true,
-                        message: "请设置大于 0 的目标值",
+                        message: dashboardWorkbenchExtraT("target.required"),
                       },
                     ]}
                   >
-                    <Input type="number" min={0.000001} placeholder="输入目标值" />
+                    <Input
+                      type="number"
+                      min={0.000001}
+                      placeholder={dashboardWorkbenchExtraT("target.placeholder")}
+                    />
                   </Form.Item>
                 ) : null}
               </Form>
@@ -1287,7 +1307,7 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
           </Drawer>
 
           <Modal
-            title="分享与公开访问"
+            title={dashboardWorkbenchExtraT("share.title")}
             open={shareOpen}
             onCancel={() => setShareOpen(false)}
             footer={null}
@@ -1295,7 +1315,9 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
           >
             <Space direction="vertical" style={{ width: "100%" }} size={12}>
               <div>
-                <div style={{ fontSize: 12, color: "#6B7280", marginBottom: 6 }}>描述</div>
+                <div style={{ fontSize: 12, color: "#6B7280", marginBottom: 6 }}>
+                  {dashboardWorkbenchExtraT("share.description")}
+                </div>
                 <Input.TextArea
                   value={shareDescription}
                   onChange={(event) =>
@@ -1319,7 +1341,7 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
                     loading={shareSaving}
                     disabled={!canManage}
                   >
-                    保存描述
+                    {dashboardWorkbenchExtraT("share.saveDescription")}
                   </Button>
                 </div>
               </div>
@@ -1333,13 +1355,17 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
                 />
                 <div style={{ flex: 1 }}>
                   <Space size={6}>
-                    <div style={{ fontWeight: 600 }}>公开访问</div>
+                    <div style={{ fontWeight: 600 }}>
+                      {dashboardWorkbenchExtraT("share.publicAccess")}
+                    </div>
                     <Tag color={dashboard.isPublic ? "green" : "default"}>
-                      {dashboard.isPublic ? "已公开" : "未公开"}
+                      {dashboard.isPublic
+                        ? dashboardWorkbenchExtraT("share.public")
+                        : dashboardWorkbenchExtraT("share.private")}
                     </Tag>
                   </Space>
                   <div style={{ fontSize: 12, color: "#6B7280" }}>
-                    开启后可通过链接访问
+                    {dashboardWorkbenchExtraT("share.hint")}
                   </div>
                 </div>
                 <Button
@@ -1347,14 +1373,14 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
                   onClick={handleCopyShareLink}
                   disabled={!canManage || !dashboard.isPublic || shareSaving}
                 >
-                  复制链接
+                  {dashboardWorkbenchExtraT("share.copyLink")}
                 </Button>
               </div>
             </Space>
           </Modal>
 
           <Modal
-            title="全屏查看"
+            title={dashboardWorkbenchExtraT("fullscreen.title")}
             open={fullscreenOpen}
             onCancel={() => setFullscreenOpen(false)}
             footer={null}
@@ -1389,7 +1415,7 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
         dashboardId={dashboardId || null}
         defaultTargetType="dashboard"
         lockTargetType
-        initialPrompt="优化当前仪表盘，让项目风险、进展和负责人负载更容易理解"
+        initialPrompt={dashboardWorkbenchExtraT("ai.defaultPrompt")}
         onClose={() => setAiVisualDesignerOpen(false)}
         onApplied={async () => {
           await refetch();

@@ -15,6 +15,7 @@ import { useMutation } from "@apollo/client/react";
 import { LeftOutlined } from "@ant-design/icons";
 import { LEAVE_WORKSPACE } from "../lib/graphql";
 import { INVITE_USER_TO_WORKSPACE_SAFE } from "../lib/workspaceInviteGraphql";
+import { useLanguage } from "../lib/useLanguage";
 import { useAuthStore } from "../store/authStore";
 import {
   useWorkspaceAccess,
@@ -22,14 +23,16 @@ import {
 } from "../hooks/useWorkspaceAccess";
 import { copyTextToClipboard } from "./SmartTable/utils/clipboard";
 import { t } from "../lib/i18nRuntime";
+import { workspaceMembersT } from "./workspaceMembersI18n";
 
-const roleLabels: Record<string, string> = {
-  owner: "Owner",
-  editor: "Editor",
-  viewer: "Viewer",
-};
+const roleLabels = () => ({
+  owner: workspaceMembersT("roleOwner"),
+  editor: workspaceMembersT("roleEditor"),
+  viewer: workspaceMembersT("roleViewer"),
+});
 
 export function WorkspaceMembersPage() {
+  useLanguage();
   const navigate = useNavigate();
   const params = useParams();
   const workspaceId = params.id || params.workspaceId;
@@ -64,7 +67,7 @@ export function WorkspaceMembersPage() {
   }, [error, accessDenied]);
 
   const title = useMemo(
-    () => `工作区成员 (${members.length})`,
+    () => workspaceMembersT("title", { count: members.length }),
     [members.length],
   );
   const currentRole = members.find(
@@ -82,13 +85,13 @@ export function WorkspaceMembersPage() {
           role: inviteRole,
         },
       });
-      message.success("邀请已发送");
+      message.success(workspaceMembersT("inviteSent"));
       setInviteOpen(false);
       setInviteEmail("");
       setInviteRole("viewer");
       await refetch();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "邀请失败";
+      const errorMessage = err instanceof Error ? err.message : workspaceMembersT("inviteFailed");
       message.error(errorMessage);
     }
   };
@@ -114,11 +117,13 @@ export function WorkspaceMembersPage() {
     const link = `${window.location.origin}/workspace/${workspaceId}`;
     const result = await copyTextToClipboard(link);
     if (result.ok) {
-      message.success("分享链接已复制");
+      message.success(workspaceMembersT("shareCopied"));
       return;
     }
     message.error(result.error);
   };
+
+  const labels = roleLabels();
 
   return (
     <div style={{ padding: "24px 32px" }}>
@@ -135,20 +140,20 @@ export function WorkspaceMembersPage() {
             </Typography.Title>
           </Space>
           <Typography.Text type="secondary">
-            管理成员角色与协作权限
+            {workspaceMembersT("subtitle")}
           </Typography.Text>
         </div>
         <Space>
-          <Button onClick={handleShare}>分享空间</Button>
+          <Button onClick={handleShare}>{workspaceMembersT("share")}</Button>
           <Button
             onClick={() => setInviteOpen(true)}
             type="primary"
             disabled={!isOwner}
           >
-            邀请成员
+            {workspaceMembersT("invite")}
           </Button>
           <Button danger onClick={confirmLeave}>
-            退出工作区
+            {workspaceMembersT("leaveWorkspace")}
           </Button>
         </Space>
       </Space>
@@ -167,11 +172,11 @@ export function WorkspaceMembersPage() {
                 actions={[
                   isSelf ? (
                     <Button danger type="link" onClick={confirmLeave}>
-                      退出
+                      {workspaceMembersT("leave")}
                     </Button>
                   ) : (
                     <Button type="link" disabled>
-                      无操作
+                      {workspaceMembersT("noAction")}
                     </Button>
                   ),
                 ]}
@@ -182,14 +187,14 @@ export function WorkspaceMembersPage() {
                     <Space>
                       <span>{displayName}</span>
                       {isSelf ? (
-                        <Typography.Text type="secondary">(我)</Typography.Text>
+                        <Typography.Text type="secondary">{workspaceMembersT("me")}</Typography.Text>
                       ) : null}
                     </Space>
                   }
                   description={member.email}
                 />
                 <Typography.Text>
-                  {roleLabels[roleKey] || roleKey}
+                  {labels[roleKey as keyof typeof labels] || roleKey}
                 </Typography.Text>
               </List.Item>
             );
@@ -198,7 +203,7 @@ export function WorkspaceMembersPage() {
       </div>
 
       <Modal
-        title="邀请成员"
+        title={workspaceMembersT("invite")}
         open={inviteOpen}
         onCancel={() => setInviteOpen(false)}
         onOk={handleInvite}
@@ -208,7 +213,7 @@ export function WorkspaceMembersPage() {
       >
         <Space direction="vertical" style={{ width: "100%" }}>
           <Input
-            placeholder="成员邮箱"
+            placeholder={workspaceMembersT("emailPlaceholder")}
             value={inviteEmail}
             onChange={(e) => setInviteEmail(e.target.value)}
           />
@@ -216,9 +221,9 @@ export function WorkspaceMembersPage() {
             value={inviteRole}
             onChange={(value) => setInviteRole(value)}
             options={[
-              { value: "viewer", label: "Viewer" },
-              { value: "editor", label: "Editor" },
-              { value: "owner", label: "Owner" },
+              { value: "viewer", label: labels.viewer },
+              { value: "editor", label: labels.editor },
+              { value: "owner", label: labels.owner },
             ]}
           />
         </Space>

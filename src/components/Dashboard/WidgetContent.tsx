@@ -1,8 +1,10 @@
 import { useMemo } from "react";
 import { VChart } from "@visactor/react-vchart";
 import { Tag } from "antd";
+import { useLanguage } from "../../lib/useLanguage";
 import type { DashboardWidget, WidgetDataPayload } from "./types";
 import { dashboardChartRenderRevision } from "./chartRenderModel";
+import { dashboardT } from "./dashboardI18n";
 import {
   buildChartSpec,
   formatDisplayNumber,
@@ -46,16 +48,15 @@ function formatDimension(value: unknown): string {
 
 function aggregationLabel(value?: string) {
   const labels: Record<string, string> = {
-    count: "计数",
-    sum: "求和",
-    avg: "平均值",
-    max: "最大值",
-    min: "最小值",
+    count: dashboardT("aggregation.count"),
+    sum: dashboardT("aggregation.sum"),
+    avg: dashboardT("aggregation.avg"),
+    max: dashboardT("aggregation.max"),
+    min: dashboardT("aggregation.min"),
   };
-  return labels[value || "count"] || String(value || "计数").toUpperCase();
+  return labels[value || "count"] || String(value || dashboardT("aggregation.count")).toUpperCase();
 }
 
-/** 小组件内容区域 —— 根据类型渲染图表/表格/指标卡/进度条。 */
 export function WidgetContent({
   widget,
   data,
@@ -63,6 +64,7 @@ export function WidgetContent({
   widget: DashboardWidget;
   data?: WidgetDataPayload;
 }) {
+  useLanguage();
   const rows = useMemo(() => data?.rows ?? [], [data?.rows]);
   const displayRows = useMemo(
     () =>
@@ -74,7 +76,7 @@ export function WidgetContent({
   );
   const hasMetricValue = rows.length > 0 && rows[0]?.value !== undefined;
   const valueOnly = toFiniteNumber(rows[0]?.value);
-  const title = widget.title?.trim() ? widget.title.trim() : "未命名组件";
+  const title = widget.title?.trim() ? widget.title.trim() : dashboardT("widget.unnamed");
   const palette = resolvePalette(widget.colorScheme);
   const primaryColor = palette?.[0] || "var(--qtable-color-primary)";
   const display = widget.config?.display;
@@ -103,7 +105,7 @@ export function WidgetContent({
     return (
       <div
         role="img"
-        aria-label={`${title}：${targetValue > 0 ? `${clampedPct}%` : "未配置目标值"}`}
+        aria-label={`${title}：${targetValue > 0 ? `${clampedPct}%` : dashboardT("content.noTarget")}`}
         style={{
           height: "100%",
           display: "flex",
@@ -124,7 +126,9 @@ export function WidgetContent({
           <strong style={{ fontSize: 34, color: "var(--qtable-color-text)", lineHeight: 1.1 }}>
             {targetValue > 0 ? `${clampedPct}%` : "—"}
           </strong>
-          <Tag color={complete ? "success" : "blue"}>{complete ? "已达成" : "进行中"}</Tag>
+          <Tag color={complete ? "success" : "blue"}>
+            {complete ? dashboardT("content.achieved") : dashboardT("content.inProgress")}
+          </Tag>
         </div>
         <div
           style={{
@@ -145,7 +149,13 @@ export function WidgetContent({
           />
         </div>
         <div style={{ color: "var(--qtable-color-text-secondary)", fontSize: "var(--qtable-font-size-label)" }}>
-          当前 {formatDisplayNumber(currentValue, display)} / 目标 {targetValue > 0 ? formatDisplayNumber(targetValue, display) : "未配置"}
+          {dashboardT("content.currentTarget", {
+            current: formatDisplayNumber(currentValue, display),
+            target:
+              targetValue > 0
+                ? formatDisplayNumber(targetValue, display)
+                : dashboardT("content.notConfigured"),
+          })}
         </div>
       </div>
     );
@@ -155,7 +165,7 @@ export function WidgetContent({
     return (
       <div
         role="status"
-        aria-label={`${title}：${hasMetricValue ? formatDisplayNumber(valueOnly, display) : "暂无数据"}`}
+        aria-label={`${title}：${hasMetricValue ? formatDisplayNumber(valueOnly, display) : dashboardT("content.noData")}`}
         style={{
           height: "100%",
           display: "flex",
@@ -182,7 +192,9 @@ export function WidgetContent({
               fontSize: "var(--qtable-font-size-label)",
             }}
           >
-            {aggregationLabel(data?.metric?.aggregation)} · 实时聚合
+            {dashboardT("content.realtimeAggregation", {
+              aggregation: aggregationLabel(data?.metric?.aggregation),
+            })}
           </div>
         </div>
         <Tag variant="filled">KPI</Tag>
@@ -200,13 +212,13 @@ export function WidgetContent({
             fontSize: "var(--qtable-font-size-micro)",
           }}
         >
-          当前结果 {displayRows.length} 行
+          {dashboardT("content.resultRows", { count: displayRows.length })}
         </div>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
           <thead>
             <tr>
               <th scope="col" style={{ textAlign: "left", borderBottom: "1px solid var(--qtable-color-border)", padding: "6px 4px" }}>
-                维度
+                {dashboardT("content.dimension")}
               </th>
               <th scope="col" style={{ textAlign: "right", borderBottom: "1px solid var(--qtable-color-border)", padding: "6px 4px" }}>
                 {aggregationLabel(data?.metric?.aggregation)}
@@ -243,7 +255,7 @@ export function WidgetContent({
   return (
     <div
       role="img"
-      aria-label={`${title} 图表，共 ${displayRows.length} 个数据点`}
+      aria-label={dashboardT("content.chartAria", { title, count: displayRows.length })}
       style={{ height: "100%", width: "100%" }}
     >
       <VChart
@@ -255,7 +267,6 @@ export function WidgetContent({
   );
 }
 
-/** 小组件内容区的加载骨架屏 */
 export function WidgetContentSkeleton({ type }: { type: string }) {
   if (type === "progress") {
     return (

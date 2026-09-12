@@ -1,3 +1,6 @@
+import { productLocaleCompare } from "../../lib/productI18n";
+import { settingsT } from "./settingsI18n";
+
 export type WorkspaceSummary = {
   id: string;
   name: string;
@@ -25,7 +28,7 @@ export const mergeSettingsWorkspaces = (
     byId.set(workspace.id, { ...workspace, owned: false });
   }
   return [...byId.values()].sort((left, right) =>
-    left.name.localeCompare(right.name, "zh-CN"),
+    productLocaleCompare(left.name, right.name),
   );
 };
 
@@ -40,8 +43,8 @@ export const resolveSettingsWorkspaceId = (
 };
 
 export const workspaceRoleLabel = (role?: string | null): string => {
-  if (role === "owner") return "所有者";
-  if (role === "editor") return "编辑者";
-  if (role === "viewer") return "查看者";
-  return role || "未知";
+  if (role === "owner") return settingsT("roleOwner");
+  if (role === "editor") return settingsT("roleEditor");
+  if (role === "viewer") return settingsT("roleViewer");
+  return role || settingsT("roleUnknown");
 };

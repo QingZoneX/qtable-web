@@ -26,6 +26,7 @@ import {
   DASHBOARD_PUBLIC_WIDGET_DATA,
   GET_DASHBOARD_PUBLIC,
 } from "../lib/graphql";
+import { useLanguage } from "../lib/useLanguage";
 import type {
   DashboardPayload,
   DashboardWidget,
@@ -46,6 +47,7 @@ import {
   WidgetContent,
   WidgetContentSkeleton,
 } from "./Dashboard/WidgetContent";
+import { publicDashboardT } from "./Dashboard/publicDashboardI18n";
 
 const { Title, Text } = Typography;
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -59,6 +61,7 @@ function safeFilename(value: string) {
 }
 
 export function PublicDashboardPage() {
+  useLanguage();
   const { token } = useParams();
   const apollo = useApolloClient();
   const { data, loading, error, refetch } = useQuery<{
@@ -115,7 +118,7 @@ export function PublicDashboardPage() {
           color: "#6B7280",
         }}
       >
-        正在加载公开仪表盘...
+        {publicDashboardT("loading")}
       </div>
     );
   }
@@ -124,11 +127,11 @@ export function PublicDashboardPage() {
     return (
       <Result
         status="404"
-        title="公开仪表盘不可用"
-        subTitle="链接可能已关闭、已失效，或发布者当前已无权访问相关数据。"
+        title={publicDashboardT("unavailableTitle")}
+        subTitle={publicDashboardT("unavailableSubtitle")}
         extra={
           <Button onClick={() => void refetch()}>
-            重新加载
+            {publicDashboardT("reload")}
           </Button>
         }
       />
@@ -152,12 +155,12 @@ export function PublicDashboardPage() {
       ) as Record<string, unknown>[];
       exportRowsToXlsx(
         `${safeFilename(dashboard.name)}-${safeFilename(
-          widget.title || "组件",
+          widget.title || publicDashboardT("widgetFilename"),
         )}.xlsx`,
         rows,
       );
     } catch {
-      message.error("导出失败，数据源当前不可用");
+      message.error(publicDashboardT("exportDataFailed"));
     }
   };
 
@@ -174,133 +177,133 @@ export function PublicDashboardPage() {
       const blob = await response.blob();
       downloadBlob(
         `${safeFilename(dashboard.name)}-${safeFilename(
-          widget.title || "组件",
+          widget.title || publicDashboardT("widgetFilename"),
         )}.png`,
         blob,
       );
     } catch {
-      message.error("导出图片失败");
+      message.error(publicDashboardT("exportImageFailed"));
     }
   };
 
   return (
+    <div
+      style={{
+        minHeight: "100vh",
+        width: "100%",
+        background: "#F8FAFC",
+      }}
+    >
       <div
         style={{
-          minHeight: "100vh",
-          width: "100%",
-          background: "#F8FAFC",
+          minHeight: 68,
+          padding: "12px 20px",
+          borderBottom: "1px solid #EAECF0",
+          background: "#fff",
+          display: "flex",
+          alignItems: "center",
+          gap: 16,
+          position: "sticky",
+          top: 0,
+          zIndex: 10,
         }}
       >
-        <div
-          style={{
-            minHeight: 68,
-            padding: "12px 20px",
-            borderBottom: "1px solid #EAECF0",
-            background: "#fff",
-            display: "flex",
-            alignItems: "center",
-            gap: 16,
-            position: "sticky",
-            top: 0,
-            zIndex: 10,
-          }}
-        >
-          <div style={{ minWidth: 0 }}>
-            <Title level={4} style={{ margin: 0 }} ellipsis>
-              {dashboard.name}
-            </Title>
-            <Text
-              style={{ color: "#6B7280", fontSize: 12 }}
-              ellipsis
-            >
-              {dashboard.description || "公开仪表盘"}
-            </Text>
-          </div>
-          <div style={{ flex: 1 }} />
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={() => setRefreshSignal((value) => value + 1)}
+        <div style={{ minWidth: 0 }}>
+          <Title level={4} style={{ margin: 0 }} ellipsis>
+            {dashboard.name}
+          </Title>
+          <Text
+            style={{ color: "#6B7280", fontSize: 12 }}
+            ellipsis
           >
-            刷新数据
-          </Button>
+            {dashboard.description || publicDashboardT("publicDashboard")}
+          </Text>
         </div>
-
-        <div style={{ padding: 16 }}>
-          {(dashboard.widgets || []).length === 0 ? (
-            <div
-              style={{
-                minHeight: 420,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Empty description="当前仪表盘暂无已发布组件" />
-            </div>
-          ) : (
-            <ResponsiveGridLayout
-              className="dashboard-public-grid"
-              layouts={layouts}
-              breakpoints={GRID_BREAKPOINTS}
-              cols={GRID_COLS}
-              rowHeight={GRID_ROW_HEIGHT}
-              margin={[12, 12]}
-              containerPadding={[0, 0]}
-              isDraggable={false}
-              isResizable={false}
-              compactType="vertical"
-              useCSSTransforms
-            >
-              {(dashboard.widgets || []).map((widget) => (
-                <div key={widget.id}>
-                  <PublicWidget
-                    widget={widget}
-                    token={token || ""}
-                    refreshSignal={refreshSignal}
-                    onFullscreen={() =>
-                      setFullscreenWidgetId(widget.id)
-                    }
-                    onExportExcel={() =>
-                      void handleExportExcel(widget)
-                    }
-                    onExportImage={(node) =>
-                      void handleExportImage(node, widget)
-                    }
-                  />
-                </div>
-              ))}
-            </ResponsiveGridLayout>
-          )}
-        </div>
-
-        <Modal
-          open={Boolean(fullscreenWidget)}
-          title={fullscreenWidget?.title || "组件详情"}
-          onCancel={() => setFullscreenWidgetId("")}
-          footer={null}
-          width="94vw"
-          style={{ top: 24 }}
-          destroyOnClose
+        <div style={{ flex: 1 }} />
+        <Button
+          icon={<ReloadOutlined />}
+          onClick={() => setRefreshSignal((value) => value + 1)}
         >
-          {fullscreenWidget ? (
-            <div style={{ height: "78vh" }}>
-              <PublicWidget
-                widget={fullscreenWidget}
-                token={token || ""}
-                refreshSignal={refreshSignal}
-                compactHeader
-                onFullscreen={() => setFullscreenWidgetId("")}
-                onExportExcel={() =>
-                  void handleExportExcel(fullscreenWidget)
-                }
-                onExportImage={(node) =>
-                  void handleExportImage(node, fullscreenWidget)
-                }
-              />
-            </div>
-          ) : null}
-        </Modal>
+          {publicDashboardT("refreshData")}
+        </Button>
       </div>
+
+      <div style={{ padding: 16 }}>
+        {(dashboard.widgets || []).length === 0 ? (
+          <div
+            style={{
+              minHeight: 420,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Empty description={publicDashboardT("emptyDashboard")} />
+          </div>
+        ) : (
+          <ResponsiveGridLayout
+            className="dashboard-public-grid"
+            layouts={layouts}
+            breakpoints={GRID_BREAKPOINTS}
+            cols={GRID_COLS}
+            rowHeight={GRID_ROW_HEIGHT}
+            margin={[12, 12]}
+            containerPadding={[0, 0]}
+            isDraggable={false}
+            isResizable={false}
+            compactType="vertical"
+            useCSSTransforms
+          >
+            {(dashboard.widgets || []).map((widget) => (
+              <div key={widget.id}>
+                <PublicWidget
+                  widget={widget}
+                  token={token || ""}
+                  refreshSignal={refreshSignal}
+                  onFullscreen={() =>
+                    setFullscreenWidgetId(widget.id)
+                  }
+                  onExportExcel={() =>
+                    void handleExportExcel(widget)
+                  }
+                  onExportImage={(node) =>
+                    void handleExportImage(node, widget)
+                  }
+                />
+              </div>
+            ))}
+          </ResponsiveGridLayout>
+        )}
+      </div>
+
+      <Modal
+        open={Boolean(fullscreenWidget)}
+        title={fullscreenWidget?.title || publicDashboardT("widgetDetails")}
+        onCancel={() => setFullscreenWidgetId("")}
+        footer={null}
+        width="94vw"
+        style={{ top: 24 }}
+        destroyOnClose
+      >
+        {fullscreenWidget ? (
+          <div style={{ height: "78vh" }}>
+            <PublicWidget
+              widget={fullscreenWidget}
+              token={token || ""}
+              refreshSignal={refreshSignal}
+              compactHeader
+              onFullscreen={() => setFullscreenWidgetId("")}
+              onExportExcel={() =>
+                void handleExportExcel(fullscreenWidget)
+              }
+              onExportImage={(node) =>
+                void handleExportImage(node, fullscreenWidget)
+              }
+            />
+          </div>
+        ) : null}
+      </Modal>
+    </div>
   );
 }
 
@@ -321,6 +324,7 @@ function PublicWidget({
   onExportExcel: () => void;
   onExportImage: (node: HTMLDivElement) => void;
 }) {
+  useLanguage();
   const cardRef = useRef<HTMLDivElement | null>(null);
   const { data, loading, error, refetch } = useQuery<{
     dashboardPublicWidgetData: WidgetDataPayload;
@@ -338,23 +342,25 @@ function PublicWidget({
 
   const title = widget.title?.trim()
     ? widget.title.trim()
-    : "未命名组件";
+    : publicDashboardT("untitledWidget");
 
   const items: MenuProps["items"] = [
     {
       key: "fullscreen",
       icon: <ExpandOutlined />,
-      label: compactHeader ? "退出全屏" : "全屏查看",
+      label: compactHeader
+        ? publicDashboardT("exitFullscreen")
+        : publicDashboardT("fullscreen"),
     },
     {
       key: "export-image",
       icon: <DownloadOutlined />,
-      label: "导出图片",
+      label: publicDashboardT("exportImage"),
     },
     {
       key: "export-excel",
       icon: <DownloadOutlined />,
-      label: "导出 Excel",
+      label: publicDashboardT("exportExcel"),
     },
   ];
 
@@ -442,11 +448,11 @@ function PublicWidget({
         {error ? (
           <Result
             status="warning"
-            title="数据暂不可用"
-            subTitle="发布者权限或数据源可能已发生变化。"
+            title={publicDashboardT("dataUnavailable")}
+            subTitle={publicDashboardT("dataUnavailableSubtitle")}
             extra={
               <Button size="small" onClick={() => void refetch()}>
-                重试
+                {publicDashboardT("retry")}
               </Button>
             }
             style={{ padding: "18px 8px" }}
@@ -464,7 +470,7 @@ function PublicWidget({
           >
             <Empty
               image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description="暂无符合条件的数据"
+              description={publicDashboardT("noData")}
             />
           </div>
         ) : (

@@ -11,12 +11,14 @@ import {
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { DASHBOARD_WIDGET_DATA } from "../../lib/graphql";
+import { useLanguage } from "../../lib/useLanguage";
 import type { DashboardWidget, WidgetDataPayload } from "./types";
 import { WidgetContent, WidgetContentSkeleton } from "./WidgetContent";
 import {
   runtimeFiltersForTable,
   useDashboardExperience,
 } from "./DashboardExperienceContext";
+import { dashboardT } from "./dashboardI18n";
 import { exportRowsToXlsx } from "./utils";
 
 const { Text } = Typography;
@@ -52,27 +54,27 @@ function widgetErrorDescription(
 ) {
   const normalized = String(message || "").toLowerCase();
   if (options.runtimeFilterUnsupported) {
-    return "当前服务端版本尚未支持仪表盘全局筛选。请先清除筛选，或完成服务端升级后重试。";
+    return dashboardT("widget.error.runtimeFilterUnsupported");
   }
   if (/source table not found|widget not found/.test(normalized)) {
-    return "组件引用的数据源已经不存在。请进入编辑模式重新选择有效的数据表并保存组件配置。";
+    return dashboardT("widget.error.sourceMissing");
   }
   if (/source table is not available|permission|forbidden|not authorized/.test(normalized)) {
-    return "当前账号已无法读取该组件的数据源。请检查工作区/数据表权限，或改用当前可访问的数据表。";
+    return dashboardT("widget.error.permission");
   }
   if (/missing field|requires a .*field|unsupported dashboard filter|widget .*invalid/.test(normalized)) {
-    return "组件配置引用了已删除或不再兼容的字段。请进入编辑模式重新选择维度、指标或筛选字段。";
+    return dashboardT("widget.error.fieldInvalid");
   }
   if (options.hasRuntimeFilters) {
-    return "当前全局筛选可能引用了失效字段，或数据源权限发生变化。请移除筛选、检查配置后重试。";
+    return dashboardT("widget.error.runtimeFilterInvalid");
   }
-  return "数据源存在运行时异常，或组件配置已失效。请重试；管理员可进入配置检查数据表、维度与指标字段。";
+  return dashboardT("widget.error.generic");
 }
 
 /**
- * 仪表盘小组件卡片 —— 含标题栏、骨架屏加载态、操作菜单、内容区域。
- * Dashboard Experience Shell 注入的 runtime filter 只作为服务端查询变量，
- * 不会改写 widget.config。
+ * Dashboard widget card with title, loading state, action menu, and content.
+ * Runtime filters from Dashboard Experience Shell are passed only as server query variables
+ * and never rewrite widget.config.
  */
 export function DashboardWidgetCard({
   widget,
@@ -101,6 +103,7 @@ export function DashboardWidgetCard({
   onDuplicate: (id: string) => void;
   style?: React.CSSProperties;
 }) {
+  useLanguage();
   const cardRef = useRef<HTMLDivElement | null>(null);
   const { mode, runtimeFilters, reportDataLoaded } = useDashboardExperience();
   const effectiveCanEdit = canEdit && mode === "edit";
@@ -135,7 +138,7 @@ export function DashboardWidgetCard({
     if (!loading && !error && data?.dashboardWidgetData) reportDataLoaded();
   }, [data?.dashboardWidgetData, error, loading, reportDataLoaded]);
 
-  const title = widget.title?.trim() ? widget.title.trim() : "未命名组件";
+  const title = widget.title?.trim() ? widget.title.trim() : dashboardT("widget.unnamed");
   const rows = data?.dashboardWidgetData?.rows ?? [];
   const runtimeFilterUnsupported = Boolean(
     hasRuntimeFilters &&
@@ -149,11 +152,11 @@ export function DashboardWidgetCard({
 
   const menuItems: MenuProps["items"] = [
     ...(effectiveCanEdit
-      ? [{ key: "duplicate", icon: <CopyOutlined />, label: "复制组件" }]
+      ? [{ key: "duplicate", icon: <CopyOutlined />, label: dashboardT("widget.duplicate") }]
       : []),
-    { key: "fullscreen", icon: <ExpandOutlined />, label: "全屏查看" },
-    { key: "export-image", icon: <DownloadOutlined />, label: "导出图片" },
-    { key: "export-excel", icon: <DownloadOutlined />, label: "导出 Excel" },
+    { key: "fullscreen", icon: <ExpandOutlined />, label: dashboardT("widget.fullscreen") },
+    { key: "export-image", icon: <DownloadOutlined />, label: dashboardT("widget.exportImage") },
+    { key: "export-excel", icon: <DownloadOutlined />, label: dashboardT("widget.exportExcel") },
   ];
 
   const exportCurrentRows = () => {
@@ -212,16 +215,16 @@ export function DashboardWidgetCard({
           </Text>
           {scopedRuntimeFilters.length ? (
             <Tag color="blue" variant="filled">
-              筛选 {scopedRuntimeFilters.length}
+              {dashboardT("widget.filterCount", { count: scopedRuntimeFilters.length })}
             </Tag>
           ) : null}
         </div>
         {effectiveCanEdit ? (
-          <Tooltip title="配置组件">
+          <Tooltip title={dashboardT("widget.configure")}>
             <Button
               type="text"
               size="small"
-              aria-label={`配置 ${title}`}
+              aria-label={dashboardT("widget.configureAria", { title })}
               icon={<SettingOutlined />}
               className="dashboard-widget-drag-cancel"
               onMouseDown={(event) => event.stopPropagation()}
@@ -246,11 +249,11 @@ export function DashboardWidgetCard({
             },
           }}
         >
-          <Tooltip title="更多组件操作">
+          <Tooltip title={dashboardT("widget.moreActions")}>
             <Button
               type="text"
               size="small"
-              aria-label={`${title} 更多操作`}
+              aria-label={dashboardT("widget.moreActionsAria", { title })}
               icon={<EllipsisOutlined />}
               className="dashboard-widget-drag-cancel"
               onMouseDown={(event) => event.stopPropagation()}
@@ -264,7 +267,7 @@ export function DashboardWidgetCard({
         {loading ? (
           <div
             role="status"
-            aria-label={`${title} 正在加载`}
+            aria-label={dashboardT("widget.loadingAria", { title })}
             style={{
               position: "absolute",
               inset: 10,
@@ -299,17 +302,17 @@ export function DashboardWidgetCard({
             <Alert
               type="error"
               showIcon
-              title="组件数据加载失败"
+              title={dashboardT("widget.loadFailed")}
               description={errorDescription}
               action={
                 <Space size={6}>
                   {effectiveCanEdit && !runtimeFilterUnsupported ? (
                     <Button size="small" onClick={() => onOpenConfig(widget.id)}>
-                      检查配置
+                      {dashboardT("widget.checkConfig")}
                     </Button>
                   ) : null}
                   <Button size="small" onClick={() => void refetch()}>
-                    重试
+                    {dashboardT("widget.retry")}
                   </Button>
                 </Space>
               }
@@ -328,8 +331,8 @@ export function DashboardWidgetCard({
               image={Empty.PRESENTED_IMAGE_SIMPLE}
               description={
                 scopedRuntimeFilters.length
-                  ? "当前全局筛选下暂无数据"
-                  : "暂无符合条件的数据"
+                  ? dashboardT("widget.noDataFiltered")
+                  : dashboardT("widget.noData")
               }
             />
           </div>
