@@ -48,7 +48,9 @@ if (
   !toolbar.includes("setAiVisualDesignerOpen(true)") ||
   !toolbar.includes("AiVisualDesignerModal") ||
   !dashboardEntry.includes("DashboardExperienceShell") ||
-  !dashboardCore.includes("AI 设计")
+  !dashboardCore.includes("setAiVisualDesignerOpen(true)") ||
+  !dashboardCore.includes('dashboardT("workbench.aiDesign")') ||
+  !dashboardCore.includes("AiVisualDesignerModal")
 ) {
   fail("table/dashboard entry points are incomplete");
 }
@@ -63,8 +65,8 @@ if (
 }
 
 if (
-  !dashboardCore.includes('{ value: "before", label: "早于" }') ||
-  !dashboardCore.includes('{ value: "after", label: "晚于" }')
+  !dashboardCore.includes('{ value: "before", label: dashboardOperatorLabel("before") }') ||
+  !dashboardCore.includes('{ value: "after", label: dashboardOperatorLabel("after") }')
 ) {
   fail("AI date filters are not editable in the normal dashboard editor");
 }
