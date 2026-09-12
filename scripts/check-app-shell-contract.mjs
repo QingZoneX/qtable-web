@@ -79,8 +79,19 @@ if (!shell.includes("navigator.onLine") || !shell.includes('window.addEventListe
   fail("AppShell must expose non-blocking offline state");
 }
 
-for (const label of ["工作台", "数据表", "仪表盘", "项目", "自动化", "AI 助手", "通知", "回收站", "设置"]) {
-  if (!rail.includes(label)) fail(`PrimaryRail is missing navigation item: ${label}`);
+for (const key of [
+  "shell.workbench",
+  "shell.home",
+  "shell.tables",
+  "shell.dashboards",
+  "shell.projects",
+  "shell.automations",
+  "shell.ai",
+  "shell.notifications",
+  "shell.recycleBin",
+  "shell.settings",
+]) {
+  if (!rail.includes(`t("${key}")`)) fail(`PrimaryRail is missing navigation i18n key: ${key}`);
 }
 
 if (!rail.includes('route: "/ai"')) {
@@ -92,7 +103,7 @@ for (const required of [
   "NotificationBell",
   "QuestionCircleOutlined",
   "workspaceItems",
-  'aria-label="用户菜单"',
+  'aria-label={t("shell.userMenu")}',
   'navigate("/help")',
 ]) {
   if (!topbar.includes(required)) fail(`TopAppBar contract is missing: ${required}`);
