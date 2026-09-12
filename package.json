@@ -71,7 +71,7 @@
     "@visactor/vtable-gantt": "1.26.8",
     "antd": "^6.6.2",
     "dayjs": "^1.11.20",
-    "eventemitter3": "4.0.7",
+    "eventemitter3": "5.0.4",
     "gifuct-js": "2.1.2",
     "graphql": "^17.0.2",
     "graphql-ws": "^6.2.1",
