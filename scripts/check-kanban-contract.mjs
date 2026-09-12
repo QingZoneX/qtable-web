@@ -38,7 +38,7 @@ requireMatch(card, /MoreOutlined/, "Cards must expose an accessible hover action
 requireMatch(card, /dueState\s*=\s*"overdue"/, "Cards must calculate overdue risk state");
 requireMatch(css, /\.q-kanban-due\.is-overdue/, "Cards must expose overdue risk styling");
 requireMatch(settings, /maxCount=\{MAX_CARD_FIELDS\}/, "Card settings must enforce a display-field density cap");
-requireMatch(settings, /按负责人分泳道/, "Board settings must expose the Task Profile assignee shortcut");
+requireMatch(settings, /t\(["']kanban\.laneByAssignee["']\)/, "Board settings must expose the localized Task Profile assignee shortcut");
 
 requireMatch(css, /clamp\(/, "Kanban columns must use adaptive sizing");
 requireMatch(css, /@media \(max-width: 640px\)/, "Kanban must define a narrow-screen layout");
