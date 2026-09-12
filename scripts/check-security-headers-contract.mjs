@@ -60,13 +60,12 @@ if (html.includes("fonts.googleapis.com") || html.includes("fonts.gstatic.com"))
   fail("index.html must not prefetch undeclared external font origins");
 if (!html.includes('src="/src/main.tsx"')) fail("index.html must load the Vite entry module");
 
-for (const token of [
-  "import.meta.env.PROD",
-  "navigator.serviceWorker.register(\"/sw.js\")",
-  "navigator.serviceWorker.getRegistrations()",
-]) {
-  if (!main.includes(token)) fail(`Service Worker bootstrap contract is missing: ${token}`);
-}
+if (!main.includes("import.meta.env.PROD"))
+  fail("Service Worker bootstrap contract is missing: import.meta.env.PROD");
+if (!/navigator\.serviceWorker\s*\.\s*register\(\s*["']\/sw\.js["']\s*\)/s.test(main))
+  fail('Service Worker bootstrap contract is missing: navigator.serviceWorker.register("/sw.js")');
+if (!/navigator\.serviceWorker\s*\.\s*getRegistrations\(\s*\)/s.test(main))
+  fail("Service Worker bootstrap contract is missing: navigator.serviceWorker.getRegistrations()");
 
 for (const token of [
   "## Production browser security headers",
