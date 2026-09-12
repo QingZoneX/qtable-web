@@ -45,7 +45,7 @@ for (const path of tracked) {
 
 const dockerfile = fs.readFileSync("Dockerfile", "utf8");
 for (const token of [
-  'org.opencontainers.image.source="https://github.com/QingZoneX/QTableUI"',
+  'org.opencontainers.image.source="https://github.com/QingZoneX/qtable-web"',
   'org.opencontainers.image.licenses="Apache-2.0"',
   'org.opencontainers.image.version="${QTABLE_UI_VERSION}"',
   'org.opencontainers.image.revision="${QTABLE_UI_REVISION}"',
@@ -63,6 +63,10 @@ for (const token of [
   "docker/setup-buildx-action@v4",
   "docker/metadata-action@v6",
   "docker/build-push-action@v7",
+  "aquasecurity/trivy-action@v0.35.0",
+  "severity: 'CRITICAL,HIGH'",
+  "exit-code: '1'",
+  "vuln-type: 'os,library'",
   "platforms: linux/amd64,linux/arm64",
   "provenance: mode=max",
   "sbom: true",
