@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [page, store, responseModel, workspaceMembers, inviteDocument, workspaceAccess] =
+const [page, authI18n, store, responseModel, workspaceMembers, inviteDocument, workspaceAccess] =
   await Promise.all([
     readFile("src/components/AuthPage.tsx", "utf8"),
+    readFile("src/components/authI18n.ts", "utf8"),
     readFile("src/store/authStore.ts", "utf8"),
     readFile("src/store/passwordResetResponse.ts", "utf8"),
     readFile("src/components/WorkspaceMembersPage.tsx", "utf8"),
@@ -29,9 +30,15 @@ for (const forbidden of [
   );
 }
 
-assert.match(page, /如果账号存在，我们会发送密码重置说明/);
-assert.match(page, /发送重置说明/);
-assert.match(page, /使用邮件中的重置链接更新密码/);
+// AuthPage is localized through authT(). Validate the presentation contract at
+// both layers: the page must use the safe translation keys, and the canonical
+// Simplified Chinese translations must retain the non-enumerating reset copy.
+for (const key of ["reset.requested", "action.sendReset", "subtitle.reset"]) {
+  assert.match(page, new RegExp(`authT\\(["']${key.replace(".", "\\.")}["']\\)`));
+}
+assert.match(authI18n, /如果账号存在，我们会发送密码重置说明/);
+assert.match(authI18n, /发送重置说明/);
+assert.match(authI18n, /使用邮件中的重置链接更新密码/);
 assert.match(page, /resetRequested/);
 
 const forgotStart = store.indexOf("requestPasswordReset: async");
