@@ -45,7 +45,7 @@ for (const path of tracked) {
 
 const dockerfile = fs.readFileSync("Dockerfile", "utf8");
 for (const token of [
-  'org.opencontainers.image.source="https://github.com/QingZoneX/QTableUI"',
+  'org.opencontainers.image.source="https://github.com/QingZoneX/qtable-web"',
   'org.opencontainers.image.licenses="Apache-2.0"',
   'org.opencontainers.image.version="${QTABLE_UI_VERSION}"',
   'org.opencontainers.image.revision="${QTABLE_UI_REVISION}"',
