@@ -21,7 +21,7 @@ if (lock.version !== version || lock.packages?.[""]?.version !== version) {
 }
 
 for (const token of [
-  'org.opencontainers.image.source="https://github.com/QingZoneX/QTableUI"',
+  'org.opencontainers.image.source="https://github.com/QingZoneX/qtable-web"',
   'org.opencontainers.image.licenses="Apache-2.0"',
   'org.opencontainers.image.version="${QTABLE_UI_VERSION}"',
   'org.opencontainers.image.revision="${QTABLE_UI_REVISION}"',
@@ -40,9 +40,10 @@ for (const token of [
   "docker/login-action@v4",
   "docker/metadata-action@v6",
   "docker/build-push-action@v7",
-  "docker/scout-action@v1",
-  "only-severities: critical,high",
-  "exit-code: true",
+  "aquasecurity/setup-trivy@e07451d2e059ed86c2870430ea286b3a9e0bf241",
+  "version: v0.74.0",
+  "--severity HIGH,CRITICAL",
+  "--exit-code 1",
   "DOCKERHUB_USERNAME",
   "DOCKERHUB_TOKEN",
   "DOCKERHUB_PUBLISH_ENABLED",
