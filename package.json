@@ -74,7 +74,7 @@
     "eventemitter3": "4.0.7",
     "gifuct-js": "2.1.2",
     "graphql": "^17.0.2",
-    "graphql-ws": "^5.16.2",
+    "graphql-ws": "^6.2.1",
     "html-to-image": "^1.11.13",
     "lottie-web": "5.13.0",
     "react": "^19.2.8",
