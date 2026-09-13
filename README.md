@@ -1,10 +1,14 @@
-# QTableUI
+# QTable Web
 
-> React frontend for [QTable](https://github.com/QingZoneX/QTable), an AI-native open-source project and work management system.
+> React frontend for [QTable](https://github.com/QingZoneX/qtable-server), an AI-native open-source project and work management system.
 
-**Status:** `v0.1.0-alpha` release candidate — private release preparation, **not yet publicly released**.
+**Status:** public open-source Alpha (`0.1.0-alpha`). The repository is public and ready for evaluation and contribution; the first verified release tag and release artifacts remain gated by CI and release verification.
 
-QTableUI provides the interactive multidimensional-table experience for QTable: Grid, Kanban, Gantt, Calendar, Gallery, dashboards, AI planning workflows and the QNote Source Inbox.
+QTable Web provides the interactive multidimensional-table experience for QTable: Grid, Kanban, Gantt, Calendar, Gallery, dashboards, collaboration and AI planning workflows.
+
+- Backend: [QingZoneX/qtable-server](https://github.com/QingZoneX/qtable-server)
+- Web frontend: [QingZoneX/qtable-web](https://github.com/QingZoneX/qtable-web)
+- Project portal and documentation: [QingZoneX.github.io](https://qingzonex.github.io/)
 
 ![QTable Grid](design/grid.png)
 
@@ -30,73 +34,62 @@ Requirements:
 - a running QTable API on port 9000
 
 ```bash
-git clone https://github.com/QingZoneX/QTableUI.git
-cd QTableUI
+git clone https://github.com/QingZoneX/qtable-web.git
+cd qtable-web
 npm ci
 npm run dev
 ```
 
 The development server listens on <http://localhost:9100> and proxies API / GraphQL / WebSocket / OAuth traffic to <http://localhost:9000>.
 
-No real credential belongs in frontend environment variables.
-
-npm and `package-lock.json` are the supported reproducible install path. The
-obsolete pnpm lockfile has been removed to prevent resolving a different tree.
+No real credential belongs in frontend environment variables. npm and `package-lock.json` are the supported reproducible install path.
 
 ## Full self-hosted stack
 
-The canonical one-command stack is maintained in the QTable backend repository.
-
-Clone both repositories as siblings:
+The canonical one-command stack is maintained in the backend repository. Clone both repositories as siblings:
 
 ```text
 qingzone/
-├── QTable/
-└── QTableUI/
+├── qtable-server/
+└── qtable-web/
 ```
 
 Then:
 
 ```bash
-cd QTable
+cd qtable-server
 cp .env.example .env
 docker compose up --build -d
 ```
 
 Open <http://localhost:9100>.
 
-The backend repository's canonical Compose stack keeps PostgreSQL, Redis, MinIO and the QTable API loopback-only on the host by default; QTableUI is the intended user-facing entry point.
+The canonical Compose stack keeps PostgreSQL, Redis, MinIO and the QTable API loopback-only on the host by default; the web frontend is the intended user-facing entry point.
 
-## Docker Hub image
+## Docker image
 
-After the corresponding verified release tag is published, the official image is:
+Release workflows are prepared for:
 
 ```text
 qingzonex/qtable-ui:0.1.0-alpha
 ```
 
-Pull and run it against an existing QTable API:
+Treat an image as an official release artifact only after its verified release tag has passed the release gates. Prerelease tags deliberately do not receive `latest`.
+
+Run a published image against an existing QTable API with:
 
 ```bash
-docker pull qingzonex/qtable-ui:0.1.0-alpha
-
 docker run --rm -p 9100:9100 \
   -e QTABLE_HOST=host.docker.internal \
   -e QTABLE_PORT=9000 \
   qingzonex/qtable-ui:0.1.0-alpha
 ```
 
-The image is designed to be published for both `linux/amd64` and `linux/arm64`, carries OCI source/version/revision/license metadata, includes the Apache-2.0 `LICENSE` and `NOTICE`, exposes `/healthz`, and is published with BuildKit SBOM and provenance attestations. Prerelease tags such as `0.1.0-alpha` deliberately do not receive the `latest` tag.
+The image is designed for `linux/amd64` and `linux/arm64`, carries OCI source/version/revision/license metadata, includes the Apache-2.0 `LICENSE` and `NOTICE`, exposes `/healthz`, and is published with BuildKit SBOM and provenance attestations when a verified release is produced.
 
-The image is not considered published merely because the workflow exists. The first official Docker Hub push remains downstream of the exact-revision QTable/QTableUI release gates described below.
+## Docker development
 
-Maintainers configure Docker Hub publishing through GitHub Actions repository configuration, never source files: set `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, and optionally `DOCKERHUB_NAMESPACE` (defaults to `qingzonex`). A `v*` Git tag must exactly match `VERSION`, `package.json`, and the root `package-lock.json` version before the workflow will push.
-
-For the complete PostgreSQL + Redis + object-storage + QTable + QTableUI deployment, use the Docker Hub consumer Compose file maintained in the QTable backend repository.
-
-## Docker
-
-Build only the UI image from source:
+Build the UI image from source:
 
 ```bash
 docker build -t qtable-ui .
@@ -106,19 +99,7 @@ docker run --rm -p 9100:9100 \
   qtable-ui
 ```
 
-Builds use the official Node/Nginx images and npm registry by default. Package
-versions and integrity hashes stay pinned in `package-lock.json`. If your network
-requires mirrors, select them explicitly:
-
-```bash
-docker build -t qtable-ui \
-  --build-arg NODE_IMAGE=docker.m.daocloud.io/library/node:22-alpine \
-  --build-arg NGINX_IMAGE=docker.m.daocloud.io/library/nginx:alpine \
-  --build-arg NPM_REGISTRY=https://registry.npmmirror.com .
-```
-
-For local npm installs, use `npm ci --registry=https://registry.npmmirror.com`
-when needed; do not regenerate the lockfile just to change download mirrors.
+Builds use official Node/Nginx images and npm registry defaults. Package versions and integrity hashes stay pinned in `package-lock.json`. Regional mirrors are explicit overrides rather than repository defaults.
 
 Runtime variables:
 
@@ -130,52 +111,32 @@ Runtime variables:
 
 `/healthz` is available as a container health endpoint.
 
-On a Linux Docker host, run the same container smoke test as CI:
+On a Linux Docker host, run the same container smoke test used by CI:
 
 ```bash
 python3 scripts/check-docker-runtime.py qtable-ui
 ```
 
-It checks default/custom listen ports, SPA deep links, missing static assets,
-REST/GraphQL/Auth/OAuth proxying, header/body forwarding, production security
-headers, and frontend liveness when the backend stops. It uses a temporary mock
-upstream with host networking; it does not replace full-product authentication
-or WebSocket/browser E2E tests.
+It checks default/custom listen ports, SPA deep links, missing static assets, REST/GraphQL/Auth/OAuth proxying, header/body forwarding, production security headers and frontend liveness when the backend stops.
 
 ## Production browser security headers
 
-The canonical QTableUI Nginx container sets browser security headers itself so a
-plain self-host does not depend on a particular gateway implementation:
+The canonical Nginx container sets browser security headers so a plain self-host does not depend on a particular gateway implementation:
 
 - `X-Content-Type-Options: nosniff`;
 - `Referrer-Policy: strict-origin-when-cross-origin`;
-- clickjacking protection through CSP `frame-ancestors 'none'` plus
-  `X-Frame-Options: DENY` for compatibility;
-- a restrictive `Permissions-Policy` for camera, microphone, geolocation,
-  payment and USB;
-- a default Content Security Policy that limits application scripts, images,
-  fonts, connections, workers and frames to the origins needed by the current
-  QTableUI runtime.
+- clickjacking protection through CSP `frame-ancestors 'none'` plus `X-Frame-Options: DENY`;
+- a restrictive `Permissions-Policy`;
+- a Content Security Policy scoped to the origins required by the current runtime.
 
-`script-src` deliberately does **not** allow `unsafe-inline` or `unsafe-eval`.
-The Service Worker bootstrap runs from the normal Vite/TypeScript bundle rather
-than an inline `<script>`. `style-src 'unsafe-inline'` is currently retained
-because Ant Design and the existing runtime styling path inject style rules at
-runtime; removing it requires a separate styling/nonces migration and must not be
-worked around by weakening script policy.
-
-An outer reverse proxy or ingress still owns transport-layer concerns such as TLS
-certificate management, HTTP-to-HTTPS redirects and HSTS. It may add stricter
-headers, but it should not silently delete or broaden QTableUI's CSP. If a
-deployment intentionally embeds QTableUI in another origin, or adds external
-asset/API origins, review and narrow the CSP explicitly rather than disabling it.
+`script-src` deliberately does **not** allow `unsafe-inline` or `unsafe-eval`. An outer reverse proxy or ingress still owns transport-layer concerns such as TLS certificate management, HTTP-to-HTTPS redirects and HSTS.
 
 ## Product safety invariants
 
 Frontend changes must preserve the backend security model:
 
-- do not load hidden rows in order to implement client-side AI or analytics;
-- do not bypass Preview → Confirm → Apply flows;
+- do not load hidden rows to implement client-side AI or analytics;
+- do not bypass **Preview → Confirm → Apply** flows;
 - do not write records directly when an atomic audited mutation exists;
 - Workspace Member candidates must come from the current workspace;
 - public dashboard pages must use public-token-safe APIs;
@@ -193,21 +154,19 @@ npm run test:xlsx-export
 npm run build
 ```
 
-Frontend CI also runs contract checks for OAuth, search, AI goal/workload/steward flows, AI visual design, Member fields and Source Inbox behavior.
+Frontend CI also runs contract checks for authentication, search, AI workflows, member fields, source intake and other product invariants. CI publishes dependency-audit, license-inventory and CycloneDX SBOM artifacts for the tested commit.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md) and the
-[dependency policy](docs/dependency-policy.md). CI publishes dependency audit,
-license inventory and CycloneDX SBOM artifacts for the tested commit.
+See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md) and the [dependency policy](docs/dependency-policy.md).
 
 ## Rainbond
 
-The existing Dockerfile and `rainbondfile` remain supported. Set the QTable backend component port alias to `QTABLE`, establish a QTableUI → QTable dependency, and expose UI port 9100 through the gateway.
+The existing Dockerfile and `rainbondfile` remain supported. Configure the backend component port alias as `QTABLE`, establish the web → backend dependency, and expose UI port 9100 through the gateway.
 
 ## Release status
 
-`v0.1.0-alpha` is being prepared as the first QTable **Open Source Preview / Alpha**. The current QTableUI `main` state is a private pre-release candidate, not a published release. It becomes release evidence only after real Frontend CI and the exact-revision full-stack release E2E execute successfully, QTable#139 / QTable#170 / QTableUI#86 are complete, the repositories intentionally become public, and the verified tag/release is created. The Docker Hub workflow is part of that release mechanism and must publish the same verified Git revision, not a manually rebuilt or unrelated image.
+QTable Web is now developed in public under the QingZoneX organization. `0.1.0-alpha` remains a prerelease line: public repository visibility does not by itself make a commit, Docker image or tag an official release artifact.
 
-See the explicitly draft [docs/releases/v0.1.0-alpha.md](docs/releases/v0.1.0-alpha.md).
+A release becomes official only when the exact server and web revisions pass their CI and full-stack release gates and the corresponding verified tag/release is published. Draft release notes remain under [`docs/releases/`](docs/releases/).
 
 ## License
 
