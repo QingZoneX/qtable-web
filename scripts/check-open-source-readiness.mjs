@@ -82,9 +82,9 @@ for (const token of [
 
 const readme = fs.readFileSync("README.md", "utf8");
 for (const token of [
-  "v0.1.0-alpha",
+  version,
   "docker compose up --build -d",
-  "qingzonex/qtable-ui:0.1.0-alpha",
+  `qingzonex/qtable-ui:${version}`,
   "DOCKERHUB_TOKEN",
   "SECURITY.md",
   "CONTRIBUTING.md",
