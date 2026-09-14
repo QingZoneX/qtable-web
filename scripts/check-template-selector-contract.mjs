@@ -52,7 +52,7 @@ requireText(
 );
 requireText(
   component,
-  'if (category !== "all") return 0;',
+  'if (activeCategory !== "all") return 0;',
   "Blank-template pinning must not disturb category-specific catalog order.",
 );
 requireText(
