@@ -63,7 +63,7 @@ jobs:
 
       - name: Verify image metadata and license payload
         run: |
-          test "$(docker image inspect qtable-ui-distribution:${GITHUB_SHA} --format '{{ index .Config.Labels \"org.opencontainers.image.licenses\" }}')" = "Apache-2.0"
-          test "$(docker image inspect qtable-ui-distribution:${GITHUB_SHA} --format '{{ index .Config.Labels \"org.opencontainers.image.revision\" }}')" = "${GITHUB_SHA}"
+          test "$(docker image inspect qtable-ui-distribution:${GITHUB_SHA} --format '{{ index .Config.Labels "org.opencontainers.image.licenses" }}')" = "Apache-2.0"
+          test "$(docker image inspect qtable-ui-distribution:${GITHUB_SHA} --format '{{ index .Config.Labels "org.opencontainers.image.revision" }}')" = "${GITHUB_SHA}"
           docker image inspect qtable-ui-distribution:${GITHUB_SHA} --format '{{json .Config.Healthcheck}}' | grep -q '/healthz'
           docker run --rm --entrypoint sh qtable-ui-distribution:${GITHUB_SHA} -c 'test -f /usr/share/licenses/qtable-ui/LICENSE && test -f /usr/share/licenses/qtable-ui/NOTICE'
