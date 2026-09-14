@@ -5,6 +5,7 @@ const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf
 
 const shellPages = read("src/components/AppShell/ShellPages.tsx");
 const page = read("src/components/Help/HelpCenterPage.tsx");
+const helpI18n = read("src/components/Help/helpI18n.ts");
 const model = read("src/components/Help/helpModel.ts");
 const palette = read("src/components/GlobalCommandPalette.tsx");
 const topBar = read("src/components/AppShell/TopAppBar.tsx");
@@ -21,13 +22,18 @@ assert.ok(
 
 assert.ok(page.includes("__QTABLE_UI_VERSION__"), "Help must display the build version");
 assert.ok(
-  page.includes("openGlobalCommandPalette") && page.includes("打开全局搜索 / Open search"),
+  page.includes("openGlobalCommandPalette") &&
+    page.includes('helpT("openSearch")') &&
+    helpI18n.includes('openSearch: "打开全局搜索"') &&
+    helpI18n.includes('openSearch: "Open global search"'),
   "Help must expose a real global-search CTA",
 );
 assert.ok(
-  page.includes("反馈模板只预填当前前端版本") &&
-    page.includes("不读取浏览器信息") &&
-    page.includes("不附带任何工作区或业务数据"),
+  page.includes('helpT("feedbackSubtitle")') &&
+    page.includes('helpT("privacy")') &&
+    helpI18n.includes('feedbackSubtitle: "反馈模板只预填当前前端版本，不读取浏览器信息，也不附带任何工作区或业务数据。"') &&
+    helpI18n.includes("Templates prefill only the frontend version and never collect browser, workspace, or business data automatically.") &&
+    helpI18n.includes("Do not paste access tokens, API keys, passwords, private workspace/table/record content"),
   "Help must state feedback privacy boundaries",
 );
 
