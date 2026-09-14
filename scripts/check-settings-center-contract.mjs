@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 const shellPages = read("src/components/AppShell/ShellPages.tsx");
 const page = read("src/components/Settings/SettingsCenterPage.tsx");
+const settingsI18n = read("src/components/Settings/settingsI18n.ts");
 const preferences = read("src/components/Home/homePreferences.ts");
 const members = read("src/components/WorkspaceMembersPage.tsx");
 const vite = read("vite.config.ts");
@@ -31,11 +32,15 @@ for (const realCapability of [
 }
 
 assert.ok(
-  page.includes("仅保存在此浏览器"),
+  page.includes('settingsT("landingHelp")') &&
+    settingsI18n.includes('landingHelp: "此偏好仅保存在此浏览器，不会同步到其他设备或账号会话。"') &&
+    settingsI18n.includes("This preference is stored only in this browser and is not synced to other devices or account sessions."),
   "browser-only landing preference scope must be explicit",
 );
 assert.ok(
-  page.includes("API Key 不会从服务端回显"),
+  page.includes('settingsT("apiKeyHidden")') &&
+    settingsI18n.includes('apiKeyHidden: "API Key 不会从服务端回显"') &&
+    settingsI18n.includes("API keys are never returned by the server"),
   "AI secret non-disclosure must be explicit",
 );
 assert.ok(
