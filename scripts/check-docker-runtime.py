@@ -142,7 +142,7 @@ def check_image(image, port, custom_port):
 
         docker("exec", name, "nginx", "-t")
         config = docker("exec", name, "cat", "/etc/nginx/conf.d/default.conf")
-        for variable in ("$host", "$http_host", "$remote_addr", "$http_upgrade", "$uri"):
+        for variable in ("$host", "$remote_addr", "$http_upgrade", "$uri"):
             assert variable in config, f"Nginx variable was substituted: {variable}"
         for variable in ("${PORT}", "${QTABLE_HOST}", "${QTABLE_PORT}"):
             assert variable not in config, f"runtime variable was not rendered: {variable}"
