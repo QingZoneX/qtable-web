@@ -6,6 +6,7 @@ const shellPages = read("src/components/AppShell/ShellPages.tsx");
 const page = read("src/components/RecycleBin/RecycleBinPage.tsx");
 const graphql = read("src/components/RecycleBin/recycleBinGraphql.ts");
 const model = read("src/components/RecycleBin/recycleBinModel.ts");
+const i18n = read("src/components/RecycleBin/recycleBinI18n.ts");
 
 assert.ok(
   shellPages.includes("export const RecycleBinShellPage = RecycleBinPage;"),
@@ -50,7 +51,10 @@ assert.ok(
   "Recycle Bin must render the immutable deleted data snapshot",
 );
 assert.ok(
-  page.includes("永久删除会清除该记录在回收站与变更历史中的可恢复数据快照"),
+  page.includes('recycleBinT("irreversible")') &&
+    page.includes('recycleBinT("irreversibleHelp")') &&
+    i18n.includes('irreversibleHelp: "永久删除会移除回收站快照，并清除该记录在变更历史中的可恢复 before/after 数据。普通 Undo 无法恢复。"') &&
+    i18n.includes("Permanent deletion removes the recycle-bin snapshot and clears recoverable before/after data for this record from change history. Normal Undo cannot restore it."),
   "purge UI must disclose irreversible history redaction",
 );
 assert.ok(
