@@ -4,6 +4,7 @@ const read = (path) => fs.readFileSync(path, "utf8");
 const graphql = read("src/components/ExperienceMode/experienceModeGraphql.ts");
 const hook = read("src/components/ExperienceMode/useWorkspaceExperienceMode.ts");
 const control = read("src/components/ExperienceMode/ExperienceModeControl.tsx");
+const controlI18n = read("src/components/ExperienceMode/experienceModeI18n.ts");
 const controlCss = read("src/components/ExperienceMode/experienceMode.css");
 const homeExperience = read("src/components/Home/HomeExperiencePage.tsx");
 const homeStart = read("src/components/Home/HomeSimpleStart.tsx");
@@ -22,7 +23,7 @@ const checks = [
   [hook.includes("effectiveMode") && hook.includes("followsWorkspaceDefault"), "Client must consume effective mode and workspace inheritance"],
   [!hook.includes("localStorage.setItem") && !hook.includes("sessionStorage.setItem"), "Experience preference must not create a second browser persistence source"],
   [control.includes("canManageWorkspaceDefault"), "Workspace-default controls must respect backend manage capability"],
-  [control.includes("仅影响你的界面") && control.includes("工作区默认"), "Mode changes must explain personal versus workspace scope"],
+  [control.includes('"switchedPersonal"') && control.includes('"workspaceDefault"') && controlI18n.includes("仅影响你的界面") && controlI18n.includes("工作区默认"), "Mode changes must explain personal versus workspace scope through the i18n contract"],
   [control.includes("message.success") && control.includes("message.error"), "Mode changes must expose success and error feedback"],
   [controlCss.includes("@media (max-width: 1099px)"), "Top-bar mode control must compact at narrow desktop widths"],
   [homeExperience.includes("<HomePage />") && homeExperience.includes("isSimpleMode ?"), "Home must keep one page tree and progressively disclose simple-mode content"],
