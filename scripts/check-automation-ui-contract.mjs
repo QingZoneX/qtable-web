@@ -48,7 +48,7 @@ const checks = [
     editor.includes("AUTOMATION_PREVIEW") &&
       editor.includes("previewSavedRule") &&
       pageI18n.includes('"editor.previewCurrent": "预览当前版本"') &&
-      pageI18n.includes('"editor.previewCurrent": "Preview saved version"'),
+      pageI18n.includes('"editor.previewCurrent": "Preview current version"'),
     "Existing rules must expose the backend preview capability",
   ],
   [
