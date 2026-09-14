@@ -51,11 +51,10 @@ assert.match(authStore, /register: async[\s\S]*?await clearPrivateBusinessCaches
 assert.match(authStore, /res\.status === 401 \|\| res\.status === 403[\s\S]*?await clearPrivateBusinessCaches\(\)/);
 assert.match(authStore, /handleAuthExpired[\s\S]*?await clearPrivateBusinessCaches\(\)/);
 
-const swLocationStart = nginx.indexOf("location = /sw.js");
-const staticLocationStart = nginx.indexOf("location ~* \\\\.(js|css", swLocationStart);
-assert.ok(swLocationStart >= 0, "nginx must have an exact /sw.js location");
-assert.ok(staticLocationStart > swLocationStart, "/sw.js exact location must precede immutable JS rule");
-const swLocation = nginx.slice(swLocationStart, staticLocationStart);
+const swLocationMatch = nginx.match(/location\s*=\s*\/sw\.js\s*\{([\s\S]*?)\n\s*\}/);
+assert.ok(swLocationMatch, "nginx must have an exact /sw.js location");
+assert.match(nginx, /location\s+~\*\s+\\\.\(js\|css/, "nginx immutable static asset rule missing");
+const swLocation = swLocationMatch[0];
 assert.match(swLocation, /Cache-Control "no-store, no-cache, must-revalidate"/);
 assert.match(swLocation, /Service-Worker-Allowed "\/"/);
 assert.equal(swLocation.includes("immutable"), false, "/sw.js must never be immutable cached");
