@@ -1,14 +1,33 @@
+import { registerHooks } from "node:module";
 import test from "node:test";
 import assert from "node:assert/strict";
-import {
+
+registerHooks({
+  resolve(specifier, context, nextResolve) {
+    if (
+      (specifier.startsWith("./") || specifier.startsWith("../")) &&
+      !/\.[cm]?[jt]sx?$/.test(specifier)
+    ) {
+      try {
+        return nextResolve(`${specifier}.ts`, context);
+      } catch {
+        // Fall through to Node's default resolution so genuine missing modules
+        // keep their original error and stack trace.
+      }
+    }
+    return nextResolve(specifier, context);
+  },
+});
+
+const {
   mergeSettingsWorkspaces,
   resolveSettingsWorkspaceId,
   workspaceRoleLabel,
-} from "../src/components/Settings/settingsModel.ts";
-import {
+} = await import("../src/components/Settings/settingsModel.ts");
+const {
   getLandingPreference,
   setLandingPreference,
-} from "../src/components/Home/homePreferences.ts";
+} = await import("../src/components/Home/homePreferences.ts");
 
 test("workspace merge deduplicates owned/invited and preserves ownership", () => {
   const workspaces = mergeSettingsWorkspaces({
