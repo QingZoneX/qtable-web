@@ -80,7 +80,7 @@ jobs:
           test -f .e2e-backend/app/main.py
           mkdir -p .release-e2e-artifacts
           {
-            echo "QTableUI=$ACTUAL_UI_SHA"
+            echo "qtable-web=$ACTUAL_UI_SHA"
             echo "qtable-server=$QTABLE_BACKEND_SHA"
             echo "event=${GITHUB_EVENT_NAME}"
             echo "ref=${GITHUB_REF}"
