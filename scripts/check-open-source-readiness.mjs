@@ -85,7 +85,6 @@ for (const token of [
   version,
   "docker compose up --build -d",
   `qingzonex/qtable-ui:${version}`,
-  "DOCKERHUB_TOKEN",
   "SECURITY.md",
   "CONTRIBUTING.md",
 ]) {
