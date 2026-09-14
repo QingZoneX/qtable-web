@@ -24,6 +24,7 @@ const {
   resolveSettingsWorkspaceId,
   workspaceRoleLabel,
 } = await import("../src/components/Settings/settingsModel.ts");
+const { settingsT } = await import("../src/components/Settings/settingsI18n.ts");
 const {
   getLandingPreference,
   setLandingPreference,
@@ -61,11 +62,11 @@ test("settings workspace resolution keeps valid preference and safely falls back
 });
 
 test("workspace role labels do not invent elevated permissions", () => {
-  assert.equal(workspaceRoleLabel("owner"), "所有者");
-  assert.equal(workspaceRoleLabel("editor"), "编辑者");
-  assert.equal(workspaceRoleLabel("viewer"), "查看者");
+  assert.equal(workspaceRoleLabel("owner"), settingsT("roleOwner"));
+  assert.equal(workspaceRoleLabel("editor"), settingsT("roleEditor"));
+  assert.equal(workspaceRoleLabel("viewer"), settingsT("roleViewer"));
   assert.equal(workspaceRoleLabel("custom"), "custom");
-  assert.equal(workspaceRoleLabel(undefined), "未知");
+  assert.equal(workspaceRoleLabel(undefined), settingsT("roleUnknown"));
 });
 
 test("landing preference acknowledges successful browser persistence", () => {
