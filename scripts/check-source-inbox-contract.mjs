@@ -70,14 +70,14 @@ for (const forbidden of [
 for (const token of [
   "InboxOutlined",
   "openSourceInbox",
-  'aria-label="来源收件箱"',
+  'aria-label={t("shell.sourceInbox")}',
   'aria-haspopup="dialog"',
   "qtable-primary-rail-utilities",
 ]) {
   if (!primaryRail.includes(token)) fail(`Primary utility rail Inbox entry is missing: ${token}`);
 }
 const utilityRailIndex = primaryRail.indexOf("qtable-primary-rail-utilities");
-const inboxActionIndex = primaryRail.indexOf('aria-label="来源收件箱"');
+const inboxActionIndex = primaryRail.indexOf('aria-label={t("shell.sourceInbox")}');
 const utilityItemsIndex = primaryRail.indexOf("{utilityItems.map(renderItem)}");
 if (
   utilityRailIndex < 0 ||

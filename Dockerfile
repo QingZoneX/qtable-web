@@ -10,7 +10,7 @@ WORKDIR /app
 ARG NPM_REGISTRY=https://registry.npmjs.org
 ENV npm_config_registry=${NPM_REGISTRY}
 
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json .npmrc ./
 # Install the locked JavaScript toolchain without package lifecycle scripts.
 RUN npm ci --ignore-scripts --no-audit --no-fund
 
@@ -20,15 +20,19 @@ RUN npm run build
 # ---- 运行阶段 ----
 FROM ${NGINX_IMAGE}
 
+# Keep Alpine runtime packages current so the final image picks up security
+# fixes published after the floating nginx:alpine base image was built.
+RUN apk upgrade --no-cache
+
 ARG QTABLE_UI_VERSION=0.0.0-dev
 ARG QTABLE_UI_REVISION=unknown
 ARG QTABLE_UI_CREATED=1970-01-01T00:00:00Z
 
 LABEL org.opencontainers.image.title="QTableUI" \
       org.opencontainers.image.description="React frontend for the QTable AI-native multidimensional-table system" \
-      org.opencontainers.image.source="https://github.com/QingZoneX/QTableUI" \
-      org.opencontainers.image.url="https://github.com/QingZoneX/QTableUI" \
-      org.opencontainers.image.documentation="https://github.com/QingZoneX/QTableUI#readme" \
+      org.opencontainers.image.source="https://github.com/QingZoneX/qtable-web" \
+      org.opencontainers.image.url="https://github.com/QingZoneX/qtable-web" \
+      org.opencontainers.image.documentation="https://github.com/QingZoneX/qtable-web#readme" \
       org.opencontainers.image.licenses="Apache-2.0" \
       org.opencontainers.image.version="${QTABLE_UI_VERSION}" \
       org.opencontainers.image.revision="${QTABLE_UI_REVISION}" \

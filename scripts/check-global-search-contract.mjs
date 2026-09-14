@@ -8,6 +8,7 @@ const fail = (message) => {
 
 const graphql = read("src/lib/graphql.ts");
 const palette = read("src/components/GlobalCommandPalette.tsx");
+const paletteI18n = read("src/components/commandPaletteI18n.ts");
 const smartTable = read("src/components/SmartTable/index.tsx");
 
 if (!graphql.includes("globalSearch(") || !graphql.includes("GLOBAL_SEARCH")) {
@@ -22,8 +23,18 @@ if (!palette.includes("event.metaKey || event.ctrlKey")) {
 if (!palette.includes("ArrowDown") || !palette.includes("ArrowUp")) {
   fail("keyboard result navigation is missing");
 }
-if (!palette.includes("nextCursor") || !palette.includes("加载更多")) {
-  fail("server cursor pagination is not wired into the palette");
+for (const token of [
+  "nextCursor",
+  "const loadMore = useCallback",
+  "cursor: nextCursor",
+  'commandPaletteT("loadMore")',
+]) {
+  if (!palette.includes(token)) {
+    fail(`server cursor pagination is not wired into the palette: ${token}`);
+  }
+}
+if (!paletteI18n.includes('loadMore: "加载更多"') || !paletteI18n.includes('loadMore: "Load more"')) {
+  fail("global-search pagination translations are missing");
 }
 if (palette.includes("useSmartTableStore") || palette.includes(".records.filter(")) {
   fail("global palette must not search the browser's loaded record window");
