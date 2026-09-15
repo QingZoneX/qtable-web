@@ -1,14 +1,34 @@
+import { registerHooks } from "node:module";
 import test from "node:test";
 import assert from "node:assert/strict";
-import {
+
+registerHooks({
+  resolve(specifier, context, nextResolve) {
+    if (
+      (specifier.startsWith("./") || specifier.startsWith("../")) &&
+      !/\.[cm]?[jt]sx?$/.test(specifier)
+    ) {
+      try {
+        return nextResolve(`${specifier}.ts`, context);
+      } catch {
+        // Fall through to Node's default resolution so genuine missing modules
+        // keep their original error and stack trace.
+      }
+    }
+    return nextResolve(specifier, context);
+  },
+});
+
+const {
   mergeSettingsWorkspaces,
   resolveSettingsWorkspaceId,
   workspaceRoleLabel,
-} from "../src/components/Settings/settingsModel.ts";
-import {
+} = await import("../src/components/Settings/settingsModel.ts");
+const { settingsT } = await import("../src/components/Settings/settingsI18n.ts");
+const {
   getLandingPreference,
   setLandingPreference,
-} from "../src/components/Home/homePreferences.ts";
+} = await import("../src/components/Home/homePreferences.ts");
 
 test("workspace merge deduplicates owned/invited and preserves ownership", () => {
   const workspaces = mergeSettingsWorkspaces({
@@ -42,11 +62,11 @@ test("settings workspace resolution keeps valid preference and safely falls back
 });
 
 test("workspace role labels do not invent elevated permissions", () => {
-  assert.equal(workspaceRoleLabel("owner"), "所有者");
-  assert.equal(workspaceRoleLabel("editor"), "编辑者");
-  assert.equal(workspaceRoleLabel("viewer"), "查看者");
+  assert.equal(workspaceRoleLabel("owner"), settingsT("roleOwner"));
+  assert.equal(workspaceRoleLabel("editor"), settingsT("roleEditor"));
+  assert.equal(workspaceRoleLabel("viewer"), settingsT("roleViewer"));
   assert.equal(workspaceRoleLabel("custom"), "custom");
-  assert.equal(workspaceRoleLabel(undefined), "未知");
+  assert.equal(workspaceRoleLabel(undefined), settingsT("roleUnknown"));
 });
 
 test("landing preference acknowledges successful browser persistence", () => {
