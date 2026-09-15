@@ -268,12 +268,19 @@ export function TemplateSelector({
     ];
   }, [scope, templates]);
 
+  const activeCategory = categoryItems.some((item) => item.value === category)
+    ? category
+    : "all";
+
   const visibleTemplates = useMemo(() => {
     const query = search.trim().toLocaleLowerCase();
     return templates
       .filter((item) => {
         if (item.scope !== scope || item.status !== "active") return false;
-        if (category !== "all" && (item.category || "general") !== category) {
+        if (
+          activeCategory !== "all" &&
+          (item.category || "general") !== activeCategory
+        ) {
           return false;
         }
         if (!query) return true;
@@ -288,48 +295,28 @@ export function TemplateSelector({
         return haystack.includes(query);
       })
       .sort((left, right) => {
-        if (category !== "all") return 0;
+        if (activeCategory !== "all") return 0;
         if (left.id === BLANK_TEMPLATE_ID) return -1;
         if (right.id === BLANK_TEMPLATE_ID) return 1;
         return 0;
       });
-  }, [category, scope, search, templates]);
+  }, [activeCategory, scope, search, templates]);
 
-  useEffect(() => {
-    if (!open) return;
-    setCategory("all");
-    setSearch("");
-  }, [open]);
+  const activeSelectedTemplateId =
+    selectedTemplateId &&
+    visibleTemplates.some((item) => item.id === selectedTemplateId)
+      ? selectedTemplateId
+      : visibleTemplates[0]?.id || null;
 
   useEffect(() => {
     if (!open) return;
     templateListRef.current?.scrollTo({ top: 0 });
-  }, [category, open, scope, search]);
+  }, [activeCategory, open, scope, search]);
 
   useEffect(() => {
     if (!open) return;
     previewScrollRef.current?.scrollTo({ top: 0 });
-  }, [open, selectedTemplateId]);
-
-  useEffect(() => {
-    if (category === "all") return;
-    if (!categoryItems.some((item) => item.value === category)) {
-      setCategory("all");
-    }
-  }, [category, categoryItems]);
-
-  useEffect(() => {
-    if (visibleTemplates.length === 0) {
-      setSelectedTemplateId(null);
-      return;
-    }
-    if (
-      !selectedTemplateId ||
-      !visibleTemplates.some((item) => item.id === selectedTemplateId)
-    ) {
-      setSelectedTemplateId(visibleTemplates[0].id);
-    }
-  }, [selectedTemplateId, visibleTemplates]);
+  }, [activeSelectedTemplateId, open]);
 
   const {
     data: detailData,
@@ -338,18 +325,18 @@ export function TemplateSelector({
     refetch: refetchDetail,
   } = useQuery<{ templateDetail: TemplateInfo }>(GET_TEMPLATE_DETAIL, {
     variables: {
-      templateId: selectedTemplateId || "",
+      templateId: activeSelectedTemplateId || "",
       workspaceId,
       includeArchived: false,
     },
-    skip: !open || !selectedTemplateId,
+    skip: !open || !activeSelectedTemplateId,
     fetchPolicy: "network-only",
     nextFetchPolicy: "cache-first",
   });
 
   const selectedTemplate =
     detailData?.templateDetail ||
-    visibleTemplates.find((item) => item.id === selectedTemplateId) ||
+    visibleTemplates.find((item) => item.id === activeSelectedTemplateId) ||
     null;
   const snapshot = selectedTemplate?.snapshot;
   const fields = snapshot?.fields || [];
@@ -370,16 +357,29 @@ export function TemplateSelector({
     },
   ];
 
+  const handleClose = () => {
+    setCategory("all");
+    setSearch("");
+    setSelectedTemplateId(null);
+    onClose();
+  };
+
+  const handleScopeChange = (key: string) => {
+    setScope(key as TemplateScope);
+    setCategory("all");
+    setSelectedTemplateId(null);
+  };
+
   const handleUseTemplate = (template: TemplateInfo | null = selectedTemplate) => {
     if (!template || template.status !== "active") return;
     void onSelect(template.id);
-    onClose();
+    handleClose();
   };
 
   return (
     <Modal
       open={open}
-      onCancel={onClose}
+      onCancel={handleClose}
       footer={null}
       width={1240}
       destroyOnClose
@@ -405,7 +405,7 @@ export function TemplateSelector({
     >
       <Tabs
         activeKey={scope}
-        onChange={(key) => setScope(key as TemplateScope)}
+        onChange={handleScopeChange}
         items={tabItems}
         className="qtable-template-tabs"
       />
@@ -417,7 +417,7 @@ export function TemplateSelector({
           data-testid="template-category-rail"
         >
           {categoryItems.map((item) => {
-            const selected = category === item.value;
+            const selected = activeCategory === item.value;
             const theme = getCategoryTheme(item.value === "all" ? null : item.value);
             return (
               <button
@@ -425,7 +425,10 @@ export function TemplateSelector({
                 type="button"
                 aria-current={selected ? "true" : undefined}
                 className={`qtable-template-category-item${selected ? " is-selected" : ""}`}
-                onClick={() => setCategory(item.value)}
+                onClick={() => {
+                  setCategory(item.value);
+                  setSelectedTemplateId(null);
+                }}
               >
                 <span
                   className={`qtable-template-category-icon category-${item.value === "all" ? "all" : theme}`}
@@ -478,7 +481,7 @@ export function TemplateSelector({
             ) : (
               <div className="qtable-template-card-grid">
                 {visibleTemplates.map((template) => {
-                  const selected = template.id === selectedTemplateId;
+                  const selected = template.id === activeSelectedTemplateId;
                   return (
                     <button
                       key={template.id}
@@ -533,7 +536,7 @@ export function TemplateSelector({
         </div>
 
         <div className="qtable-template-preview">
-          {!selectedTemplateId ? (
+          {!activeSelectedTemplateId ? (
             <div className="qtable-template-state">
               <Empty description={t("template.preview")} />
             </div>

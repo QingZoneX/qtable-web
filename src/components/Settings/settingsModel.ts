@@ -1,5 +1,4 @@
-import { productLocaleCompare } from "../../lib/productI18n";
-import { settingsT } from "./settingsI18n";
+import { getLanguage } from "../../lib/i18n.ts";
 
 export type WorkspaceSummary = {
   id: string;
@@ -28,7 +27,7 @@ export const mergeSettingsWorkspaces = (
     byId.set(workspace.id, { ...workspace, owned: false });
   }
   return [...byId.values()].sort((left, right) =>
-    productLocaleCompare(left.name, right.name),
+    left.name.localeCompare(right.name, getLanguage()),
   );
 };
 
@@ -42,9 +41,25 @@ export const resolveSettingsWorkspaceId = (
   return workspaces[0]?.id || "";
 };
 
+const roleLabels = {
+  "zh-CN": {
+    owner: "所有者",
+    editor: "编辑者",
+    viewer: "查看者",
+    unknown: "未知",
+  },
+  "en-US": {
+    owner: "Owner",
+    editor: "Editor",
+    viewer: "Viewer",
+    unknown: "Unknown",
+  },
+} as const;
+
 export const workspaceRoleLabel = (role?: string | null): string => {
-  if (role === "owner") return settingsT("roleOwner");
-  if (role === "editor") return settingsT("roleEditor");
-  if (role === "viewer") return settingsT("roleViewer");
-  return role || settingsT("roleUnknown");
+  const labels = roleLabels[getLanguage()];
+  if (role === "owner") return labels.owner;
+  if (role === "editor") return labels.editor;
+  if (role === "viewer") return labels.viewer;
+  return role || labels.unknown;
 };
