@@ -140,7 +140,7 @@ jobs:
             --base-url http://127.0.0.1:9100 \
             --result .release-e2e-artifacts/attachment-result.json
 
-      - name: Verify attachment registry and physical object purge
+      - name: Verify registry and physical object purge
         working-directory: .e2e-backend
         run: |
           ATTACHMENT_ID="$(python3 -c 'import json; print(json.load(open("../.release-e2e-artifacts/attachment-result.json"))["attachmentId"])')"

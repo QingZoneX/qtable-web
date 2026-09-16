@@ -18,8 +18,8 @@ on:
       - "scripts/check-docker-runtime.py"
       - ".github/workflows/container-distribution.yml"
       - ".github/workflows/docker-publish.yml"
+  # 任意分支推送即运行（不必先开 PR），路径过滤保持不变。
   push:
-    branches: [main]
     paths:
       - "Dockerfile"
       - "docker-entrypoint.sh"

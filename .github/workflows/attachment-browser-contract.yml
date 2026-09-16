@@ -11,8 +11,8 @@ on:
       - "src/components/SmartTable/editors/AttachmentEditor.tsx"
       - "src/components/SmartTable/editors/ReactEditor.tsx"
       - "src/components/SmartTable/renderers/renderAttachment.tsx"
+  # 任意分支推送即运行（不必先开 PR），路径过滤保持不变。
   push:
-    branches: [main]
     paths:
       - ".github/workflows/attachment-browser-contract.yml"
       - "e2e/**"

@@ -19,8 +19,8 @@ on:
       - "e2e/run_service_worker_private_cache_gate.py"
       - "e2e/webdriver_client.py"
       - "package.json"
+  # 任意分支推送即运行（不必先开 PR），路径过滤保持不变。
   push:
-    branches: [main]
     paths:
       - ".github/workflows/service-worker-private-cache.yml"
       - "public/sw.js"

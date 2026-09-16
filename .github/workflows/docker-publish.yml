@@ -14,7 +14,9 @@ on:
       - "NOTICE"
       - "scripts/check-open-source-readiness.mjs"
       - "scripts/check-container-distribution-contract.mjs"
+  # 任意分支推送也会跑（只做构建 + 漏洞门禁，不推送镜像——推送只在 tag 上发生）。
   push:
+    branches: ["**"]
     tags:
       - "v*"
 

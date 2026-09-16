@@ -3,8 +3,10 @@ name: Frontend CI
 on:
   pull_request:
     branches: [main]
+  # 任意分支推送即运行，不必先开 PR。
+  # 注意：同仓库分支开 PR 后 pull_request 事件会再跑一遍同名 job（GitHub 侧是两个
+  # 独立的 run）。外部 fork 的 PR 只有 pull_request 事件会触发，所以这个触发器保留。
   push:
-    branches: [main]
 
 jobs:
   build:
