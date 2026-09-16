@@ -84,7 +84,7 @@ def assert_record_persistence(browser: Browser, table_id: str, view_id: str, rec
         {
             "tableId": table_id,
             "filters": [{"fieldId": "release_status", "operator": "equals", "value": "ready"}],
-            "sorts": [{"fieldId": "release_title", "direction": "asc"}],
+            "sorts": [{"fieldId": "release_title", "order": "asc"}],
             "offset": 0,
             "limit": 20,
         },

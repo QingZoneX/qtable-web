@@ -4,6 +4,14 @@ from webdriver_client import Browser
 from release_gate_support import fail, gql_data
 
 
+def _has_sort(config: dict, *, field_id: str, order: str) -> bool:
+    """Match the persisted sort contract, which has no client-side id."""
+    return any(
+        str(item.get("fieldId")) == field_id and str(item.get("order")) == order
+        for item in (config.get("sorts") or [])
+    )
+
+
 def assert_filter_sort_persistence(browser: Browser, *, table_id: str) -> str:
     second = gql_data(
         browser,
@@ -24,7 +32,6 @@ def assert_filter_sort_persistence(browser: Browser, *, table_id: str) -> str:
         "value": "ready",
     }
     release_sort = {
-        "id": "release-sort",
         "fieldId": "release_title",
         "order": "desc",
     }
@@ -46,10 +53,7 @@ def assert_filter_sort_persistence(browser: Browser, *, table_id: str) -> str:
     )
     if not any(str(item.get("id")) == "release-filter" for item in (config.get("filters") or [])):
         fail("saved filter missing after round-trip", config)
-    if not any(
-        str(item.get("id")) == "release-sort" and str(item.get("order")) == "desc"
-        for item in (config.get("sorts") or [])
-    ):
+    if not _has_sort(config, field_id="release_title", order="desc"):
         fail("saved sort missing after round-trip", config)
 
     page = gql_data(
