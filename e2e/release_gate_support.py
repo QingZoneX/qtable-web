@@ -37,6 +37,37 @@ const [query, variables] = arguments;
 })().catch((error) => done({networkError: String(error && error.stack || error)}));
 """
 
+INSTALL_FETCH_CAPTURE = r"""
+const [captureKey, endpoint] = arguments;
+const originalFetch = window.fetch.bind(window);
+window[captureKey] = null;
+window.fetch = async (...fetchArgs) => {
+  const input = fetchArgs[0];
+  const requestUrl = typeof input === 'string'
+    ? input
+    : input && typeof input.url === 'string'
+      ? input.url
+      : String(input || '');
+  let matches = false;
+  try { matches = new URL(requestUrl, window.location.href).pathname === endpoint; } catch (_) {}
+  try {
+    const response = await originalFetch(...fetchArgs);
+    if (matches) {
+      // Successful auth responses contain credentials. Record their status but
+      // never copy their response body into CI diagnostics.
+      const body = response.ok ? '' : (await response.clone().text()).slice(0, 2000);
+      window[captureKey] = {status: response.status, ok: response.ok, body};
+    }
+    return response;
+  } catch (error) {
+    if (matches) {
+      window[captureKey] = {networkError: String(error && error.stack || error)};
+    }
+    throw error;
+  }
+};
+"""
+
 
 def fail(message: str, payload: Any | None = None) -> None:
     if payload is None:
@@ -70,9 +101,45 @@ def body_text(browser: Browser) -> str:
     return str(browser.evaluate("return document.body.innerText") or "")
 
 
+def _install_auth_capture(browser: Browser, capture_key: str, endpoint: str) -> None:
+    browser.evaluate(INSTALL_FETCH_CAPTURE, [capture_key, endpoint])
+
+
+def _wait_for_auth_token(browser: Browser, capture_key: str, label: str) -> None:
+    def auth_outcome() -> dict[str, Any] | None:
+        if browser.evaluate("return Boolean(localStorage.getItem('qtable_token'))"):
+            return {"ok": True}
+        response = browser.evaluate(
+            "return window[arguments[0]] || null",
+            [capture_key],
+        )
+        if response and (response.get("networkError") or response.get("ok") is False):
+            return {"ok": False, "response": response}
+        return None
+
+    try:
+        outcome = wait_for(auth_outcome, timeout=30, label=label)
+    except AssertionError:
+        fail(
+            f"{label} did not establish a session",
+            {
+                "response": browser.evaluate(
+                    "return window[arguments[0]] || null",
+                    [capture_key],
+                ),
+                "url": browser.current_url(),
+                "body": body_text(browser)[-2000:],
+            },
+        )
+    if not outcome["ok"]:
+        fail(f"{label} request failed", outcome["response"])
+
+
 def register_ui(browser: Browser, email: str, password: str, name: str) -> None:
     browser.navigate("/register")
     wait_for(lambda: browser.find("input[type='email']"), label="register email")
+    capture_key = "__releaseE2ERegisterResponse"
+    _install_auth_capture(browser, capture_key, "/auth/register")
     browser.send_keys(browser.find("input[autocomplete='name']"), name)
     browser.send_keys(browser.find("input[type='email']"), email)
     passwords = browser.find_all("input[type='password']")
@@ -80,11 +147,7 @@ def register_ui(browser: Browser, email: str, password: str, name: str) -> None:
         fail("register password field missing")
     browser.send_keys(passwords[0], password)
     browser.click(browser.find("button[type='submit']"))
-    wait_for(
-        lambda: browser.evaluate("return Boolean(localStorage.getItem('qtable_token'))"),
-        timeout=30,
-        label="registration token",
-    )
+    _wait_for_auth_token(browser, capture_key, "registration")
     wait_for(
         lambda: "/register" not in browser.current_url(),
         timeout=30,
@@ -95,17 +158,15 @@ def register_ui(browser: Browser, email: str, password: str, name: str) -> None:
 def login_ui(browser: Browser, email: str, password: str) -> None:
     browser.navigate("/login")
     wait_for(lambda: browser.find("input[type='email']"), label="login email")
+    capture_key = "__releaseE2ELoginResponse"
+    _install_auth_capture(browser, capture_key, "/auth/login")
     browser.send_keys(browser.find("input[type='email']"), email)
     passwords = browser.find_all("input[type='password']")
     if not passwords:
         fail("login password field missing")
     browser.send_keys(passwords[0], password)
     browser.click(browser.find("button[type='submit']"))
-    wait_for(
-        lambda: browser.evaluate("return Boolean(localStorage.getItem('qtable_token'))"),
-        timeout=30,
-        label="login token",
-    )
+    _wait_for_auth_token(browser, capture_key, "login")
     wait_for(
         lambda: "/login" not in browser.current_url(),
         timeout=30,

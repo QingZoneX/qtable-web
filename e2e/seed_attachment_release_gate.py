@@ -21,9 +21,9 @@ VIEW_ID = "view-attachment-browser-e2e"
 ALICE_ID = 927101
 BOB_ID = 927102
 MANAGER_ID = 927103
-ALICE_EMAIL = "attachment-e2e-alice@example.test"
-BOB_EMAIL = "attachment-e2e-bob@example.test"
-MANAGER_EMAIL = "attachment-e2e-manager@example.test"
+ALICE_EMAIL = "attachment-e2e-alice@example.com"
+BOB_EMAIL = "attachment-e2e-bob@example.com"
+MANAGER_EMAIL = "attachment-e2e-manager@example.com"
 
 
 async def main():

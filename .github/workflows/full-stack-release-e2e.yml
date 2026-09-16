@@ -51,12 +51,12 @@ jobs:
       REDIS_HOST_PORT: "6379"
       MINIO_API_HOST_PORT: "9001"
       MINIO_CONSOLE_HOST_PORT: "9002"
-      QTABLE_RELEASE_E2E_ALICE: release-alice-${{ github.run_id }}@example.test
-      QTABLE_RELEASE_E2E_BOB: release-bob-${{ github.run_id }}@example.test
+      QTABLE_RELEASE_E2E_ALICE: release-alice-${{ github.run_id }}@example.com
+      QTABLE_RELEASE_E2E_BOB: release-bob-${{ github.run_id }}@example.com
       QTABLE_RELEASE_E2E_PASSWORD: release-${{ github.run_id }}-${{ github.run_attempt }}-QTable
-      QTABLE_E2E_ALICE_EMAIL: attachment-alice-${{ github.run_id }}@example.test
-      QTABLE_E2E_BOB_EMAIL: attachment-bob-${{ github.run_id }}@example.test
-      QTABLE_E2E_MANAGER_EMAIL: attachment-manager-${{ github.run_id }}@example.test
+      QTABLE_E2E_ALICE_EMAIL: attachment-alice-${{ github.run_id }}@example.com
+      QTABLE_E2E_BOB_EMAIL: attachment-bob-${{ github.run_id }}@example.com
+      QTABLE_E2E_MANAGER_EMAIL: attachment-manager-${{ github.run_id }}@example.com
       QTABLE_E2E_PASSWORD: attachment-${{ github.run_id }}-${{ github.run_attempt }}-QTable
 
     steps:
@@ -168,6 +168,7 @@ jobs:
         with:
           name: full-stack-release-e2e-${{ env.QTABLE_UI_SHA }}
           path: .release-e2e-artifacts/
+          include-hidden-files: true
           if-no-files-found: warn
           retention-days: 14
 

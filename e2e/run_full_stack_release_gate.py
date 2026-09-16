@@ -137,8 +137,8 @@ def main() -> None:
     parser.add_argument("--artifacts", default=".release-e2e-artifacts")
     args = parser.parse_args()
 
-    alice_email = os.environ.get("QTABLE_RELEASE_E2E_ALICE", "release.alice@example.test")
-    bob_email = os.environ.get("QTABLE_RELEASE_E2E_BOB", "release.bob@example.test")
+    alice_email = os.environ.get("QTABLE_RELEASE_E2E_ALICE", "release.alice@example.com")
+    bob_email = os.environ.get("QTABLE_RELEASE_E2E_BOB", "release.bob@example.com")
     password = os.environ.get("QTABLE_RELEASE_E2E_PASSWORD", "release-e2e-password-170")
     artifacts = Path(args.artifacts)
     artifacts.mkdir(parents=True, exist_ok=True)
