@@ -1,21 +1,10 @@
 name: Full-Stack Release E2E
 
+# 分级约定：真实 Chrome + 全栈 docker compose 的重流程只在「发布」时跑。
+#   - PR / main 推送的快反馈由 frontend-ci.yml 与 attachment-browser-contract.yml 承担；
+#   - 本工作流是 release 证据（tag v* 由根目录 release.sh 推送），也可手动触发。
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - ".github/workflows/full-stack-release-e2e.yml"
-      - "e2e/**"
-      - "public/sw.js"
-      - "src/**"
-      - "package.json"
-      - "package-lock.json"
-      - "Dockerfile"
-      - "nginx.conf.template"
-      - "docker-entrypoint.sh"
-      - ".dockerignore"
   push:
-    branches: [main]
     tags: ["v*"]
   workflow_dispatch:
 
@@ -31,8 +20,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
-      QTABLE_BACKEND_SHA: 86a348ecc843f2bc3eb1451a9cd4ddcd31defa49
-      QTABLE_UI_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      # ▼ 后端 revision 的唯一来源：被验证的 qtable-server 修订（v0.1.1-alpha）。
+      #   改动时只改这一处——工作流的其余部分都从它派生，
+      #   并把实际解析出的 SHA 写进 .release-e2e-artifacts/revisions.txt。
+      #   必须是 QingZoneX/qtable-server 中真实存在的 ref（tag 或 40 位 SHA）。
+      QTABLE_SERVER_REVISION: 86a348ecc843f2bc3eb1451a9cd4ddcd31defa49
       APP_ENV: production
       PASSWORD_RESET_DEBUG_TOKEN_ENABLED: "false"
       PASSWORD_RESET_RATE_LIMIT_ENABLED: "true"
@@ -51,12 +43,12 @@ jobs:
       REDIS_HOST_PORT: "6379"
       MINIO_API_HOST_PORT: "9001"
       MINIO_CONSOLE_HOST_PORT: "9002"
-      QTABLE_RELEASE_E2E_ALICE: release-alice-${{ github.run_id }}@example.test
-      QTABLE_RELEASE_E2E_BOB: release-bob-${{ github.run_id }}@example.test
+      QTABLE_RELEASE_E2E_ALICE: release-alice-${{ github.run_id }}@example.com
+      QTABLE_RELEASE_E2E_BOB: release-bob-${{ github.run_id }}@example.com
       QTABLE_RELEASE_E2E_PASSWORD: release-${{ github.run_id }}-${{ github.run_attempt }}-QTable
-      QTABLE_E2E_ALICE_EMAIL: attachment-alice-${{ github.run_id }}@example.test
-      QTABLE_E2E_BOB_EMAIL: attachment-bob-${{ github.run_id }}@example.test
-      QTABLE_E2E_MANAGER_EMAIL: attachment-manager-${{ github.run_id }}@example.test
+      QTABLE_E2E_ALICE_EMAIL: attachment-alice-${{ github.run_id }}@example.com
+      QTABLE_E2E_BOB_EMAIL: attachment-bob-${{ github.run_id }}@example.com
+      QTABLE_E2E_MANAGER_EMAIL: attachment-manager-${{ github.run_id }}@example.com
       QTABLE_E2E_PASSWORD: attachment-${{ github.run_id }}-${{ github.run_attempt }}-QTable
 
     steps:
@@ -64,30 +56,36 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
-          ref: ${{ env.QTABLE_UI_SHA }}
 
       - name: Export QTable backend exact revision
-        uses: QingZoneX/qtable-server/.github/actions/export-source@86a348ecc843f2bc3eb1451a9cd4ddcd31defa49
+        uses: actions/checkout@v7
         with:
-          destination: .e2e-backend
+          repository: QingZoneX/qtable-server
+          ref: ${{ env.QTABLE_SERVER_REVISION }}
+          path: .e2e-backend
+          fetch-depth: 1
 
       - name: Record exact tested revisions
         run: |
           set -euo pipefail
           ACTUAL_UI_SHA="$(git rev-parse HEAD)"
-          test "$ACTUAL_UI_SHA" = "$QTABLE_UI_SHA"
+          ACTUAL_BACKEND_SHA="$(git -C .e2e-backend rev-parse HEAD)"
           test -f .e2e-backend/docker-compose.yml
           test -f .e2e-backend/app/main.py
+          test -f .e2e-backend/requirements.txt
           mkdir -p .release-e2e-artifacts
           {
             echo "qtable-web=$ACTUAL_UI_SHA"
-            echo "qtable-server=$QTABLE_BACKEND_SHA"
+            echo "qtable-server=$ACTUAL_BACKEND_SHA"
+            echo "qtable-server-requested=$QTABLE_SERVER_REVISION"
             echo "event=${GITHUB_EVENT_NAME}"
             echo "ref=${GITHUB_REF}"
           } | tee .release-e2e-artifacts/revisions.txt
 
       - name: Validate release gate source
-        run: python3 -m py_compile e2e/*.py
+        run: |
+          python3 -m py_compile e2e/*.py
+          python3 -m unittest discover -s e2e -p "test_*.py"
 
       - name: Reset previous stack state
         working-directory: .e2e-backend
@@ -118,9 +116,11 @@ jobs:
 
       - name: Run primary fresh-install two-user browser release gate
         run: |
+          set -o pipefail
           python3 e2e/run_full_stack_release_gate.py \
             --base-url http://127.0.0.1:9100 \
-            --artifacts .release-e2e-artifacts
+            --artifacts .release-e2e-artifacts \
+            2>&1 | tee .release-e2e-artifacts/release-browser-gate.log
 
       - name: Run private-cache browser regression gate
         run: |
@@ -128,7 +128,6 @@ jobs:
             --result .release-e2e-artifacts/service-worker-result.json
 
       - name: Seed attachment permission fixture for full main/tag verification
-        if: github.event_name != 'pull_request'
         working-directory: .e2e-backend
         run: |
           docker compose exec -T \
@@ -136,14 +135,12 @@ jobs:
             qtable python - < ../e2e/seed_attachment_release_gate.py
 
       - name: Run attachment upload refresh permission recycle purge lifecycle
-        if: github.event_name != 'pull_request'
         run: |
           python3 e2e/run_attachment_editor_release_gate.py \
             --base-url http://127.0.0.1:9100 \
             --result .release-e2e-artifacts/attachment-result.json
 
-      - name: Verify attachment registry and physical object purge
-        if: github.event_name != 'pull_request'
+      - name: Verify registry and physical object purge
         working-directory: .e2e-backend
         run: |
           ATTACHMENT_ID="$(python3 -c 'import json; print(json.load(open("../.release-e2e-artifacts/attachment-result.json"))["attachmentId"])')"
@@ -162,8 +159,9 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: full-stack-release-e2e-${{ env.QTABLE_UI_SHA }}
+          name: full-stack-release-e2e-${{ github.sha }}
           path: .release-e2e-artifacts/
+          include-hidden-files: true
           if-no-files-found: warn
           retention-days: 14
 

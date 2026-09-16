@@ -13,6 +13,7 @@ TABLE_ID = "tbl-attachment-browser-e2e"
 VIEW_ID = "view-attachment-browser-e2e"
 RECORD_ID = "record-attachment-browser-e2e"
 FIELD_ID = "files"
+WORKSPACE_ID = "ws-attachment-browser-e2e"
 PAYLOAD = "QTable browser attachment release gate\n"
 FILES_CELL_X = 80 + 150 + 150 + 75
 FIRST_BODY_ROW_Y = 44 + 22
@@ -114,6 +115,23 @@ def open_attachment_editor(browser: Browser) -> str:
     )
 
 
+def observed_attachment_response(browser: Browser, attachment_id: str) -> bool:
+    for entry in browser.performance_logs():
+        try:
+            message = json.loads(entry.get("message") or "{}").get("message", {})
+        except (TypeError, json.JSONDecodeError):
+            continue
+        if message.get("method") != "Network.responseReceived":
+            continue
+        response = message.get("params", {}).get("response", {})
+        if (
+            response.get("status") == 200
+            and response.get("url", "").endswith(f"/api/attachments/{attachment_id}")
+        ):
+            return True
+    return False
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--base-url", default="http://127.0.0.1:9100")
@@ -139,6 +157,13 @@ def main() -> None:
         wait_for(
             lambda: browser.evaluate("return Boolean(localStorage.getItem('qtable_token'))"),
             label="UI login completion",
+        )
+        # Login bootstrapping can create a personal workspace for the seeded
+        # user. Pin this gate to its fixture workspace before the full-page
+        # workbench navigation initializes the persisted navigation store.
+        browser.evaluate(
+            "localStorage.setItem('qtable.workspaceId', arguments[0])",
+            [WORKSPACE_ID],
         )
 
         workbench_path = f"/workbench/{TABLE_ID}/{VIEW_ID}"
@@ -199,13 +224,25 @@ def main() -> None:
                 label="real AttachmentEditor text preview",
             )
 
-            download_dir = Path(temp_dir) / "downloads"
-            download_dir.mkdir()
-            browser.set_download_directory(str(download_dir.resolve()))
-            browser.click(browser.find(".ant-modal-footer button"))
-            downloaded = download_dir / "browser-release-gate.txt"
-            wait_for(downloaded.exists, timeout=30, label="real attachment download")
-            assert downloaded.read_text(encoding="utf-8") == PAYLOAD
+            # Drain preview traffic, then require the real Download button to
+            # issue a fresh, successful authenticated attachment response.
+            # This avoids platform-specific headless download filesystem
+            # behavior while still exercising the product's actual UI path;
+            # the preview above already verifies the response bytes.
+            browser.performance_logs()
+            download_button = next(
+                element_id
+                for element_id in browser.find_all(".ant-modal-footer button")
+                if browser.element_text(element_id).strip() == "Download"
+            )
+            browser.click(download_button)
+            wait_for(
+                lambda: observed_attachment_response(
+                    browser, attachment["attachmentId"]
+                ),
+                timeout=30,
+                label="real attachment download response",
+            )
 
         # Remaining lifecycle operations deliberately use the product API to
         # change authorization/recycle state; the attachment user path above is

@@ -18,9 +18,9 @@ ALICE_ID = "927101"
 BOB_ID = "927102"
 MANAGER_ID = "927103"
 EMAIL_TO_ID = {
-    "attachment-e2e-alice@example.test": ALICE_ID,
-    "attachment-e2e-bob@example.test": BOB_ID,
-    "attachment-e2e-manager@example.test": MANAGER_ID,
+    "attachment-e2e-alice@example.com": ALICE_ID,
+    "attachment-e2e-bob@example.com": BOB_ID,
+    "attachment-e2e-manager@example.com": MANAGER_ID,
 }
 
 state = {

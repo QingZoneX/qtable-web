@@ -35,3 +35,12 @@ id_ed25519
 
 # Generated dependency audit / SBOM artifacts
 .oss-reports/
+
+# Python bytecode produced by the browser release gates (e2e/*.py)
+__pycache__/
+*.py[cod]
+
+# Local release-gate / e2e run artifacts
+.release-e2e-artifacts/
+.e2e-*.json
+*.pid

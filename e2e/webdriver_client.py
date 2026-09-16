@@ -12,6 +12,8 @@ from pathlib import Path
 from typing import Any
 
 ELEMENT_KEY = "element-6066-11e4-a52e-4f735466cecf"
+E2E_LANGUAGE = "zh-CN"
+LANGUAGE_STORAGE_KEY = "qtable.language"
 
 
 class WebDriverError(RuntimeError):
@@ -95,11 +97,13 @@ class Browser:
                                 "--headless=new",
                                 "--no-sandbox",
                                 "--disable-dev-shm-usage",
+                                f"--lang={E2E_LANGUAGE}",
                                 "--window-size=1440,1000",
                             ],
                             "prefs": {
                                 "download.prompt_for_download": False,
                                 "download.directory_upgrade": True,
+                                "intl.accept_languages": "zh-CN,zh",
                             },
                         },
                     }
@@ -111,6 +115,22 @@ class Browser:
             "POST",
             "timeouts",
             {"script": 30000, "pageLoad": 30000, "implicit": 0},
+        )
+        # The release gate asserts the Chinese product contract. GitHub runner
+        # images default to an English browser locale, so seed the product's
+        # persisted language before any application JavaScript runs. The
+        # Chrome locale settings above keep navigator/Accept-Language aligned;
+        # this preload makes the test deterministic even if Chrome changes how
+        # headless locale preferences are exposed.
+        self.cdp(
+            "Page.addScriptToEvaluateOnNewDocument",
+            {
+                "source": (
+                    "try { window.localStorage.setItem("
+                    f"{json.dumps(LANGUAGE_STORAGE_KEY)}, {json.dumps(E2E_LANGUAGE)}"
+                    "); } catch (_) {}"
+                )
+            },
         )
 
     def command(self, method: str, path: str, payload: Any | None = None) -> Any:
@@ -226,6 +246,9 @@ class Browser:
                 "connectionType": "none" if offline else "wifi",
             },
         )
+
+    def set_bypass_service_worker(self, bypass: bool) -> None:
+        self.cdp("Network.setBypassServiceWorker", {"bypass": bypass})
 
     def browser_logs(self) -> list[dict[str, Any]]:
         result = self.command("POST", "log", {"type": "browser"})

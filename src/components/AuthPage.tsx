@@ -159,7 +159,10 @@ export function AuthPage({ mode }: AuthPageProps) {
                 name="name"
                 rules={[{ required: true, message: authT("field.nameRequired") }]}
               >
-                <Input placeholder={authT("field.namePlaceholder")} />
+                <Input
+                  autoComplete="name"
+                  placeholder={authT("field.namePlaceholder")}
+                />
               </Form.Item>
             )}
             {(isLogin || isRegister || isForgot) && (

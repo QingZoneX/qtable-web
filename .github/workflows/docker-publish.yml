@@ -14,7 +14,9 @@ on:
       - "NOTICE"
       - "scripts/check-open-source-readiness.mjs"
       - "scripts/check-container-distribution-contract.mjs"
+  # 任意分支推送也会跑（只做构建 + 漏洞门禁，不推送镜像——推送只在 tag 上发生）。
   push:
+    branches: ["**"]
     tags:
       - "v*"
 
@@ -127,10 +129,17 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.created=${{ steps.identity.outputs.created }}
 
+      # 发布镜像刻意使用官方上游 Node/Nginx 镜像与官方 npm registry。
+      # Dockerfile 的默认值是可国内直连的镜像源（供 Rainbond 等不带 --build-arg 的
+      # 源码构建使用），因此这里必须显式回置官方源，保证发布产物的供应链与
+      # 「official upstream sources」的对外声明一致。
       - name: Build local image for vulnerability gate
         shell: bash
         run: |
           docker build \
+            --build-arg NODE_IMAGE=node:22-alpine \
+            --build-arg NGINX_IMAGE=nginx:alpine \
+            --build-arg NPM_REGISTRY=https://registry.npmjs.org \
             --build-arg QTABLE_UI_VERSION="${{ steps.identity.outputs.version }}" \
             --build-arg QTABLE_UI_REVISION="${GITHUB_SHA}" \
             --build-arg QTABLE_UI_CREATED="${{ steps.identity.outputs.created }}" \
@@ -156,6 +165,9 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           annotations: ${{ steps.meta.outputs.annotations }}
           build-args: |
+            NODE_IMAGE=node:22-alpine
+            NGINX_IMAGE=nginx:alpine
+            NPM_REGISTRY=https://registry.npmjs.org
             QTABLE_UI_VERSION=${{ steps.identity.outputs.version }}
             QTABLE_UI_REVISION=${{ github.sha }}
             QTABLE_UI_CREATED=${{ steps.identity.outputs.created }}

@@ -134,14 +134,26 @@ test('activate removes legacy business caches and keeps only current static cach
   assert.ok(harness.cacheStores.has('qtable-static-v2'));
 });
 
-test('logout cleanup deletes every non-current cache as fail-safe', async () => {
+test('logout cleanup deletes every QTable-owned cache, including current static', async () => {
   const harness = createHarness();
   harness.cacheStores.set('qtable-static-v2', new Map());
   harness.cacheStores.set('api-v1', new Map());
-  harness.cacheStores.set('future-business-cache', new Map());
+  harness.cacheStores.set('qtable-business-v9', new Map());
+  harness.cacheStores.set('unrelated-app-cache', new Map());
 
   await harness.dispatchWaitUntil('message', { type: 'CLEAR_PRIVATE_CACHES' });
-  assert.ok(harness.cacheStores.has('qtable-static-v2'));
+
+  // 登出是 fail-safe 的：连**当前** static 缓存一起清掉，这样将来任何一次回归把业务数据
+  // 写进 QTable 拥有的缓存时，也不会在登出后残留。同一行为由
+  // e2e/run_service_worker_private_cache_gate.py 的 "logout private cache cleanup"
+  // 在真实 Chrome 里断言（它要求清理后不剩任何 qtable-* 缓存）。
+  assert.deepEqual(
+    new Set(harness.deleted),
+    new Set(['qtable-static-v2', 'api-v1', 'qtable-business-v9']),
+  );
+  assert.equal(harness.cacheStores.has('qtable-static-v2'), false);
   assert.equal(harness.cacheStores.has('api-v1'), false);
-  assert.equal(harness.cacheStores.has('future-business-cache'), false);
+  assert.equal(harness.cacheStores.has('qtable-business-v9'), false);
+  // 同源但不属于 QTable 的缓存不能被误删。
+  assert.equal(harness.cacheStores.has('unrelated-app-cache'), true);
 });
