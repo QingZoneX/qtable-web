@@ -15,7 +15,7 @@ on:
       - "docker-entrypoint.sh"
       - ".dockerignore"
   push:
-    branches: [main]
+    branches: [main, fix/main-ci-clean-20260916-v2]
     tags: ["v*"]
   workflow_dispatch:
 
@@ -118,9 +118,11 @@ jobs:
 
       - name: Run primary fresh-install two-user browser release gate
         run: |
+          set -o pipefail
           python3 e2e/run_full_stack_release_gate.py \
             --base-url http://127.0.0.1:9100 \
-            --artifacts .release-e2e-artifacts
+            --artifacts .release-e2e-artifacts \
+            2>&1 | tee .release-e2e-artifacts/release-browser-gate.log
 
       - name: Run private-cache browser regression gate
         run: |
