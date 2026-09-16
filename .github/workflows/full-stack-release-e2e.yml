@@ -87,7 +87,9 @@ jobs:
           } | tee .release-e2e-artifacts/revisions.txt
 
       - name: Validate release gate source
-        run: python3 -m py_compile e2e/*.py
+        run: |
+          python3 -m py_compile e2e/*.py
+          python3 -m unittest discover -s e2e -p "test_*.py"
 
       - name: Reset previous stack state
         working-directory: .e2e-backend

@@ -73,7 +73,7 @@ def body_text(browser: Browser) -> str:
 def register_ui(browser: Browser, email: str, password: str, name: str) -> None:
     browser.navigate("/register")
     wait_for(lambda: browser.find("input[type='email']"), label="register email")
-    browser.send_keys(browser.find("input[placeholder='请输入姓名']"), name)
+    browser.send_keys(browser.find("input[autocomplete='name']"), name)
     browser.send_keys(browser.find("input[type='email']"), email)
     passwords = browser.find_all("input[type='password']")
     if not passwords:
