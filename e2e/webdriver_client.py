@@ -247,6 +247,9 @@ class Browser:
             },
         )
 
+    def set_bypass_service_worker(self, bypass: bool) -> None:
+        self.cdp("Network.setBypassServiceWorker", {"bypass": bypass})
+
     def browser_logs(self) -> list[dict[str, Any]]:
         result = self.command("POST", "log", {"type": "browser"})
         return list(result.get("value") or [])

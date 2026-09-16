@@ -173,6 +173,11 @@ jobs:
       - name: ESLint auth entrypoints
         run: npx eslint src/components/AuthPage.tsx src/store/authStore.ts src/store/passwordResetResponse.ts
 
+      # 原来由 service-worker-private-cache.yml 承担的 PWA 缓存入口 lint，
+      # 随该工作流合并到 service-worker-private-cache.yml（去掉依赖安装）后挪到这里。
+      - name: ESLint PWA service worker cache entrypoint
+        run: npx eslint src/lib/serviceWorkerCache.ts
+
       - name: ESLint design-system shell and locale entrypoints
         run: npx eslint src/App.tsx src/main.tsx src/styles/tokens.ts src/components/AppShell/*.tsx src/lib/shellEvents.ts src/lib/i18nRuntime.ts src/lib/useLanguage.ts src/store/workspaceNavigationStore.ts
 

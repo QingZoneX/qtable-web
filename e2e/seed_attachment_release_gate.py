@@ -21,9 +21,13 @@ VIEW_ID = "view-attachment-browser-e2e"
 ALICE_ID = 927101
 BOB_ID = 927102
 MANAGER_ID = 927103
-ALICE_EMAIL = "attachment-e2e-alice@example.com"
-BOB_EMAIL = "attachment-e2e-bob@example.com"
-MANAGER_EMAIL = "attachment-e2e-manager@example.com"
+ALICE_EMAIL = os.environ.get(
+    "QTABLE_E2E_ALICE_EMAIL", "attachment-e2e-alice@example.com"
+)
+BOB_EMAIL = os.environ.get("QTABLE_E2E_BOB_EMAIL", "attachment-e2e-bob@example.com")
+MANAGER_EMAIL = os.environ.get(
+    "QTABLE_E2E_MANAGER_EMAIL", "attachment-e2e-manager@example.com"
+)
 
 
 async def main():

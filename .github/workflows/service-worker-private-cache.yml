@@ -1,26 +1,39 @@
 name: Service Worker Private Cache Safety
 
+# 合并自原 service-worker-private-cache.yml 与 service-worker-browser-contract.yml：
+# 两者的路径过滤大面积重叠，改一次 sw.js / authStore.ts 会各自跑一遍**同一个**
+# Chrome 门禁。这里保留为一个工作流：静态契约 + 模型测试 + 真实 Chrome 生命周期。
 on:
   pull_request:
     branches: [main]
     paths:
       - ".github/workflows/service-worker-private-cache.yml"
       - "public/sw.js"
+      - "nginx.conf.template"
       - "src/lib/serviceWorkerCache.ts"
       - "src/store/authStore.ts"
+      - "scripts/check-service-worker-cache-contract.mjs"
+      - "scripts/test-service-worker-cache-model.mjs"
       - "scripts/test-service-worker-private-cache.mjs"
+      - "scripts/check-docker-runtime.py"
       - "e2e/run_service_worker_private_cache_gate.py"
       - "e2e/webdriver_client.py"
+      - "package.json"
   push:
     branches: [main]
     paths:
       - ".github/workflows/service-worker-private-cache.yml"
       - "public/sw.js"
+      - "nginx.conf.template"
       - "src/lib/serviceWorkerCache.ts"
       - "src/store/authStore.ts"
+      - "scripts/check-service-worker-cache-contract.mjs"
+      - "scripts/test-service-worker-cache-model.mjs"
       - "scripts/test-service-worker-private-cache.mjs"
+      - "scripts/check-docker-runtime.py"
       - "e2e/run_service_worker_private_cache_gate.py"
       - "e2e/webdriver_client.py"
+      - "package.json"
 
 permissions:
   contents: read
@@ -37,22 +50,28 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: "22"
-          cache: npm
 
-      - name: Install locked dependencies
-        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Compile browser gate sources
+        run: python3 -m py_compile e2e/*.py scripts/check-docker-runtime.py
 
-      - name: Compile browser gate
-        run: python3 -m py_compile e2e/webdriver_client.py e2e/run_service_worker_private_cache_gate.py
+      # 以下三步都是纯 Node 脚本（直接读源码做断言），不需要 node_modules，
+      # 因此本工作流不安装依赖、也不做生产构建：构建由 frontend-ci.yml 覆盖。
+      - name: Service worker cache contract and model tests
+        run: |
+          npm run check:service-worker-cache
+          npm run test:service-worker-cache
+          node --test scripts/test-service-worker-private-cache.mjs
 
-      - name: Service Worker cache contract
-        run: node --test scripts/test-service-worker-private-cache.mjs
-
-      - name: ESLint PWA auth teardown entrypoints
-        run: npx eslint src/lib/serviceWorkerCache.ts src/store/authStore.ts
-
-      - name: Production build
-        run: npm run build
-
+      # 门禁自带 HTTP 服务并直接读 public/sw.js，不依赖 vite dev server 或 dist/。
       - name: Real Chrome private-cache lifecycle gate
-        run: PYTHONPATH=e2e python3 e2e/run_service_worker_private_cache_gate.py
+        run: |
+          python3 e2e/run_service_worker_private_cache_gate.py \
+            --result .e2e-service-worker-result.json
+
+      - name: Upload browser evidence on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: service-worker-private-cache-${{ github.sha }}
+          path: .e2e-service-worker-result.json
+          if-no-files-found: ignore

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import unittest
-from unittest.mock import patch
+from unittest.mock import call, patch
 
 import webdriver_client
 
@@ -57,6 +57,20 @@ class WebDriverConfigurationTest(unittest.TestCase):
         self.assertIn('"qtable.language"', preload_source)
         self.assertIn('"zh-CN"', preload_source)
 
+    def test_service_worker_bypass_uses_network_domain(self) -> None:
+        browser = webdriver_client.Browser("http://example.test")
+
+        with patch.object(browser, "cdp") as cdp:
+            browser.set_bypass_service_worker(True)
+            browser.set_bypass_service_worker(False)
+
+        self.assertEqual(
+            cdp.call_args_list,
+            [
+                call("Network.setBypassServiceWorker", {"bypass": True}),
+                call("Network.setBypassServiceWorker", {"bypass": False}),
+            ],
+        )
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,12 +1,29 @@
 from __future__ import annotations
 
+from urllib.parse import urlparse
+
 from release_gate_support import body_text, fail
 from webdriver_client import Browser, wait_for
 
 
+def _surface_path_matches(current_url: str, expected_path: str) -> bool:
+    pathname = urlparse(current_url).path
+    if expected_path == "/tables":
+        return pathname == expected_path or (
+            pathname.startswith("/workbench/")
+            and not pathname.removeprefix("/workbench/").lower().startswith("dsb")
+        )
+    if expected_path == "/dashboards":
+        return pathname == expected_path or (
+            pathname.startswith("/workbench/")
+            and pathname.removeprefix("/workbench/").lower().startswith("dsb")
+        )
+    return pathname == expected_path
+
+
 def _assert_surface(browser: Browser, label: str, path: str) -> None:
     wait_for(
-        lambda: browser.current_url().split("?", 1)[0].endswith(path),
+        lambda: _surface_path_matches(browser.current_url(), path),
         timeout=20,
         label=f"{label} navigation",
     )
@@ -45,12 +62,14 @@ def assert_primary_surfaces_by_click(browser: Browser) -> None:
         browser.click(button)
         _assert_surface(browser, label, path)
 
-    user_menu = wait_for(
-        lambda: (browser.find_all("button[aria-label='用户菜单']") or [None])[0],
+    help_menu = wait_for(
+        lambda: (
+            browser.find_all("button[aria-label='帮助与快捷操作']") or [None]
+        )[0],
         timeout=20,
-        label="user menu for help navigation",
+        label="help and shortcuts menu",
     )
-    browser.click(user_menu)
+    browser.click(help_menu)
     help_item = wait_for(
         lambda: next(
             (

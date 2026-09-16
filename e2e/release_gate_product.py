@@ -294,6 +294,12 @@ def assert_recycle_lifecycle(alice: Browser, bob: Browser, *, table_id: str, rec
 def assert_offline_private_fail_closed(browser: Browser, *, table_id: str, record_id: str) -> None:
     browser.navigate(f"/workbench/{table_id}?recordId={record_id}")
     wait_for(lambda: bool(browser.find_all("canvas")), timeout=30, label="online workbench before offline")
+    # Chrome's page-target Network.emulateNetworkConditions does not constrain
+    # a controlling service worker's own network request. Bypass the worker for
+    # this page-level offline assertion; the following dedicated service-worker
+    # gate independently drops the origin connection while the worker remains
+    # active and proves that it cannot replay a private response.
+    browser.set_bypass_service_worker(True)
     browser.set_offline(True)
     try:
         result = browser.evaluate_async(
@@ -305,8 +311,27 @@ def assert_offline_private_fail_closed(browser: Browser, *, table_id: str, recor
         )
     finally:
         browser.set_offline(False)
+        browser.set_bypass_service_worker(False)
     if not result.get("networkError"):
-        fail("offline private GraphQL request was replayed from cache", result)
+        fail("offline private GraphQL request unexpectedly succeeded", result)
+    # WebDriver reports the expected failed fetch as a SEVERE browser entry.
+    # Consume it here so the final runtime audit does not mistake the proof of
+    # fail-closed behavior for an unrelated application error. Still reject
+    # every other severe entry accumulated up to this point.
+    severe_logs = [
+        entry for entry in browser.browser_logs() if entry.get("level") == "SEVERE"
+    ]
+    unexpected_logs = [
+        entry
+        for entry in severe_logs
+        if not (
+            entry.get("source") == "network"
+            and "/graphql" in str(entry.get("message") or "")
+            and "ERR_INTERNET_DISCONNECTED" in str(entry.get("message") or "")
+        )
+    ]
+    if unexpected_logs:
+        fail("unexpected browser errors during offline private request", unexpected_logs)
 
 
 def assert_primary_surfaces(browser: Browser) -> None:

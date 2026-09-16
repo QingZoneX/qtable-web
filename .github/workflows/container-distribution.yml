@@ -50,9 +50,14 @@ jobs:
       - name: Distribution contract
         run: node scripts/check-container-distribution-contract.mjs
 
+      # 与 docker-publish.yml 同理：分发验证必须跑在官方上游源上，
+      # 而 Dockerfile 的默认值是可国内直连的镜像源，所以这里显式回置官方源。
       - name: Build runtime image
         run: |
           docker build \
+            --build-arg NODE_IMAGE=node:22-alpine \
+            --build-arg NGINX_IMAGE=nginx:alpine \
+            --build-arg NPM_REGISTRY=https://registry.npmjs.org \
             --build-arg QTABLE_UI_VERSION="$(cat VERSION)" \
             --build-arg QTABLE_UI_REVISION="${GITHUB_SHA}" \
             --build-arg QTABLE_UI_CREATED="1970-01-01T00:00:00Z" \
