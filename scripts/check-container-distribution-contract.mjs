@@ -1,7 +1,10 @@
 import fs from "node:fs";
+import { ciDefinitionsHere } from "./ciOwnership.mjs";
+
+const ciOwned = ciDefinitionsHere();
 
 const dockerfile = fs.readFileSync("Dockerfile", "utf8");
-const workflow = fs.readFileSync(".github/workflows/docker-publish.yml", "utf8");
+const workflow = ciOwned ? fs.readFileSync(".github/workflows/docker-publish.yml", "utf8") : null;
 const docs = fs.readFileSync("docs/docker-hub.md", "utf8");
 const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
 const lock = JSON.parse(fs.readFileSync("package-lock.json", "utf8"));
@@ -33,28 +36,30 @@ for (const token of [
   assertContains(dockerfile, token, "Dockerfile");
 }
 
-for (const token of [
-  "linux/amd64,linux/arm64",
-  "docker/setup-qemu-action@v4",
-  "docker/setup-buildx-action@v4",
-  "docker/login-action@v4",
-  "docker/metadata-action@v6",
-  "docker/build-push-action@v7",
-  "aquasecurity/trivy-action@v0.35.0",
-  "severity: 'CRITICAL,HIGH'",
-  "exit-code: '1'",
-  "vuln-type: 'os,library'",
-  "DOCKERHUB_USERNAME",
-  "DOCKERHUB_TOKEN",
-  "DOCKERHUB_PUBLISH_ENABLED",
-  "latest=false",
-  "provenance: mode=max",
-  "sbom: true",
-  'tag_version="${GITHUB_REF_NAME#v}"',
-  "package-lock.json",
-  "QTABLE_UI_CREATED=${{ steps.identity.outputs.created }}",
-]) {
-  assertContains(workflow, token, "Docker Hub workflow");
+if (ciOwned) {
+  for (const token of [
+    "linux/amd64,linux/arm64",
+    "docker/setup-qemu-action@v4",
+    "docker/setup-buildx-action@v4",
+    "docker/login-action@v4",
+    "docker/metadata-action@v6",
+    "docker/build-push-action@v7",
+    "aquasecurity/trivy-action@v0.35.0",
+    "severity: 'CRITICAL,HIGH'",
+    "exit-code: '1'",
+    "vuln-type: 'os,library'",
+    "DOCKERHUB_USERNAME",
+    "DOCKERHUB_TOKEN",
+    "DOCKERHUB_PUBLISH_ENABLED",
+    "latest=false",
+    "provenance: mode=max",
+    "sbom: true",
+    'tag_version="${GITHUB_REF_NAME#v}"',
+    "package-lock.json",
+    "QTABLE_UI_CREATED=${{ steps.identity.outputs.created }}",
+  ]) {
+    assertContains(workflow, token, "Docker Hub workflow");
+  }
 }
 
 for (const token of [
@@ -72,4 +77,8 @@ for (const token of [
   assertContains(docs, token, "Docker Hub documentation");
 }
 
-console.log("[container-distribution] QTableUI Docker Hub distribution contract verified");
+console.log(
+  ciOwned
+    ? "[container-distribution] QTableUI Docker Hub distribution contract verified"
+    : "[container-distribution] image and documentation contract verified; workflow assertions skipped (CI definitions live in the public repository)",
+);

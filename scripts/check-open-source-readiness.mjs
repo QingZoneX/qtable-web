@@ -1,5 +1,8 @@
 import fs from "node:fs";
 import { execFileSync } from "node:child_process";
+import { ciDefinitionsHere } from "./ciOwnership.mjs";
+
+const ciOwned = ciDefinitionsHere();
 
 const fail = (message) => {
   console.error("[open-source-readiness] " + message);
@@ -8,10 +11,12 @@ const fail = (message) => {
 const required = [
   "LICENSE", "NOTICE", "README.md", "CONTRIBUTING.md", "SECURITY.md",
   "CHANGELOG.md", "VERSION", ".env.example", "Dockerfile",
-  ".github/workflows/docker-publish.yml",
   "docs/releases/v0.1.0-alpha.md",
   "scripts/check-secrets.mjs", "scripts/check-open-source-readiness.mjs",
 ];
+// The CI definitions belong to the public repository; the private development
+// checkout only keeps a pointer there, so the workflow cannot be required.
+if (ciOwned) required.push(".github/workflows/docker-publish.yml");
 const tracked = new Set(execFileSync("git", ["ls-files", "-z"]).toString("utf8").split("\0").filter(Boolean));
 for (const path of required) if (!tracked.has(path)) fail("missing public file: " + path);
 
@@ -56,28 +61,30 @@ for (const token of [
   if (!dockerfile.includes(token)) fail("Dockerfile missing release-image contract token: " + token);
 }
 
-const publish = fs.readFileSync(".github/workflows/docker-publish.yml", "utf8");
-for (const token of [
-  "docker/login-action@v4",
-  "docker/setup-qemu-action@v4",
-  "docker/setup-buildx-action@v4",
-  "docker/metadata-action@v6",
-  "docker/build-push-action@v7",
-  "aquasecurity/trivy-action@v0.35.0",
-  "severity: 'CRITICAL,HIGH'",
-  "exit-code: '1'",
-  "vuln-type: 'os,library'",
-  "platforms: linux/amd64,linux/arm64",
-  "provenance: mode=max",
-  "sbom: true",
-  "DOCKERHUB_TOKEN",
-  "DOCKERHUB_NAMESPACE || 'qingzonex'",
-  "latest=false",
-  "!contains(steps.identity.outputs.version, '-')",
-  'tag_version="${GITHUB_REF_NAME#v}"',
-  "QTABLE_UI_REVISION=${{ github.sha }}",
-]) {
-  if (!publish.includes(token)) fail("Docker publish workflow missing release contract token: " + token);
+if (ciOwned) {
+  const publish = fs.readFileSync(".github/workflows/docker-publish.yml", "utf8");
+  for (const token of [
+    "docker/login-action@v4",
+    "docker/setup-qemu-action@v4",
+    "docker/setup-buildx-action@v4",
+    "docker/metadata-action@v6",
+    "docker/build-push-action@v7",
+    "aquasecurity/trivy-action@v0.35.0",
+    "severity: 'CRITICAL,HIGH'",
+    "exit-code: '1'",
+    "vuln-type: 'os,library'",
+    "platforms: linux/amd64,linux/arm64",
+    "provenance: mode=max",
+    "sbom: true",
+    "DOCKERHUB_TOKEN",
+    "DOCKERHUB_NAMESPACE || 'qingzonex'",
+    "latest=false",
+    "!contains(steps.identity.outputs.version, '-')",
+    'tag_version="${GITHUB_REF_NAME#v}"',
+    "QTABLE_UI_REVISION=${{ github.sha }}",
+  ]) {
+    if (!publish.includes(token)) fail("Docker publish workflow missing release contract token: " + token);
+  }
 }
 
 const readme = fs.readFileSync("README.md", "utf8");
@@ -95,4 +102,8 @@ for (const path of tracked) {
   if (path === ".env" || /\.(pem|key|p12|pfx)$/i.test(path)) fail("sensitive file is tracked: " + path);
 }
 
-console.log("[open-source-readiness] OK");
+console.log(
+  ciOwned
+    ? "[open-source-readiness] OK"
+    : "[open-source-readiness] OK; Docker publish workflow assertions skipped (CI definitions live in the public repository)",
+);
