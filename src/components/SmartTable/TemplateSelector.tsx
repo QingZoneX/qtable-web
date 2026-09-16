@@ -295,11 +295,19 @@ export function TemplateSelector({
       });
   }, [category, scope, search, templates]);
 
-  useEffect(() => {
-    if (!open) return;
-    setCategory("all");
-    setSearch("");
-  }, [open]);
+  // 每次打开都把筛选条件复位。
+  // 不能写成 useEffect(..., [open]) 里 setCategory/setSearch：react-hooks 的
+  // set-state-in-effect 规则（eslint-plugin-react-hooks v7）会判定「effect 里同步
+  // setState 触发级联渲染」并直接报 error。这里改用 React 官方推荐的
+  // 「渲染期按 prop 变化调整 state」写法，语义与原来完全一致。
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
+    if (open) {
+      setCategory("all");
+      setSearch("");
+    }
+  }
 
   useEffect(() => {
     if (!open) return;
@@ -311,25 +319,27 @@ export function TemplateSelector({
     previewScrollRef.current?.scrollTo({ top: 0 });
   }, [open, selectedTemplateId]);
 
-  useEffect(() => {
-    if (category === "all") return;
-    if (!categoryItems.some((item) => item.value === category)) {
-      setCategory("all");
-    }
-  }, [category, categoryItems]);
+  // category 在当前可用列表里已经不存在时（例如切换 scope 之后）回落到 "all"。
+  // 与上面一致：不能在 effect 里 setState，改为渲染期调整。
+  if (
+    category !== "all" &&
+    !categoryItems.some((item) => item.value === category)
+  ) {
+    setCategory("all");
+  }
 
-  useEffect(() => {
-    if (visibleTemplates.length === 0) {
-      setSelectedTemplateId(null);
-      return;
-    }
-    if (
-      !selectedTemplateId ||
-      !visibleTemplates.some((item) => item.id === selectedTemplateId)
-    ) {
-      setSelectedTemplateId(visibleTemplates[0].id);
-    }
-  }, [selectedTemplateId, visibleTemplates]);
+  // selectedTemplateId 必须始终指向当前可见列表里的模板：列表为空时置空，
+  // 否则在失效时（筛选/scope 变化）回落到第一项。同样是渲染期调整。
+  const resolvedTemplateId =
+    visibleTemplates.length === 0
+      ? null
+      : visibleTemplates.some((item) => item.id === selectedTemplateId)
+        ? selectedTemplateId
+        : visibleTemplates[0].id;
+
+  if (resolvedTemplateId !== selectedTemplateId) {
+    setSelectedTemplateId(resolvedTemplateId);
+  }
 
   const {
     data: detailData,
