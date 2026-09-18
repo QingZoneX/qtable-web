@@ -2,7 +2,7 @@
 
 > React frontend for [QTable](https://github.com/QingZoneX/qtable-server), an AI-native open-source project and work management system.
 
-**Status:** public open-source Alpha (`0.1.0-alpha`). The repository is public and ready for evaluation and contribution; the first verified release tag and release artifacts remain gated by CI and release verification.
+**Status:** public open-source Alpha (`0.1.2-alpha`). The repository is public and ready for evaluation and contribution; the first verified release tag and release artifacts remain gated by CI and release verification.
 
 QTable Web provides the interactive multidimensional-table experience for QTable: Grid, Kanban, Gantt, Calendar, Gallery, dashboards, collaboration and AI planning workflows.
 
@@ -71,7 +71,7 @@ The canonical Compose stack keeps PostgreSQL, Redis, MinIO and the QTable API lo
 Release workflows are prepared for:
 
 ```text
-qingzonex/qtable-ui:0.1.0-alpha
+qingzonex/qtable-ui:0.1.2-alpha
 ```
 
 Treat an image as an official release artifact only after its verified release tag has passed the release gates. Prerelease tags deliberately do not receive `latest`.
@@ -82,7 +82,7 @@ Run a published image against an existing QTable API with:
 docker run --rm -p 9100:9100 \
   -e QTABLE_HOST=host.docker.internal \
   -e QTABLE_PORT=9000 \
-  qingzonex/qtable-ui:0.1.0-alpha
+  qingzonex/qtable-ui:0.1.2-alpha
 ```
 
 The image is designed for `linux/amd64` and `linux/arm64`, carries OCI source/version/revision/license metadata, includes the Apache-2.0 `LICENSE` and `NOTICE`, exposes `/healthz`, and is published with BuildKit SBOM and provenance attestations when a verified release is produced.
@@ -164,7 +164,7 @@ The existing Dockerfile and `rainbondfile` remain supported. Configure the backe
 
 ## Release status
 
-QTable Web is now developed in public under the QingZoneX organization. `0.1.0-alpha` remains a prerelease line: public repository visibility does not by itself make a commit, Docker image or tag an official release artifact.
+QTable Web is now developed in public under the QingZoneX organization. `0.1.2-alpha` remains a prerelease line: public repository visibility does not by itself make a commit, Docker image or tag an official release artifact.
 
 A release becomes official only when the exact server and web revisions pass their CI and full-stack release gates and the corresponding verified tag/release is published. Draft release notes remain under [`docs/releases/`](docs/releases/).
 

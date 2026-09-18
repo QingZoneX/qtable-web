@@ -17,7 +17,7 @@ REST, GraphQL, WebSocket, Auth and OAuth paths are proxied to the configured QTa
 
 For the alpha channel the canonical immutable tags are:
 
-- `0.1.0-alpha` from Git tag `v0.1.0-alpha`
+- `0.1.2-alpha` from Git tag `v0.1.2-alpha`
 - `sha-<short commit>`
 - moving `alpha` channel tag
 
@@ -47,11 +47,11 @@ Before the multi-architecture image is published, the workflow builds the exact 
 After an official release is published:
 
 ```bash
-docker pull qingzonex/qtable-ui:0.1.0-alpha
+docker pull qingzonex/qtable-ui:0.1.2-alpha
 docker run --rm -p 9100:9100 \
   -e QTABLE_HOST=host.docker.internal \
   -e QTABLE_PORT=9000 \
-  qingzonex/qtable-ui:0.1.0-alpha
+  qingzonex/qtable-ui:0.1.2-alpha
 ```
 
 For the complete PostgreSQL + Redis + MinIO + QTable + QTableUI stack, use `docker-compose.registry.yml` from the QTable repository rather than rebuilding either application image locally.
