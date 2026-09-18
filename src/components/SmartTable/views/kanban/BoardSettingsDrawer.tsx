@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { t } from "../../../../lib/i18nRuntime";
 import { useLanguage } from "../../../../lib/useLanguage";
 import type { Field } from "../../../../store/useSmartTableStore";
+import { FieldTypeIcon } from "../../FieldTypeIcon";
 import type { TaskProfileConfig } from "../../../TaskProfile/taskProfile";
 import type { BoardConfig } from "./types";
 
@@ -95,11 +96,22 @@ function BoardSettingsEditor({
                 style={{ width: "100%" }}
                 options={laneFields.map((field) => ({
                   value: field.id,
-                  label: `${field.name} · ${t(
-                    field.type === "member"
-                      ? "kanban.memberField"
-                      : "kanban.singleSelectField",
-                  )}`,
+                  label: (
+                    <span
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 6,
+                      }}
+                    >
+                      <FieldTypeIcon type={field.type} />
+                      {`${field.name} · ${t(
+                        field.type === "member"
+                          ? "kanban.memberField"
+                          : "kanban.singleSelectField",
+                      )}`}
+                    </span>
+                  ),
                 }))}
                 onChange={(value) => setLaneFieldId(value || null)}
               />

@@ -26,6 +26,7 @@ import { useTableRecords } from "../hooks/useTableRecords";
 import { RowDetailDrawer } from "../RowDetailDrawer";
 import { formatAutoNumber } from "../utils/autoNumber";
 import { t } from "../../../lib/i18nRuntime";
+import { FieldTypeIcon } from "../FieldTypeIcon";
 
 const { Text } = Typography;
 
@@ -635,7 +636,16 @@ export function GalleryView({
               onChange={(value) => setDraftCoverFieldId(value || null)}
               options={mediaFields.map((field) => ({
                 value: field.id,
-                label: `${field.name} · ${field.type === "image" ? "图片" : "附件"}`,
+                label: (
+                  <span
+                    style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+                  >
+                    <FieldTypeIcon type={field.type} />
+                    {`${field.name} · ${
+                      field.type === "image" ? "图片" : "附件"
+                    }`}
+                  </span>
+                ),
               }))}
               style={{ width: "100%" }}
             />

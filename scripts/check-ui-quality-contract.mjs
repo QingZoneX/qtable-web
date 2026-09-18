@@ -11,12 +11,17 @@ const expect = (condition, message) => {
 
 const runtime = read("src/lib/i18nRuntime.ts");
 const app = read("src/App.tsx");
+const appCss = read("src/App.css");
 const shell = read("src/components/AppShell/AppShell.tsx");
 const primaryRail = read("src/components/AppShell/PrimaryRail.tsx");
 const topBar = read("src/components/AppShell/TopAppBar.tsx");
 const shellPages = read("src/components/AppShell/ShellPages.tsx");
 const globalCss = read("src/index.css");
 const shellQualityCss = read("src/components/AppShell/accessibilityResponsive.css");
+const onboarding = read("src/components/OnboardingExperience.tsx");
+const workloadPlanning = read(
+  "src/components/WorkloadPlanning/WorkloadPlanningModal.tsx",
+);
 const kanban = read("src/components/SmartTable/views/KanbanView.tsx");
 const kanbanCell = read("src/components/SmartTable/views/kanban/KanbanCell.tsx");
 const kanbanCard = read("src/components/SmartTable/views/kanban/KanbanCard.tsx");
@@ -106,6 +111,51 @@ expect(
   "global CSS must preserve keyboard focus indication and reduced-motion behavior",
 );
 
+// QTable#220: the generic focus fallback must never draw a second outer ring
+// around inputs/selects/textareas. Form controls keep their own AntD/native
+// focused-border state; the explicit reset in index.css wins for role-based
+// controls that would otherwise match the generic [tabindex] selector.
+const appFocusRule = appCss.match(
+  /:where\([\s\S]*?\):focus-visible\s*\{[\s\S]*?\}/,
+)?.[0] ?? "";
+expect(
+  appFocusRule.length > 0 &&
+    !/\binput\b|\btextarea\b|\bselect\b/.test(appFocusRule),
+  "global App.css focus fallback must not target form controls",
+);
+const formControlFocusReset = globalCss.match(
+  /:where\(\s*input,[\s\S]*?\):focus-visible\s*\{[\s\S]*?\}/,
+)?.[0] ?? "";
+expect(
+  formControlFocusReset.includes('[role="combobox"]') &&
+    formControlFocusReset.includes('[role="spinbutton"]') &&
+    formControlFocusReset.includes("outline: none") &&
+    formControlFocusReset.includes("box-shadow: none"),
+  "form controls must suppress the duplicate global focus ring while retaining their own focused border state",
+);
+
+// QTable#220: the onboarding launcher occupies the same bottom-right corner as
+// the docked AI assistant. It must become non-visible and non-interactive while
+// that drawer is open rather than covering the chat send action.
+expect(
+  onboarding.includes("useAiAssistantStore((state) => state.drawerOpen)") &&
+    onboarding.includes('visibility: aiPanelOpen ? "hidden" : "visible"') &&
+    onboarding.includes('pointerEvents: aiPanelOpen ? "none" : "auto"'),
+  "onboarding launcher must yield the bottom-right corner while the AI panel is open",
+);
+
+// QTable#220: estimation explanations can contain long AI text and risk copy.
+// Keep the explanation on its own grid row, wrap arbitrary text, and bound the
+// vertical region so it cannot stretch or overflow the estimation table/modal.
+expect(
+  workloadPlanning.includes('gridColumn: "2 / -1"') &&
+    workloadPlanning.includes("maxHeight: 300") &&
+    workloadPlanning.includes('overflowX: "hidden"') &&
+    workloadPlanning.includes('overflowWrap: "anywhere"') &&
+    workloadPlanning.includes('wordBreak: "break-word"'),
+  "workload estimation rationale must stay inside its row and wrap/scroll safely",
+);
+
 expect(
   shellQualityCss.includes("@media (max-width: 720px)") &&
     shellQualityCss.includes("min-width: 0") &&
@@ -161,5 +211,5 @@ expect(
 );
 
 console.log(
-  `[ui-quality] OK - ${zhKeys.size} supplemental bilingual keys; shell/Kanban i18n, keyboard focus, reduced motion and compact responsive contracts verified`,
+  `[ui-quality] OK - ${zhKeys.size} supplemental bilingual keys; shell/Kanban i18n, keyboard focus, QTable#220 UI regression guards, reduced motion and compact responsive contracts verified`,
 );

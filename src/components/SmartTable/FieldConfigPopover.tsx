@@ -16,8 +16,6 @@ import {
   CloseOutlined,
   DeleteOutlined,
   DownOutlined,
-  FunctionOutlined,
-  LinkOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
 import type {
@@ -35,6 +33,7 @@ import {
 } from "../../lib/graphql";
 import { GET_TABLE_FIELDS_ONLY } from "./relation/relationGraphql";
 import { t } from "../../lib/i18nRuntime";
+import { FieldTypeIcon } from "./FieldTypeIcon";
 import {
   getRelationProperty,
   type RelationProperty,
@@ -835,12 +834,6 @@ export function FieldConfigPopover({
     onSubmit(payload);
   };
 
-  const typeIcon = (fieldType: EditableFieldType) => {
-    if (fieldType === "formula") return <FunctionOutlined style={{ marginRight: 6 }} />;
-    if (fieldType === "relation") return <LinkOutlined style={{ marginRight: 6 }} />;
-    return null;
-  };
-
   const renderTypeSelector = () => (
     <Popover
       content={
@@ -860,6 +853,9 @@ export function FieldConfigPopover({
                   setTypePopoverOpen(false);
                 }}
                 style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
                   padding: "8px 10px",
                   borderRadius: 8,
                   cursor: "pointer",
@@ -870,8 +866,8 @@ export function FieldConfigPopover({
                   fontWeight: option.value === type ? 600 : 400,
                 }}
               >
-                {typeIcon(option.value)}
-                {option.label}
+                <FieldTypeIcon type={option.value} style={{ fontSize: 14 }} />
+                <span>{option.label}</span>
               </div>
             ))}
           </div>
@@ -890,8 +886,8 @@ export function FieldConfigPopover({
           borderRadius: 8,
         }}
       >
-        <span>
-          {typeIcon(type)}
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <FieldTypeIcon type={type} />
           {fieldTypeOptions.find((option) => option.value === type)?.label ||
             "选择字段类型"}
         </span>

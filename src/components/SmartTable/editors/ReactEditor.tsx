@@ -18,9 +18,8 @@ export class ReactEditor implements IEditor {
     this.element.style.padding = "0";
     this.element.style.boxSizing = "border-box";
     this.element.style.backgroundColor = "#fff";
-    this.element.style.border = "none";
+    // 编辑态外框只由 CSS 的 .vtable-editor-wrapper 画一层，这里不再覆盖 border / box-shadow
     this.element.style.outline = "none";
-    this.element.style.boxShadow = "none";
     this.element.style.zIndex = "100";
   }
 

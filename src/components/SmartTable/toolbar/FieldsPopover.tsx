@@ -26,6 +26,7 @@ import { CSS } from "@dnd-kit/utilities";
 import type { DragEndEvent } from "@dnd-kit/core";
 import { useSmartTableStore } from "../../../store/useSmartTableStore";
 import type { Field } from "../../../store/useSmartTableStore";
+import { FieldTypeIcon } from "../FieldTypeIcon";
 
 const { Text } = Typography;
 
@@ -70,6 +71,10 @@ function SortableItem({
         >
           <HolderOutlined />
         </span>
+        <FieldTypeIcon
+          type={field.type}
+          style={{ color: "var(--qtable-color-text-tertiary)", fontSize: 12 }}
+        />
         <Text style={{ fontSize: 12 }}>{field.name}</Text>
       </Space>
       <Button

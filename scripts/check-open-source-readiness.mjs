@@ -11,7 +11,7 @@ const fail = (message) => {
 const required = [
   "LICENSE", "NOTICE", "README.md", "CONTRIBUTING.md", "SECURITY.md",
   "CHANGELOG.md", "VERSION", ".env.example", "Dockerfile",
-  "docs/releases/v0.1.0-alpha.md",
+  "docs/releases/v0.1.2-alpha.md",
   "scripts/check-secrets.mjs", "scripts/check-open-source-readiness.mjs",
 ];
 // The CI definitions belong to the public repository; the private development
@@ -21,7 +21,7 @@ const tracked = new Set(execFileSync("git", ["ls-files", "-z"]).toString("utf8")
 for (const path of required) if (!tracked.has(path)) fail("missing public file: " + path);
 
 const version = fs.readFileSync("VERSION", "utf8").trim();
-if (version !== "0.1.0-alpha") fail("VERSION must be 0.1.0-alpha");
+if (version !== "0.1.2-alpha") fail("VERSION must be 0.1.2-alpha");
 
 const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
 const lock = JSON.parse(fs.readFileSync("package-lock.json", "utf8"));

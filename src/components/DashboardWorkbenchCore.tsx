@@ -26,6 +26,7 @@ import {
   ReloadOutlined,
   RobotOutlined,
 } from "@ant-design/icons";
+import { FieldTypeIcon } from "./SmartTable/FieldTypeIcon";
 import { useApolloClient, useMutation, useQuery } from "@apollo/client/react";
 import { useParams } from "react-router-dom";
 import { toPng } from "html-to-image";
@@ -683,15 +684,28 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
     },
   );
   const availableFields = tableData?.fields ?? [];
+  // label 带字段类型图标；optionFilterProp 用 title 以保持按原字符串搜索
   const fieldOptions = availableFields.map((field) => ({
     value: field.id,
-    label: `${field.name} · ${field.type}`,
+    title: `${field.name} · ${field.type}`,
+    label: (
+      <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+        <FieldTypeIcon type={field.type} />
+        {`${field.name} · ${field.type}`}
+      </span>
+    ),
   }));
   const numericFieldOptions = availableFields
     .filter((field) => NUMERIC_FIELD_TYPES.has(field.type))
     .map((field) => ({
       value: field.id,
-      label: `${field.name} · ${field.type}`,
+      title: `${field.name} · ${field.type}`,
+      label: (
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <FieldTypeIcon type={field.type} />
+          {`${field.name} · ${field.type}`}
+        </span>
+      ),
     }));
   const needsDimension = DIMENSION_WIDGET_TYPES.has(
     selectedWidgetType || "bar",
@@ -1076,7 +1090,7 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
                   >
                     <Select
                       showSearch
-                      optionFilterProp="label"
+                      optionFilterProp="title"
                       placeholder={dashboardT("workbench.dimensionPlaceholder")}
                       options={fieldOptions}
                     />
@@ -1120,7 +1134,7 @@ export function DashboardWorkbench({ embedded }: { embedded?: boolean }) {
                   >
                     <Select
                       showSearch
-                      optionFilterProp="label"
+                      optionFilterProp="title"
                       placeholder={dashboardT("workbench.metricFieldPlaceholder")}
                       options={numericFieldOptions}
                       notFoundContent={dashboardT("workbench.noNumericFields")}

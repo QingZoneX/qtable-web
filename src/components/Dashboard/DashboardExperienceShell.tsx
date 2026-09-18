@@ -13,6 +13,7 @@ import {
 import { DashboardWorkbench as DashboardWorkbenchCore } from "../DashboardWorkbenchCore";
 import { normalizeDashboardFilterValue } from "./dashboardExperienceModel";
 import { dashboardOperatorLabel, dashboardT } from "./dashboardI18n";
+import { FieldTypeIcon } from "../SmartTable/FieldTypeIcon";
 import { walkTables } from "./utils";
 import {
   DashboardExperienceContext,
@@ -305,10 +306,19 @@ export function DashboardExperienceShell({ embedded }: { embedded?: boolean }) {
               loading={fieldsLoading}
               disabled={!filterTableId}
               showSearch
-              optionFilterProp="label"
+              optionFilterProp="title"
               options={fields.map((field) => ({
                 value: field.id,
-                label: `${field.name} · ${field.type}`,
+                // label 带类型图标；optionFilterProp 用 title 保持按原字符串搜索
+                title: `${field.name} · ${field.type}`,
+                label: (
+                  <span
+                    style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+                  >
+                    <FieldTypeIcon type={field.type} />
+                    {`${field.name} · ${field.type}`}
+                  </span>
+                ),
               }))}
               onChange={(value) => {
                 const field = fields.find((item) => item.id === value);

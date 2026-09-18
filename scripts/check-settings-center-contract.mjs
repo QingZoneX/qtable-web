@@ -55,7 +55,7 @@ assert.ok(
   vite.includes("'__QTABLE_UI_VERSION__': JSON.stringify(qtableUiVersion)"),
   "Vite must inject the package-derived version constant",
 );
-assert.equal(packageJson.version, "0.1.0-alpha", "release package version must remain expected");
+assert.equal(packageJson.version, "0.1.2-alpha", "release package version must remain expected");
 
 assert.ok(
   preferences.includes("export const setLandingPreference = (value: LandingPreference): boolean"),

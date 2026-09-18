@@ -17,6 +17,9 @@ export type HelpResource = {
   url: string;
 };
 
+/** 不跳转、而是在当前页面触发应用内行为（例如重新打开新手引导）的指南动作。 */
+export type HelpGuideAction = "onboarding";
+
 export type HelpGuide = {
   id: string;
   titleZh: string;
@@ -25,6 +28,7 @@ export type HelpGuide = {
   descriptionEn: string;
   route?: string;
   resourceUrl?: string;
+  action?: HelpGuideAction;
 };
 
 export const HELP_SHORTCUTS: HelpShortcut[] = [
@@ -67,6 +71,14 @@ export const HELP_SHORTCUTS: HelpShortcut[] = [
 ];
 
 export const HELP_GUIDES: HelpGuide[] = [
+  {
+    id: "onboarding",
+    titleZh: "新手引导",
+    titleEn: "Onboarding tour",
+    descriptionZh: "重新打开 3 分钟引导：创建一份可编辑的 Demo 项目，或直接描述目标让 AI 生成工作结构。",
+    descriptionEn: "Reopen the three-minute tour to create an editable demo project, or describe a goal and let AI generate the work structure.",
+    action: "onboarding",
+  },
   {
     id: "tables",
     titleZh: "数据表与多视图",
@@ -156,11 +168,11 @@ export const HELP_RESOURCES: HelpResource[] = [
   },
   {
     id: "release-notes",
-    titleZh: "v0.1.0-alpha Release Notes",
-    titleEn: "v0.1.0-alpha Release Notes",
+    titleZh: "v0.1.2-alpha Release Notes",
+    titleEn: "v0.1.2-alpha Release Notes",
     descriptionZh: "当前 Alpha / Open Source Preview 的版本说明。",
     descriptionEn: "Release notes for the current Alpha / Open Source Preview.",
-    url: "https://github.com/QingZoneX/QTableUI/blob/main/docs/releases/v0.1.0-alpha.md",
+    url: "https://github.com/QingZoneX/QTableUI/blob/main/docs/releases/v0.1.2-alpha.md",
   },
 ];
 

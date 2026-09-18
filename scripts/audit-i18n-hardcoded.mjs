@@ -7,9 +7,9 @@ const ALLOWLIST = new Set([
   "src/lib/i18n.ts",
   "src/lib/i18nRuntime.ts",
   "src/lib/productI18n.ts",
-  "src/components/Home/homeI18n.ts",
-  "src/components/SmartTable/tableWorkspaceI18n.ts",
 ]);
+// 各功能模块的中英文词表（homeI18n / helpI18n / onboardingI18n …）都是翻译目录本身，不参与审计。
+const TRANSLATION_CATALOG = /I18n\.ts$/;
 const CJK = /[\u3400-\u4dbf\u4e00-\u9fff]/;
 
 function walk(directory) {
@@ -25,7 +25,7 @@ function walk(directory) {
 const findings = [];
 for (const file of walk(ROOT)) {
   const relative = file.split(path.sep).join("/");
-  if (ALLOWLIST.has(relative)) continue;
+  if (ALLOWLIST.has(relative) || TRANSLATION_CATALOG.test(relative)) continue;
   const lines = fs.readFileSync(file, "utf8").split(/\r?\n/);
   lines.forEach((line, index) => {
     if (!CJK.test(line)) return;

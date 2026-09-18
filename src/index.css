@@ -44,12 +44,11 @@ body {
   box-sizing: border-box;
 }
 
+/* 键盘焦点环只给按钮、链接与自定义可点击元素：设计上输入框不使用外边框，
+   输入类控件的焦点态由控件自身的边框色变化表达。 */
 :where(
   a,
   button,
-  input,
-  select,
-  textarea,
   [role="button"],
   [role="menuitem"],
   [role="tab"],
@@ -57,6 +56,24 @@ body {
 ):focus-visible {
   outline: 2px solid var(--qtable-color-primary, #2f6fed);
   outline-offset: 2px;
+}
+
+/* 输入框 / 下拉 / 文本域一律不显示外发光焦点环。
+   这条同时还兜住 [tabindex] / [role] 之类的通用匹配，避免表单控件被上面的规则命中；
+   清除 box-shadow 是因为全局焦点规则会额外叠一层光圈（App.css）。
+   控件自身的边框色变化（AntD activeBorderColor → colorPrimary）仍然是焦点提示。 */
+:where(
+  input,
+  select,
+  textarea,
+  [role="textbox"],
+  [role="searchbox"],
+  [role="spinbutton"],
+  [role="combobox"],
+  [contenteditable="true"]
+):focus-visible {
+  outline: none;
+  box-shadow: none;
 }
 
 .qtable-visually-hidden {

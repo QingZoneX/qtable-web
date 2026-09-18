@@ -27,6 +27,7 @@ import {
 } from "antd";
 import { GET_TEMPLATE_DETAIL, GET_TEMPLATES } from "../../lib/graphql";
 import { t } from "../../lib/i18n";
+import { FieldTypeIcon } from "./FieldTypeIcon";
 import "./templateSelector.css";
 
 type TemplateScope = "system" | "personal" | "workspace";
@@ -626,7 +627,15 @@ export function TemplateSelector({
                         <span className="qtable-template-field-name">
                           {field.name || field.id}
                         </span>
-                        <Tag style={{ marginInlineEnd: 0 }}>
+                        <Tag
+                          style={{
+                            marginInlineEnd: 0,
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: 4,
+                          }}
+                        >
+                          <FieldTypeIcon type={field.type} />
                           {field.type || "text"}
                         </Tag>
                       </div>

@@ -2,7 +2,6 @@ import type { EditContext } from "@visactor/vtable-editors";
 import { useSmartTableStore } from "../../../store/useSmartTableStore";
 import { RelationRecordSelect } from "../relation/RelationRecordSelect";
 import { ReactEditor } from "./ReactEditor";
-import "./editorStyles.css";
 
 type RelationColumnDef = {
   relationFieldId?: string;
@@ -46,7 +45,6 @@ export class RelationEditor extends ReactEditor {
           width: "100%",
           minHeight: this.baseHeight || 40,
           padding: 2,
-          border: "2px solid #2563EB",
           borderRadius: 4,
           background: "#fff",
           boxSizing: "border-box",

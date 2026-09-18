@@ -35,13 +35,13 @@ test("help shortcut catalog is unique and only documents implemented search keys
 });
 
 test("bug feedback URL prefills only a safe issue template and frontend version", () => {
-  const url = new URL(buildFeedbackUrl("bug", "0.1.0-alpha"));
+  const url = new URL(buildFeedbackUrl("bug", "0.1.2-alpha"));
   assert.equal(url.origin, "https://github.com");
   assert.equal(url.pathname, "/QingZoneX/QTableUI/issues/new");
   assert.deepEqual([...url.searchParams.keys()].sort(), ["body", "title"]);
   assert.equal(url.searchParams.get("title"), "[Bug] ");
   const body = url.searchParams.get("body") || "";
-  assert.ok(body.includes("0.1.0-alpha"));
+  assert.ok(body.includes("0.1.2-alpha"));
   assert.ok(body.includes("Browser / 浏览器"));
   assert.ok(body.includes("Steps to reproduce / 复现步骤"));
   assert.ok(body.includes("Expected behavior / 预期结果"));
@@ -54,7 +54,7 @@ test("bug feedback URL prefills only a safe issue template and frontend version"
 });
 
 test("feature feedback URL asks for problem and desired experience", () => {
-  const url = new URL(buildFeedbackUrl("feature", "0.1.0-alpha"));
+  const url = new URL(buildFeedbackUrl("feature", "0.1.2-alpha"));
   assert.equal(url.searchParams.get("title"), "[Feature] ");
   const body = url.searchParams.get("body") || "";
   assert.ok(body.includes("Problem / 要解决的问题"));
@@ -63,9 +63,9 @@ test("feature feedback URL asks for problem and desired experience", () => {
 });
 
 test("feedback version is normalized before entering a GitHub template", () => {
-  const url = new URL(buildFeedbackUrl("bug", " 0.1.0-alpha\n<script>alert(1)</script> "));
+  const url = new URL(buildFeedbackUrl("bug", " 0.1.2-alpha\n<script>alert(1)</script> "));
   const body = url.searchParams.get("body") || "";
-  assert.ok(body.includes("0.1.0-alphascriptalert1script"));
+  assert.ok(body.includes("0.1.2-alphascriptalert1script"));
   assert.ok(!body.includes("<script>"));
   assert.ok(!body.includes("\n<script>"));
 });

@@ -14,6 +14,16 @@ This document mirrors the release-safe help surfaced in `/help`. It only documen
 
 No other keyboard shortcut should be treated as supported unless it is implemented in the product code.
 
+## Onboarding / 新手引导
+
+An empty workspace opens a three-minute onboarding dialog on first visit. It offers two real paths: create a demo project (a normal, editable table with sample tasks), or describe a goal and let AI generate the work structure. Creating the demo project also schedules a short in-product tour.
+
+Reopen it any time from the floating guide button in the bottom-right corner, or from **Help Center → Product guides → Onboarding tour → Reopen the tour**. That floating button steps aside while the AI assistant panel is open, so it never overlaps the chat send button.
+
+首次进入空工作区会打开 3 分钟新手引导：可以创建 Demo 项目（一张包含示例任务、可直接编辑的真实数据表），也可以直接描述目标由 AI 生成工作结构；创建 Demo 后会继续一段产品内分步引导。
+
+随时可以从右下角的悬浮引导按钮重新打开，也可以在 **帮助中心 → 产品使用指南 → 新手引导 → 重新打开引导** 中打开。AI 助手面板打开时悬浮引导按钮会自动避让，不会与对话发送按钮重叠。
+
 ## Tables and views / 数据表与多视图
 
 Open **Tables / 数据表** from the primary rail and choose a workspace table. Grid, Kanban, Gantt, Calendar and Gallery are views over the same server-backed table data; they are not separate local datasets.
@@ -76,4 +86,4 @@ Do **not** include access tokens, API keys, passwords, private workspace/table/r
 - [Security policy](../SECURITY.md)
 - [Contributing](../CONTRIBUTING.md)
 - [Apache-2.0 License](../LICENSE)
-- [v0.1.0-alpha release notes](releases/v0.1.0-alpha.md)
+- [v0.1.2-alpha release notes](releases/v0.1.2-alpha.md)

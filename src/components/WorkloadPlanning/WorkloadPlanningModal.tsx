@@ -34,6 +34,7 @@ import {
   WORKLOAD_PLANNING_WHAT_IF,
 } from "../../lib/graphql";
 import { useSmartTableStore } from "../../store/useSmartTableStore";
+import { FieldTypeIcon } from "../SmartTable/FieldTypeIcon";
 import type {
   WorkloadPlanningAggregate,
   WorkloadPlanningApplyResult,
@@ -714,7 +715,15 @@ export function WorkloadPlanningModal({
               description={
                 <Space wrap>
                   {preview.schemaAdditions.map((field) => (
-                    <Tag key={field.id}>
+                    <Tag
+                      key={field.id}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 4,
+                      }}
+                    >
+                      <FieldTypeIcon type={field.type} />
                       {field.name} · {field.type}
                     </Tag>
                   ))}
@@ -762,6 +771,29 @@ export function WorkloadPlanningModal({
                           <Tag color="purple">关键路径</Tag>
                         ) : null}
                       </Space>
+                    </div>
+                    <Tag>{task.storyPoints} SP</Tag>
+                    <span>{formatHours(task.p50Hours)}h</span>
+                    <span>{formatHours(task.p90Hours)}h</span>
+                    <div>
+                      <Progress
+                        percent={Math.round(task.confidenceScore * 100)}
+                        size="small"
+                        strokeColor={confidenceColor(
+                          task.confidenceScore,
+                        )}
+                      />
+                    </div>
+                    <Tag color={historyCount > 0 ? "blue" : "default"}>
+                      历史 {historyCount} 条
+                    </Tag>
+                    <div
+                      style={{
+                        gridColumn: "2 / -1",
+                        minWidth: 0,
+                        maxWidth: "100%",
+                      }}
+                    >
                       <Collapse
                         ghost
                         size="small"
@@ -770,17 +802,42 @@ export function WorkloadPlanningModal({
                             key: "why",
                             label: "为什么这样估",
                             children: (
-                              <Space
-                                orientation="vertical"
-                                size={6}
-                                style={{ width: "100%" }}
+                              <div
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  gap: 8,
+                                  minWidth: 0,
+                                  maxWidth: "100%",
+                                  maxHeight: 300,
+                                  overflowY: "auto",
+                                  overflowX: "hidden",
+                                  paddingRight: 8,
+                                }}
                               >
-                                <Typography.Text>
+                                <Typography.Paragraph
+                                  style={{
+                                    margin: 0,
+                                    whiteSpace: "pre-wrap",
+                                    overflowWrap: "anywhere",
+                                    wordBreak: "break-word",
+                                    lineHeight: 1.65,
+                                  }}
+                                >
                                   {task.summary}
-                                </Typography.Text>
-                                <Typography.Text type="secondary">
+                                </Typography.Paragraph>
+                                <Typography.Paragraph
+                                  type="secondary"
+                                  style={{
+                                    margin: 0,
+                                    whiteSpace: "pre-wrap",
+                                    overflowWrap: "anywhere",
+                                    wordBreak: "break-word",
+                                    lineHeight: 1.65,
+                                  }}
+                                >
                                   {task.confidenceRationale}
-                                </Typography.Text>
+                                </Typography.Paragraph>
                                 {(task.basis?.assumptions || []).length >
                                 0 ? (
                                   <Space wrap>
@@ -802,27 +859,12 @@ export function WorkloadPlanningModal({
                                     description={risk.impact}
                                   />
                                 ))}
-                              </Space>
+                              </div>
                             ),
                           },
                         ]}
                       />
                     </div>
-                    <Tag>{task.storyPoints} SP</Tag>
-                    <span>{formatHours(task.p50Hours)}h</span>
-                    <span>{formatHours(task.p90Hours)}h</span>
-                    <div>
-                      <Progress
-                        percent={Math.round(task.confidenceScore * 100)}
-                        size="small"
-                        strokeColor={confidenceColor(
-                          task.confidenceScore,
-                        )}
-                      />
-                    </div>
-                    <Tag color={historyCount > 0 ? "blue" : "default"}>
-                      历史 {historyCount} 条
-                    </Tag>
                   </div>
                 );
               })}

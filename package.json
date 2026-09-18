@@ -1,7 +1,7 @@
 {
   "name": "qtable-ui",
   "private": true,
-  "version": "0.1.0-alpha",
+  "version": "0.1.2-alpha",
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 9100 --strictPort",

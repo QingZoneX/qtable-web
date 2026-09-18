@@ -5,12 +5,16 @@ import {
   BulbOutlined,
   GithubOutlined,
   KeyOutlined,
+  PlayCircleOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import { Button, Card, Divider, Space, Tag, Typography } from "antd";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { openGlobalCommandPalette } from "../../lib/shellEvents";
+import {
+  openGlobalCommandPalette,
+  openOnboardingGuide,
+} from "../../lib/shellEvents";
 import { useLanguage } from "../../lib/useLanguage";
 import {
   HELP_GUIDES,
@@ -130,6 +134,15 @@ export function HelpCenterPage() {
                     icon={<GithubOutlined />}
                   >
                     {helpT("docs")}
+                  </Button>
+                ) : null}
+                {guide.action === "onboarding" ? (
+                  <Button
+                    type="primary"
+                    icon={<PlayCircleOutlined />}
+                    onClick={openOnboardingGuide}
+                  >
+                    {helpT("reopenOnboarding")}
                   </Button>
                 ) : null}
               </Space>

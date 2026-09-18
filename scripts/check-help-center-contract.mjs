@@ -68,7 +68,7 @@ for (const requiredFile of [
   "LICENSE",
   "docs/task-profile-ui.md",
   "docs/help-center.md",
-  "docs/releases/v0.1.0-alpha.md",
+  "docs/releases/v0.1.2-alpha.md",
 ]) {
   assert.ok(
     existsSync(new URL(`../${requiredFile}`, import.meta.url)),

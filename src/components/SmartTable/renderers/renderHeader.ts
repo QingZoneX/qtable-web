@@ -6,6 +6,7 @@ import {
   ellipsisOutlinedSvg,
   plusOutlinedSvg,
 } from "../icons";
+import { FIELD_TYPE_ICON_BOX, fieldTypeIconSvg } from "../fieldTypeIconSvg";
 import type { Field } from "../../../store/useSmartTableStore";
 
 type HeaderLayoutArgs = {
@@ -47,6 +48,10 @@ export const renderHeader = (
   };
   const { height, width } = rect ?? fallbackRect();
 
+  // 字段类型图标宽度里已经含了「与名称的间距」（画进 SVG 了），名称可用宽度要把这段让出来
+  const TYPE_ICON_WIDTH = FIELD_TYPE_ICON_BOX.width;
+  const titleWidth = Math.max(16, width - 66 - TYPE_ICON_WIDTH);
+
   const container = new CustomLayout.Group({
     height,
     width: width - 16,
@@ -59,10 +64,19 @@ export const renderHeader = (
   // Title with left margin simulation
   const titleContainer = new CustomLayout.Group({
     height,
-    width: width - 66,
+    width: Math.max(24, width - 66),
     display: "flex",
     alignItems: "center",
+    // VRender 的 flex 默认 wrap，会把图标和名称拆成两行，必须显式 nowrap
+    flexWrap: "nowrap",
   }) as unknown as LayoutContainer;
+
+  // 字段类型图标：放在字段名称前面，明确标识当前列的类型
+  const typeIcon = new CustomLayout.Image({
+    width: TYPE_ICON_WIDTH,
+    height: FIELD_TYPE_ICON_BOX.height,
+    image: svgToDataUrl(fieldTypeIconSvg(field.type)),
+  });
 
   const title = new CustomLayout.Text({
     text: value || field.name || "",
@@ -72,9 +86,12 @@ export const renderHeader = (
     fill: "rgba(0, 0, 0, 0.88)",
     fontWeight: 600,
     textBaseline: "middle",
-    ellipsis: true,
-    maxLineWidth: width - 66,
+    // 注意：这里必须是省略号字符本身。传 true 会被当成省略号内容拼到文本尾部，
+    // 一旦真的触发截断就会渲染出脏字符（VRender 的 clipTextWithSuffix 只认字符串）。
+    ellipsis: "…",
+    maxLineWidth: titleWidth,
   });
+  titleContainer.add(typeIcon as unknown);
   titleContainer.add(title as unknown);
 
   // Right container for icons

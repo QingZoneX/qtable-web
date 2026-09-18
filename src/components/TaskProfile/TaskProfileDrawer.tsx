@@ -23,6 +23,7 @@ import { useLazyQuery, useMutation, useQuery } from "@apollo/client/react";
 import { useEffect, useMemo, useState } from "react";
 import { ADD_FIELD } from "../../lib/graphql";
 import { t } from "../../lib/i18nRuntime";
+import { FieldTypeIcon } from "../SmartTable/FieldTypeIcon";
 import {
   permissionAllows,
   type Field,
@@ -106,7 +107,17 @@ const createFieldId = () => {
 const fieldOptionLabel = (field: Field) => (
   <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
     <span>{field.name}</span>
-    <Tag bordered={false} style={{ marginInlineEnd: 0, fontSize: 10 }}>
+    <Tag
+      bordered={false}
+      style={{
+        marginInlineEnd: 0,
+        fontSize: 10,
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 4,
+      }}
+    >
+      <FieldTypeIcon type={field.type} />
       {fieldTypeLabel(field)}
     </Tag>
   </span>

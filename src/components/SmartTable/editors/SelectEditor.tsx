@@ -4,7 +4,6 @@ import type { DefaultOptionType } from "antd/es/select";
 import type { KeyboardEvent } from "react";
 import { ReactEditor } from "./ReactEditor";
 import type { EditContext } from "@visactor/vtable-editors";
-import "./editorStyles.css";
 
 type OptionItem = DefaultOptionType & {
   value: string;
@@ -37,8 +36,6 @@ const SelectEditorComponent = ({
       style={{
         width: "100%",
         height: "100%",
-        border: "2px solid #2563EB",
-        boxShadow: "0 0 0 4px rgba(37, 99, 235, 0.1)",
         backgroundColor: "#fff",
         display: "flex",
         alignItems: "center",

@@ -56,8 +56,21 @@
 .vtable-editor-wrapper {
   border: 2px solid var(--qtable-color-primary);
   border-radius: var(--qtable-radius-sm);
-  box-shadow: var(--qtable-shadow-focus);
   background: var(--qtable-color-background);
+}
+
+/* 编辑态只有 .vtable-editor-wrapper 画一层外框（自身占 2px 边框）；内部输入框/下拉框/日期控件
+   不再画边框与焦点环，横向内边距只留 6px，使文字/标签与单元格内容（renderers 的 CELL_PADDING_X = 8px）对齐。 */
+.vtable-editor-wrapper .ant-select,
+.vtable-editor-wrapper .ant-input,
+.vtable-editor-wrapper .ant-input-affix-wrapper,
+.vtable-editor-wrapper .ant-input-number,
+.vtable-editor-wrapper .ant-input-number-group-wrapper,
+.vtable-editor-wrapper .ant-picker {
+  border-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding-inline: 6px !important;
 }
 
 /* Compact neutral scrollbars for high-density work surfaces. */
@@ -80,13 +93,12 @@
 }
 
 /* Do not remove the browser/AntD focus state. This fallback guarantees that
-   custom clickable elements also remain visible to keyboard users. */
+   custom clickable elements also remain visible to keyboard users.
+   输入类控件（input/select/textarea）由 index.css 统一清零，见该文件里的表单控件
+   reset —— 设计上输入框没有外边框。 */
 :where(
   button,
   a[href],
-  input,
-  textarea,
-  select,
   [role="button"],
   [role="menuitem"],
   [tabindex]:not([tabindex="-1"])

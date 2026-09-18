@@ -24,8 +24,6 @@ const NumberEditorComponent = ({
         width: "100%",
         height: "100%",
         minHeight: "44px",
-        border: "2px solid #2563EB",
-        boxShadow: "0 0 0 4px rgba(37, 99, 235, 0.1)",
         backgroundColor: "#fff",
         display: "flex",
         alignItems: "center",

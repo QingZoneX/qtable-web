@@ -32,6 +32,7 @@ import {
   ProgressEditor,
 } from "../editors";
 import { t } from "../../../lib/i18n";
+import { FieldTypeIcon } from "../FieldTypeIcon";
 import { ensureVisActorBrowserEnv } from "../../../lib/visactorEnv";
 
 // Extend dayjs with isoWeek plugin
@@ -1325,7 +1326,22 @@ export function GanttView({ configModalOpen, onConfigModalOpen, onConfigModalClo
                   handleFieldSelectionChange("progress", value)
                 }
                 options={progressFields.map((field) => ({
-                  label: `${field.name} (${field.type === "progress" ? t('gantt.progressField') : t('toolbar.fields')})`,
+                  label: (
+                    <span
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 6,
+                      }}
+                    >
+                      <FieldTypeIcon type={field.type} />
+                      {`${field.name} (${
+                        field.type === "progress"
+                          ? t("gantt.progressField")
+                          : t("toolbar.fields")
+                      })`}
+                    </span>
+                  ),
                   value: field.id,
                 }))}
                 allowClear

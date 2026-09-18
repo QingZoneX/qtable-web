@@ -29,8 +29,16 @@ import {
   INSERT_ROWS_WITH_DATA,
 } from "../lib/graphql";
 import { useAuthStore } from "../store/authStore";
+import { useAiAssistantStore } from "../store/aiAssistantStore";
+import { useLanguage } from "../lib/useLanguage";
+import { ONBOARDING_OPEN_EVENT } from "../lib/shellEvents";
 import { GoalWorkspaceModal } from "./GoalWorkspace/GoalWorkspaceModal";
 import type { GoalWorkspaceApplyResult } from "./GoalWorkspace/goalWorkspaceTypes";
+import {
+  ONBOARDING_DEMO_TABLE_NAMES,
+  onboardingCatalog,
+  onboardingT,
+} from "./onboardingI18n";
 
 type WorkspaceSummary = {
   id: string;
@@ -61,8 +69,6 @@ type CreatedTable = {
   defaultViewId?: string | null;
 };
 
-const DEMO_TABLE_NAME = "个人博客改版项目";
-const DEMO_WORKSPACE_NAME = "QTable 体验空间";
 const PROJECT_TEMPLATE_ID = "project_management";
 
 const hasWorkspaceContent = (root?: WorkspaceNode | null): boolean => {
@@ -71,9 +77,12 @@ const hasWorkspaceContent = (root?: WorkspaceNode | null): boolean => {
   return (root.children || []).some((child) => hasWorkspaceContent(child));
 };
 
+// Demo 表名跟随界面语言，所以按名称查找时要接受全部语言的写法。
 const findDemoTable = (root?: WorkspaceNode | null): WorkspaceNode | null => {
   if (!root) return null;
-  if (root.type === "table" && root.name === DEMO_TABLE_NAME) return root;
+  if (root.type === "table" && ONBOARDING_DEMO_TABLE_NAMES.includes(root.name)) {
+    return root;
+  }
   for (const child of root.children || []) {
     const found = findDemoTable(child);
     if (found) return found;
@@ -85,16 +94,16 @@ const buildDemoRows = () => {
   const today = dayjs().startOf("day");
   const date = (offset: number) => today.add(offset, "day").format("YYYY-MM-DD");
   return [
-    { f1: "确认改版目标与成功指标", f2: "opt3", f4: 100, f5: 5, f6: date(-7), f7: date(-6) },
-    { f1: "梳理现有内容与信息架构", f2: "opt3", f4: 100, f5: 4, f6: date(-6), f7: date(-4) },
-    { f1: "确定首页视觉方向", f2: "opt2", f4: 70, f5: 5, f6: date(-3), f7: date(1) },
-    { f1: "重构首页 Hero 与导航", f2: "opt2", f4: 45, f5: 5, f6: date(-1), f7: date(3) },
-    { f1: "优化文章列表与标签筛选", f2: "opt2", f4: 30, f5: 4, f6: date(1), f7: date(5) },
-    { f1: "补齐文章详情响应式样式", f2: "opt1", f4: 0, f5: 4, f6: date(3), f7: date(7) },
-    { f1: "优化图片与首屏加载性能", f2: "opt1", f4: 0, f5: 5, f6: date(5), f7: date(8) },
-    { f1: "增加 SEO 与分享元信息", f2: "opt1", f4: 0, f5: 3, f6: date(6), f7: date(9) },
-    { f1: "完成多端回归测试", f2: "opt1", f4: 0, f5: 5, f6: date(8), f7: date(11) },
-    { f1: "上线并复盘改版效果", f2: "opt1", f4: 0, f5: 4, f6: date(12), f7: date(14) },
+    { f1: onboardingT("demoRowGoals"), f2: "opt3", f4: 100, f5: 5, f6: date(-7), f7: date(-6) },
+    { f1: onboardingT("demoRowContentAudit"), f2: "opt3", f4: 100, f5: 4, f6: date(-6), f7: date(-4) },
+    { f1: onboardingT("demoRowVisualDirection"), f2: "opt2", f4: 70, f5: 5, f6: date(-3), f7: date(1) },
+    { f1: onboardingT("demoRowHeroNav"), f2: "opt2", f4: 45, f5: 5, f6: date(-1), f7: date(3) },
+    { f1: onboardingT("demoRowArticleList"), f2: "opt2", f4: 30, f5: 4, f6: date(1), f7: date(5) },
+    { f1: onboardingT("demoRowArticleDetail"), f2: "opt1", f4: 0, f5: 4, f6: date(3), f7: date(7) },
+    { f1: onboardingT("demoRowPerformance"), f2: "opt1", f4: 0, f5: 5, f6: date(5), f7: date(8) },
+    { f1: onboardingT("demoRowSeo"), f2: "opt1", f4: 0, f5: 3, f6: date(6), f7: date(9) },
+    { f1: onboardingT("demoRowRegression"), f2: "opt1", f4: 0, f5: 5, f6: date(8), f7: date(11) },
+    { f1: onboardingT("demoRowLaunchReview"), f2: "opt1", f4: 0, f5: 4, f6: date(12), f7: date(14) },
   ];
 };
 
@@ -113,6 +122,8 @@ export function OnboardingExperience() {
     parentId: string;
   } | null>(null);
   const [progressText, setProgressText] = useState("");
+  const aiPanelOpen = useAiAssistantStore((state) => state.drawerOpen);
+  const language = useLanguage();
 
   const storageKey = useMemo(
     () => `qtable.onboarding.v1.${user?.id ?? user?.email ?? "anonymous"}`,
@@ -170,6 +181,13 @@ export function OnboardingExperience() {
     setTourOpen(true);
   }, [token, tourStorageKey]);
 
+  // 帮助中心等入口通过 shell 事件重新打开引导（AI 面板占据右下角时悬浮入口会避让）。
+  useEffect(() => {
+    const openFromShell = () => setOpen(true);
+    window.addEventListener(ONBOARDING_OPEN_EVENT, openFromShell);
+    return () => window.removeEventListener(ONBOARDING_OPEN_EVENT, openFromShell);
+  }, []);
+
   const persistState = (state: "completed" | "skipped") => {
     localStorage.setItem(storageKey, state);
   };
@@ -188,7 +206,7 @@ export function OnboardingExperience() {
 
       if (!targetWorkspace) {
         const workspaceResult = await createWorkspace({
-          variables: { name: "我的 QTable 空间" },
+          variables: { name: onboardingT("workspaceName") },
         });
         targetWorkspace = (
           workspaceResult as unknown as {
@@ -226,7 +244,7 @@ export function OnboardingExperience() {
       setOpen(false);
       setGoalOpen(true);
     } catch {
-      message.error("无法准备目标驱动创建所需的工作空间，请稍后重试。");
+      message.error(onboardingT("goalPrepareFailed"));
     } finally {
       setPreparingGoal(false);
     }
@@ -236,7 +254,7 @@ export function OnboardingExperience() {
     persistState("completed");
     setOpen(false);
     navigate("/");
-    message.info("请点击左侧“+”，选择“从模板创建”开始。");
+    message.info(onboardingT("templateHint"));
   };
 
   const fetchWorkspaceRoot = async (workspaceId: string) => {
@@ -259,7 +277,7 @@ export function OnboardingExperience() {
   const handleCreateDemo = async () => {
     if (creatingDemo) return;
     setCreatingDemo(true);
-    setProgressText("正在准备体验空间…");
+    setProgressText(onboardingT("progressPreparingDemo"));
 
     let createdTable: CreatedTable | null = null;
     try {
@@ -268,7 +286,7 @@ export function OnboardingExperience() {
 
       if (!targetWorkspace) {
         const workspaceResult = await createWorkspace({
-          variables: { name: DEMO_WORKSPACE_NAME },
+          variables: { name: onboardingT("demoWorkspaceName") },
         });
         targetWorkspace = (
           workspaceResult as unknown as {
@@ -281,7 +299,7 @@ export function OnboardingExperience() {
         }
 
         localStorage.setItem("qtable.workspaceId", targetWorkspace.id);
-        setProgressText("正在初始化工作区…");
+        setProgressText(onboardingT("progressInitializingWorkspace"));
         root = await fetchWorkspaceRoot(targetWorkspace.id);
         await refetchWorkspaces();
       }
@@ -303,7 +321,7 @@ export function OnboardingExperience() {
           id: existingDemo.id,
           defaultViewId: existingDemo.defaultViewId,
         });
-        message.success("已打开你的 QTable Demo 项目");
+        message.success(onboardingT("demoOpened"));
         return;
       }
 
@@ -312,10 +330,10 @@ export function OnboardingExperience() {
         throw new Error("workspace-root-unavailable");
       }
 
-      setProgressText("正在创建项目管理表…");
+      setProgressText(onboardingT("progressCreatingTable"));
       const tableResult = await createTable({
         variables: {
-          name: DEMO_TABLE_NAME,
+          name: onboardingT("demoTableName"),
           parentId,
           workspaceId: targetWorkspace.id,
           templateId: PROJECT_TEMPLATE_ID,
@@ -336,7 +354,7 @@ export function OnboardingExperience() {
         createdTable.id,
       );
 
-      setProgressText("正在写入示例任务…");
+      setProgressText(onboardingT("progressWritingRows"));
       await insertRows({
         variables: {
           tableId: createdTable.id,
@@ -348,18 +366,16 @@ export function OnboardingExperience() {
       setOpen(false);
       scheduleTourAfterNavigation();
       openTable(createdTable);
-      message.success("Demo 已创建：你现在看到的是真实可编辑的 QTable 项目");
+      message.success(onboardingT("demoCreated"));
     } catch {
       if (createdTable?.id) {
         persistState("completed");
         setOpen(false);
         scheduleTourAfterNavigation();
         openTable(createdTable);
-        message.warning(
-          "Demo 表已经创建，但示例任务写入失败。表本身仍可正常编辑，不会重复创建。",
-        );
+        message.warning(onboardingT("demoRowsFailed"));
       } else {
-        message.error("Demo 创建失败，请稍后重试。不会覆盖你已有的数据。");
+        message.error(onboardingT("demoFailed"));
       }
     } finally {
       setCreatingDemo(false);
@@ -367,37 +383,25 @@ export function OnboardingExperience() {
     }
   };
 
-  const tourSteps = [
-    {
-      title: "1. 一个项目，多种工作视角",
-      description:
-        "同一批任务可以在表格、看板、甘特和日历之间切换，不需要维护多份数据。",
-    },
-    {
-      title: "2. 每一行都是可执行任务",
-      description:
-        "状态、优先级、进度和日期都可以直接编辑。先把真实工作放进来，再逐步增加高级配置。",
-    },
-    {
-      title: "3. AI 应该理解项目，而不是只生成文字",
-      description:
-        "后续可以从任务拆解、工作量估算到项目诊断，逐步把 AI 变成项目助手。",
-    },
-    {
-      title: "4. 现在就动手改一条",
-      description:
-        "建议先把一条示例任务改成你自己的真实任务，或者切换到看板看看同一份数据的不同视角。",
-    },
-  ];
+  // 分步引导的文案跟随当前语言，所以按 language 重算整组 steps。
+  const tourSteps = useMemo(() => {
+    const copy = onboardingCatalog(language);
+    return [
+      { title: copy.tourStep1Title, description: copy.tourStep1Body },
+      { title: copy.tourStep2Title, description: copy.tourStep2Body },
+      { title: copy.tourStep3Title, description: copy.tourStep3Body },
+      { title: copy.tourStep4Title, description: copy.tourStep4Body },
+    ];
+  }, [language]);
 
   if (!token) return null;
 
   return (
     <>
       {!open && (
-        <Tooltip title="重新打开新手引导">
+        <Tooltip title={onboardingT("reopenGuide")}>
           <Button
-            aria-label="重新打开新手引导"
+            aria-label={onboardingT("reopenGuide")}
             shape="circle"
             icon={<QuestionCircleOutlined />}
             onClick={() => setOpen(true)}
@@ -407,6 +411,13 @@ export function OnboardingExperience() {
               bottom: 24,
               zIndex: 900,
               boxShadow: "0 6px 20px rgba(15, 23, 42, 0.12)",
+              // AI 面板停靠在视口右侧，其右下角是发送按钮的地盘；
+              // 面板打开时让引导入口整体退出该角落，避免两个按钮重叠。
+              transition: "opacity 0.2s ease, transform 0.2s ease",
+              opacity: aiPanelOpen ? 0 : 1,
+              transform: aiPanelOpen ? "scale(0.9)" : "scale(1)",
+              visibility: aiPanelOpen ? "hidden" : "visible",
+              pointerEvents: aiPanelOpen ? "none" : "auto",
             }}
           />
         </Tooltip>
@@ -417,7 +428,7 @@ export function OnboardingExperience() {
         onCancel={handleSkip}
         footer={
           <Button type="text" onClick={handleSkip} disabled={creatingDemo || preparingGoal}>
-            暂时跳过
+            {onboardingT("skip")}
           </Button>
         }
         width={820}
@@ -426,10 +437,10 @@ export function OnboardingExperience() {
         title={
           <div>
             <Typography.Title level={4} style={{ margin: 0 }}>
-              欢迎使用 QTable
+              {onboardingT("welcomeTitle")}
             </Typography.Title>
             <Typography.Text type="secondary">
-              不需要先学习“多维表格怎么配置”，先选择你想完成的事情。
+              {onboardingT("welcomeSubtitle")}
             </Typography.Text>
           </div>
         }
@@ -437,7 +448,7 @@ export function OnboardingExperience() {
         <Alert
           type="info"
           showIcon
-          message="目标：3 分钟内得到一个可以真正编辑和继续工作的项目"
+          message={onboardingT("goalAlert")}
           style={{ marginBottom: 18 }}
         />
 
@@ -455,12 +466,14 @@ export function OnboardingExperience() {
           >
             <Space orientation="vertical" size={10}>
               <RocketOutlined style={{ fontSize: 26, color: "#2563eb" }} />
-              <Typography.Text strong>描述我的目标</Typography.Text>
+              <Typography.Text strong>
+                {onboardingT("goalCardTitle")}
+              </Typography.Text>
               <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                例如“我要做一个 3 人参与的博客改版项目”，后续由 AI 自动设计工作结构。
+                {onboardingT("goalCardBody")}
               </Typography.Text>
               <Button type="link" style={{ padding: 0 }} loading={preparingGoal}>
-                立即生成项目蓝图
+                {onboardingT("goalCardAction")}
               </Button>
             </Space>
           </Card>
@@ -475,12 +488,14 @@ export function OnboardingExperience() {
               <PlayCircleOutlined
                 style={{ fontSize: 26, color: "#2563eb" }}
               />
-              <Typography.Text strong>体验 Demo 项目</Typography.Text>
+              <Typography.Text strong>
+                {onboardingT("demoCardTitle")}
+              </Typography.Text>
               <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                一键创建“个人博客改版项目”，包含 10 条任务和项目管理多视图。
+                {onboardingT("demoCardBody")}
               </Typography.Text>
               <Button type="primary" loading={creatingDemo}>
-                立即创建
+                {onboardingT("demoCardAction")}
               </Button>
             </Space>
           </Card>
@@ -494,12 +509,14 @@ export function OnboardingExperience() {
               <AppstoreAddOutlined
                 style={{ fontSize: 26, color: "#7c3aed" }}
               />
-              <Typography.Text strong>从模板 / 数据开始</Typography.Text>
+              <Typography.Text strong>
+                {onboardingT("templateCardTitle")}
+              </Typography.Text>
               <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                已经知道自己要做什么？直接使用现有模板，或继续导入已有数据。
+                {onboardingT("templateCardBody")}
               </Typography.Text>
               <Button type="link" style={{ padding: 0 }}>
-                使用现有能力
+                {onboardingT("templateCardAction")}
               </Button>
             </Space>
           </Card>
@@ -532,7 +549,7 @@ export function OnboardingExperience() {
           <Space>
             <BulbOutlined style={{ color: "#f59e0b" }} />
             <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-              Demo 创建的是正常 QTable 数据，不是截图；你可以直接改、删、复制或继续添加真实任务。
+              {onboardingT("demoDataTip")}
             </Typography.Text>
           </Space>
         </div>
@@ -542,7 +559,7 @@ export function OnboardingExperience() {
         open={goalOpen}
         workspaceId={goalTarget?.workspaceId || ""}
         parentId={goalTarget?.parentId || ""}
-        initialGoal="我要管理一个 3 人完成的个人博客改版项目，预计 3 周完成。"
+        initialGoal={onboardingT("initialGoal")}
         onClose={() => {
           setGoalOpen(false);
           if (!localStorage.getItem(storageKey)) {

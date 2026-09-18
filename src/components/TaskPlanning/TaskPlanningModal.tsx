@@ -31,6 +31,7 @@ import {
   PREVIEW_TASK_PLANNING,
 } from "../../lib/graphql";
 import { useSmartTableStore } from "../../store/useSmartTableStore";
+import { FieldTypeIcon } from "../SmartTable/FieldTypeIcon";
 import type {
   TaskPlanningApplyResult,
   TaskPlanningDecision,
@@ -832,7 +833,15 @@ export function TaskPlanningModal({
                 <Space wrap>
                   <span>确认写入时会在同一事务中自动补齐：</span>
                   {preview.schemaAdditions.map((field) => (
-                    <Tag key={field.id}>
+                    <Tag
+                      key={field.id}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 4,
+                      }}
+                    >
+                      <FieldTypeIcon type={field.type} />
                       {field.name} · {field.type}
                     </Tag>
                   ))}

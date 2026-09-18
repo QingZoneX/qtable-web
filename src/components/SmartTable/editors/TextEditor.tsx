@@ -29,7 +29,6 @@ const TextEditorComponent = ({
       style={{
         width: "100%",
         height: "100%",
-        border: "2px solid #2563EB",
         backgroundColor: "#fff",
         display: "flex",
         alignItems: "center",
@@ -55,7 +54,7 @@ const TextEditorComponent = ({
           width: "100%",
           height: "100%",
           borderRadius: 0,
-          padding: "0 16px",
+          padding: "0 6px",
           fontSize: 13,
         }}
         variant="borderless"

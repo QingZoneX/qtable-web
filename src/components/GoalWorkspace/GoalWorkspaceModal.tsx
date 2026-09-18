@@ -11,6 +11,7 @@ import {
   TableOutlined,
 } from "@ant-design/icons";
 import { useMutation } from "@apollo/client/react";
+import { FieldTypeIcon } from "../SmartTable/FieldTypeIcon";
 import {
   Alert,
   Button,
@@ -588,7 +589,15 @@ export function GoalWorkspaceModal({
                               })
                             }
                           />
-                          <Tag style={{ margin: 0 }}>
+                          <Tag
+                            style={{
+                              margin: 0,
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 4,
+                            }}
+                          >
+                            <FieldTypeIcon type={field.type} />
                             {fieldTypeLabel[field.type] || field.type}
                           </Tag>
                           <Popconfirm

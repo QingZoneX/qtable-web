@@ -31,6 +31,7 @@ import {
 } from "antd";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { t } from "../../lib/i18nRuntime";
+import { FieldTypeIcon } from "../SmartTable/FieldTypeIcon";
 import {
   useAiAssistantStore,
   type AiConversation,
@@ -1395,7 +1396,18 @@ const ChatAreaEnhanced: React.FC<ChatAreaProps> = ({ onOpenConfig }) => {
                 title: (
                   <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                     <Text strong style={{ fontSize: 12, whiteSpace: "nowrap" }}>{field.name}</Text>
-                    <Tag color="blue" style={{ fontSize: 9, lineHeight: "14px", padding: "0 3px" }}>
+                    <Tag
+                      color="blue"
+                      style={{
+                        fontSize: 9,
+                        lineHeight: "14px",
+                        padding: "0 3px",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 3,
+                      }}
+                    >
+                      <FieldTypeIcon type={field.type} />
                       {field.type}
                     </Tag>
                   </div>

@@ -10,6 +10,7 @@ import {
 import { t } from "../../lib/i18nRuntime";
 
 const { Text, Link } = Typography;
+const DEFAULT_DEEPSEEK_MODEL = "deepseek-flash";
 
 interface AiConfigModalProps {
   open: boolean;
@@ -58,7 +59,7 @@ const AiConfigModal: React.FC<AiConfigModalProps> = ({
     form.resetFields();
     form.setFieldsValue({
       provider: "deepseek",
-      model: "deepseek-chat",
+      model: DEFAULT_DEEPSEEK_MODEL,
     });
   }, [form]);
 
@@ -88,7 +89,7 @@ const AiConfigModal: React.FC<AiConfigModalProps> = ({
             id: editingId || undefined,
             provider: values.provider || "deepseek",
             apiKey: values.apiKey,
-            model: values.model || "deepseek-chat",
+            model: values.model || DEFAULT_DEEPSEEK_MODEL,
           },
         },
       });
@@ -198,7 +199,7 @@ const AiConfigModal: React.FC<AiConfigModalProps> = ({
         <Form
           form={form}
           layout="vertical"
-          initialValues={{ provider: "deepseek", model: "deepseek-chat" }}
+          initialValues={{ provider: "deepseek", model: DEFAULT_DEEPSEEK_MODEL }}
           style={{ marginTop: 8 }}
         >
           <Form.Item name="provider" label="服务提供方">
@@ -215,7 +216,7 @@ const AiConfigModal: React.FC<AiConfigModalProps> = ({
             />
           </Form.Item>
           <Form.Item name="model" label="模型名称">
-            <Input placeholder="deepseek-chat" />
+            <Input placeholder={DEFAULT_DEEPSEEK_MODEL} />
           </Form.Item>
         </Form>
         <Text type="secondary" style={{ fontSize: 12 }}>

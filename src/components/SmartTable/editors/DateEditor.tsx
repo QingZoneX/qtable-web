@@ -21,8 +21,6 @@ const DateEditorComponent = ({
       style={{
         width: "100%",
         height: "100%",
-        border: "2px solid #2563EB",
-        boxShadow: "0 0 0 4px rgba(37, 99, 235, 0.1)",
         backgroundColor: "#fff",
         display: "flex",
         alignItems: "center",
@@ -47,7 +45,7 @@ const DateEditorComponent = ({
         style={{
           width: "100%",
           height: "100%",
-          padding: "0 16px",
+          padding: "0 6px",
         }}
         popupClassName="vtable-editor-popup"
         onChange={(date) => {

@@ -3,6 +3,10 @@ import { Input } from "antd";
 import type { TextAreaRef } from "antd/es/input/TextArea";
 import { ReactEditor } from "./ReactEditor";
 
+// .vtable-editor-wrapper 上下各 2px 边框：内容高度要把这 4px 让出来，
+// 否则底部（含 Shift+Enter 提示行）会被外框裁掉。
+const EDITOR_FRAME_BORDER = 4;
+
 const TaskTitleEditorComponent = ({
   initialValue,
   onChange,
@@ -30,7 +34,7 @@ const TaskTitleEditorComponent = ({
   }, []);
 
   useEffect(() => {
-    onHeightChange(40);
+    onHeightChange(40 + EDITOR_FRAME_BORDER);
   }, [onHeightChange]);
 
   useEffect(() => {
@@ -41,7 +45,7 @@ const TaskTitleEditorComponent = ({
       const natural = ta.scrollHeight;
       const h = Math.min(maxHeight, Math.max(minHeight, natural));
       setBoxHeight(h);
-      onHeightChange(h);
+      onHeightChange(h + EDITOR_FRAME_BORDER);
       ta.style.height = `${h}px`;
       ta.scrollTop = h === maxHeight ? ta.scrollHeight : 0;
     };
@@ -53,7 +57,7 @@ const TaskTitleEditorComponent = ({
     <div
       style={{
         width: "100%",
-        height: boxHeight - 2,
+        height: boxHeight,
         position: "relative",
       }}
     >
@@ -77,11 +81,9 @@ const TaskTitleEditorComponent = ({
           height: "100%",
           borderRadius: "4px",
           resize: "none",
-          padding: "8px 16px",
+          padding: "8px 6px",
           lineHeight: "1.5",
           backgroundColor: "#fff",
-          border: "2px solid #2563EB",
-          boxShadow: "0 0 0 4px rgba(37, 99, 235, 0.1)",
           overflowY: boxHeight >= maxHeight ? "auto" : "hidden",
         }}
         variant="borderless"
@@ -91,8 +93,8 @@ const TaskTitleEditorComponent = ({
       <div
         style={{
           position: "absolute",
-          right: 3,
-          bottom: 0,
+          right: 6,
+          bottom: 2,
           fontSize: "8px",
           color: "#c9c9c9",
           pointerEvents: "none",

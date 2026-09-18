@@ -19,6 +19,7 @@ import {
   ReloadOutlined,
 } from "@ant-design/icons";
 import { useMemo, useState } from "react";
+import { FieldTypeIcon } from "../FieldTypeIcon";
 import { client } from "../../../lib/apollo";
 import {
   IMPORT_CSV,
@@ -787,9 +788,20 @@ export function CsvImportModal({ open, onClose }: Props) {
                     }}
                     options={supportedFields.map((field) => ({
                       value: field.id,
-                      label: `${field.name} · ${
-                        FIELD_TYPE_LABELS[String(field.type)] || field.type
-                      }`,
+                      label: (
+                        <span
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: 6,
+                          }}
+                        >
+                          <FieldTypeIcon type={field.type} />
+                          {`${field.name} · ${
+                            FIELD_TYPE_LABELS[String(field.type)] || field.type
+                          }`}
+                        </span>
+                      ),
                       disabled:
                         usedFieldIds.has(field.id) &&
                         field.id !== selectedFieldId,

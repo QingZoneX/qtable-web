@@ -283,7 +283,6 @@ const AttachmentEditorComponent = ({
     >
       <div
         style={{
-          border: "2px solid #2563EB",
           borderRadius: 4,
           padding: 3,
           height: "100%",
