@@ -69,7 +69,6 @@ if (ciOwned) {
     "docker/setup-buildx-action@v4",
     "docker/metadata-action@v6",
     "docker/build-push-action@v7",
-    "aquasecurity/trivy-action@v0.35.0",
     "severity: 'CRITICAL,HIGH'",
     "exit-code: '1'",
     "vuln-type: 'os,library'",
@@ -84,6 +83,9 @@ if (ciOwned) {
     "QTABLE_UI_REVISION=${{ github.sha }}",
   ]) {
     if (!publish.includes(token)) fail("Docker publish workflow missing release contract token: " + token);
+  }
+  if (!/aquasecurity\/trivy-action@v\d+\.\d+\.\d+/.test(publish)) {
+    fail("Docker publish workflow missing a pinned aquasecurity/trivy-action release");
   }
 }
 
