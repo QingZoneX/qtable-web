@@ -44,7 +44,6 @@ if (ciOwned) {
     "docker/login-action@v4",
     "docker/metadata-action@v6",
     "docker/build-push-action@v7",
-    "aquasecurity/trivy-action@v0.35.0",
     "severity: 'CRITICAL,HIGH'",
     "exit-code: '1'",
     "vuln-type: 'os,library'",
@@ -59,6 +58,9 @@ if (ciOwned) {
     "QTABLE_UI_CREATED=${{ steps.identity.outputs.created }}",
   ]) {
     assertContains(workflow, token, "Docker Hub workflow");
+  }
+  if (!/aquasecurity\/trivy-action@v\d+\.\d+\.\d+/.test(workflow)) {
+    throw new Error("Docker Hub workflow is missing a pinned aquasecurity/trivy-action release");
   }
 }
 
