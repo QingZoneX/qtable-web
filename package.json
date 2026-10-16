@@ -114,6 +114,7 @@
     "@visactor/vrender-core": "1.1.11",
     "@visactor/vrender-kits": "1.1.11",
     "@visactor/vrender-components": "1.1.11",
-    "@visactor/vrender-animate": "1.1.11"
+    "@visactor/vrender-animate": "1.1.11",
+    "katex": "0.18.2"
   }
 }
