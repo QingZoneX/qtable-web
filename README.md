@@ -14,6 +14,8 @@ QTable Web provides the interactive multidimensional-table experience for QTable
 
 ![QTable Kanban](design/kanban.png)
 
+**Source ownership:** `QingZoneX/QTableWebPrivate` is the sole canonical development source. This public repository is the reviewed release/snapshot lane. Public issues and contribution proposals remain welcome; maintainers port product-code changes into the canonical source before a new snapshot. This notice does not claim the public snapshot contains the latest private business features. See [release/sync ownership](docs/source-ownership.md).
+
 ## Stack
 
 - React 19
